@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button";
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
 
-// Initialize Stripe (you'll need to add your publishable key)
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_test_...');
+// Initialize Stripe
+const stripePromise = loadStripe('pk_live_51SpvVjC59PRvTlS1FnlD7NrMuLmbLpb9NEZDDpRm18zGQLo25i8DstYYfDVO0N8erd9j1gE6xEsb0kMCiTVGk73G00H04ddFDh');
 
 const CARD_ELEMENT_OPTIONS = {
   style: {
