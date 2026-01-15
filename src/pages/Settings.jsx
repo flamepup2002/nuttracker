@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   ArrowLeft, DollarSign, Settings2, CreditCard, 
-  Bluetooth, Save, Info, AlertTriangle
+  Bluetooth, Save, Info, AlertTriangle, Plus
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,11 +20,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import StripePaymentSetup from '@/components/StripePaymentSetup';
+import PaymentMethodCard from '@/components/PaymentMethodCard';
 
 export default function Settings() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [hasChanges, setHasChanges] = useState(false);
+  const [showPaymentSetup, setShowPaymentSetup] = useState(false);
 
   const { data: existingSettings, isLoading } = useQuery({
     queryKey: ['userSettings'],
@@ -32,6 +35,12 @@ export default function Settings() {
       const list = await base44.entities.UserSettings.list();
       return list[0] || null;
     },
+  });
+
+  const { data: paymentMethodData, refetch: refetchPaymentMethod } = useQuery({
+    queryKey: ['paymentMethod'],
+    queryFn: () => base44.functions.getStripePaymentMethod(),
+    initialData: { hasPaymentMethod: false },
   });
 
   const [settings, setSettings] = useState({
@@ -269,7 +278,7 @@ export default function Settings() {
           )}
         </motion.div>
 
-        {/* Payment Notice */}
+        {/* Payment Method */}
         {settings.findom_enabled && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -277,20 +286,79 @@ export default function Settings() {
             transition={{ delay: 0.1 }}
             className="bg-zinc-900/50 rounded-2xl border border-zinc-800 p-6"
           >
-            <div className="flex items-center gap-3 mb-4">
+            <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
                 <CreditCard className="w-5 h-5 text-white" />
               </div>
               <div>
                 <h2 className="text-white font-bold">Payment Method</h2>
-                <p className="text-zinc-500 text-sm">PAD charges for findom sessions</p>
+                <p className="text-zinc-500 text-sm">For automatic findom charges</p>
               </div>
             </div>
-            <div className="bg-blue-900/20 border border-blue-500/30 rounded-xl p-4">
-              <p className="text-blue-400 text-sm">
-                Payment integration requires backend functions. Contact support to enable automatic PAD charges for your findom sessions.
-              </p>
-            </div>
+
+            <AnimatePresence mode="wait">
+              {!showPaymentSetup ? (
+                paymentMethodData?.hasPaymentMethod ? (
+                  <motion.div
+                    key="has-payment"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                  >
+                    <PaymentMethodCard paymentMethod={paymentMethodData.paymentMethod} />
+                    <Button
+                      onClick={() => setShowPaymentSetup(true)}
+                      variant="outline"
+                      className="w-full mt-4 bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Update Payment Method
+                    </Button>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="no-payment"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                  >
+                    <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-xl p-4 mb-4">
+                      <div className="flex items-start gap-3">
+                        <AlertTriangle className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <p className="text-yellow-400 font-medium text-sm">No payment method added</p>
+                          <p className="text-yellow-500/70 text-xs mt-1">
+                            Add a payment method to enable automatic findom charges
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <Button
+                      onClick={() => setShowPaymentSetup(true)}
+                      className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Payment Method
+                    </Button>
+                  </motion.div>
+                )
+              ) : (
+                <motion.div
+                  key="setup-form"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <StripePaymentSetup
+                    onSuccess={() => {
+                      setShowPaymentSetup(false);
+                      refetchPaymentMethod();
+                    }}
+                    onCancel={() => setShowPaymentSetup(false)}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         )}
 

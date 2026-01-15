@@ -112,18 +112,55 @@ export default function FindomSession() {
         peak_heart_rate: peakHR,
         avg_heart_rate: avgHR,
       });
+
+      // Process payment if there's a cost
+      if (totalCost > 0) {
+        try {
+          const user = await base44.auth.me();
+          
+          if (!user.stripe_payment_method_id) {
+            toast.error('No payment method on file', {
+              description: 'Please add a payment method in Settings'
+            });
+            setIsActive(false);
+            setShowEndDialog(false);
+            setShowSummary(true);
+            return;
+          }
+
+          toast.loading('Processing payment...', { id: 'payment' });
+
+          const result = await base44.functions.processFindomPayment({
+            sessionId: session.id,
+            amount: totalCost,
+            stripeCustomerId: user.stripe_customer_id,
+            paymentMethodId: user.stripe_payment_method_id
+          });
+
+          toast.dismiss('payment');
+
+          if (result.success) {
+            toast.success(`Payment processed: $${totalCost.toFixed(2)}`, {
+              description: 'Thank you for your submission'
+            });
+          } else {
+            toast.error('Payment failed', {
+              description: result.error || 'Please check your payment method'
+            });
+          }
+        } catch (paymentError) {
+          toast.dismiss('payment');
+          toast.error('Payment processing failed', {
+            description: paymentError.message
+          });
+        }
+      } else {
+        toast.success('Session complete!');
+      }
       
       setIsActive(false);
       setShowEndDialog(false);
       setShowSummary(true);
-
-      if (totalCost > 0) {
-        toast.success(`Session complete! Total: $${totalCost.toFixed(2)}`, {
-          description: 'PAD charge will be processed'
-        });
-      } else {
-        toast.success('Session complete!');
-      }
     } catch (error) {
       toast.error('Failed to end session');
     }
