@@ -1,12 +1,10 @@
 import AICoach from './pages/AICoach';
-import AIGuidedSession from './pages/AIGuidedSession';
 import Achievements from './pages/Achievements';
 import BullyChat from './pages/BullyChat';
 import BuyCoins from './pages/BuyCoins';
 import Edge from './pages/Edge';
 import FindomAI from './pages/FindomAI';
 import FindomAnalytics from './pages/FindomAnalytics';
-import FindomChallenges from './pages/FindomChallenges';
 import FindomDebt from './pages/FindomDebt';
 import FindomSession from './pages/FindomSession';
 import GoonSession from './pages/GoonSession';
@@ -20,20 +18,19 @@ import Profile from './pages/Profile';
 import SellHouse from './pages/SellHouse';
 import Settings from './pages/Settings';
 import Shop from './pages/Shop';
-import AIDebtContracts from './pages/AIDebtContracts';
+import AIGuidedSession from './pages/AIGuidedSession';
+import FindomChallenges from './pages/FindomChallenges';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "AICoach": AICoach,
-    "AIGuidedSession": AIGuidedSession,
     "Achievements": Achievements,
     "BullyChat": BullyChat,
     "BuyCoins": BuyCoins,
     "Edge": Edge,
     "FindomAI": FindomAI,
     "FindomAnalytics": FindomAnalytics,
-    "FindomChallenges": FindomChallenges,
     "FindomDebt": FindomDebt,
     "FindomSession": FindomSession,
     "GoonSession": GoonSession,
@@ -47,7 +44,8 @@ export const PAGES = {
     "SellHouse": SellHouse,
     "Settings": Settings,
     "Shop": Shop,
-    "AIDebtContracts": AIDebtContracts,
+    "AIGuidedSession": AIGuidedSession,
+    "FindomChallenges": FindomChallenges,
 }
 
 export const pagesConfig = {
