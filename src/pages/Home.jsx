@@ -77,6 +77,26 @@ export default function Home() {
     initUser();
   }, []);
 
+  // Calculate debt with interest
+  const calculateDebt = () => {
+    const findomSessions = sessions.filter(s => s.is_findom && s.status === 'completed');
+    let totalDebt = 0;
+    
+    findomSessions.forEach(session => {
+      const baseCost = session.total_cost || 0;
+      const sessionDate = new Date(session.created_date);
+      const now = new Date();
+      const daysElapsed = (now - sessionDate) / (1000 * 60 * 60 * 24);
+      const interestRate = (settings?.interest_rate || 0) / 100;
+      const debtWithInterest = baseCost * Math.pow(1 + interestRate, daysElapsed);
+      totalDebt += debtWithInterest;
+    });
+    
+    return totalDebt;
+  };
+
+  const currentDebt = calculateDebt();
+
   const stats = {
     total: orgasms.length,
     cumshots: orgasms.filter(o => o.type === 'cumshot').length,
@@ -339,6 +359,28 @@ export default function Home() {
             delay={0.2}
           />
         </div>
+
+        {/* Findom Debt Display */}
+        {settings?.findom_enabled && currentDebt > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+            className="bg-gradient-to-br from-red-900/30 to-orange-900/30 border border-red-500/30 rounded-2xl p-5"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-zinc-400 text-sm font-medium">Outstanding Debt</p>
+                <p className="text-red-400 text-xs mt-1">
+                  {settings?.interest_rate > 0 ? `Growing at ${settings.interest_rate}%/day` : 'No interest'}
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="text-2xl font-bold text-red-400">${currentDebt.toFixed(2)}</p>
+              </div>
+            </div>
+          </motion.div>
+        )}
 
         {/* Orgasm Types Breakdown */}
         <motion.div
