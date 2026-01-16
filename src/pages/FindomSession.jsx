@@ -37,6 +37,9 @@ export default function FindomSession() {
   const [showEndDialog, setShowEndDialog] = useState(false);
   const [showSummary, setShowSummary] = useState(false);
   const [sessionOrgasms, setSessionOrgasms] = useState([]);
+  
+  // Detect iOS (Web Bluetooth not supported)
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
   const { data: settings, isLoading } = useQuery({
     queryKey: ['userSettings'],
@@ -325,14 +328,18 @@ export default function FindomSession() {
         )}
 
         {/* Heart Rate Monitor */}
-        <HeartRateMonitor 
-          onHeartRateChange={setHeartRate}
-          onDataPoint={(dp) => setHeartRateData(prev => [...prev, dp])}
-        />
+        {!isIOS && (
+          <>
+            <HeartRateMonitor 
+              onHeartRateChange={setHeartRate}
+              onDataPoint={(dp) => setHeartRateData(prev => [...prev, dp])}
+            />
 
-        {/* Heart Rate Chart */}
-        {heartRateData.length > 0 && (
-          <HeartRateChart data={heartRateData} />
+            {/* Heart Rate Chart */}
+            {heartRateData.length > 0 && (
+              <HeartRateChart data={heartRateData} />
+            )}
+          </>
         )}
 
         {/* Session Summary */}

@@ -1,17 +1,17 @@
-import Home from './pages/Home';
-import GoonSession from './pages/GoonSession';
 import FindomSession from './pages/FindomSession';
-import Settings from './pages/Settings';
+import GoonSession from './pages/GoonSession';
 import History from './pages/History';
+import Home from './pages/Home';
+import Settings from './pages/Settings';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
-    "Home": Home,
-    "GoonSession": GoonSession,
     "FindomSession": FindomSession,
-    "Settings": Settings,
+    "GoonSession": GoonSession,
     "History": History,
+    "Home": Home,
+    "Settings": Settings,
 }
 
 export const pagesConfig = {
