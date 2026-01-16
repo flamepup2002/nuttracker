@@ -8,7 +8,10 @@ import {
   ArrowLeft, Trophy, Lock, Sparkles, DollarSign, 
   Ban, Flame, TrendingUp, Heart, Timer, Zap, 
   Droplet, Target, TrendingDown, Calendar, Award,
-  Star, Crown, Coins, Activity, Video
+  Star, Crown, Coins, Activity, Video, Milestone,
+  FastForward, Undo2, Hourglass, AlertCircle, Skull,
+  Wind, Gem, Rocket, Lightbulb, Gift,
+  Shield, Compass, Infinity, Radio, MapPin, Gauge, Circle
 } from 'lucide-react';
 import { toast } from 'sonner';
 
