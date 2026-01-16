@@ -248,6 +248,23 @@ export default function Home() {
             </motion.div>
           </Link>
 
+          <Link to={createPageUrl('FindomDebt')}>
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className={`relative overflow-hidden rounded-2xl p-6 ${
+                settings?.findom_enabled
+                  ? 'bg-gradient-to-br from-red-600/50 to-pink-600/50 border border-red-500/30'
+                  : 'bg-zinc-900 border border-zinc-800'
+              }`}
+            >
+              <TrendingUp className="w-8 h-8 text-white mb-3" />
+              <p className="text-white font-bold text-lg">Findom Debt</p>
+              <p className="text-white/70 text-sm">Track your balance</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+
           <Link to={createPageUrl('KinkSessions')}>
             <motion.div
               whileHover={{ scale: 1.02 }}
