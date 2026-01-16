@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { AlertTriangle, FileText, Check } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { AlertTriangle, FileText, Check, Building2, Loader2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { base44 } from '@/api/base44Client';
+import { toast } from 'sonner';
 
 export default function UnethicalModeAgreement({ onAccept, onCancel }) {
   const [signature, setSignature] = useState('');
@@ -12,6 +14,8 @@ export default function UnethicalModeAgreement({ onAccept, onCancel }) {
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [acceptedCollateral, setAcceptedCollateral] = useState(false);
   const [acceptedLiability, setAcceptedLiability] = useState(false);
+  const [isSigning, setIsSigning] = useState(false);
+  const [filingStatus, setFilingStatus] = useState(null);
 
   const currentDate = new Date().toLocaleDateString('en-US', { 
     year: 'numeric', 
@@ -21,13 +25,39 @@ export default function UnethicalModeAgreement({ onAccept, onCancel }) {
 
   const canSubmit = signature && address && acceptedTerms && acceptedCollateral && acceptedLiability;
 
-  const handleSubmit = () => {
-    if (canSubmit) {
-      onAccept({
+  const handleSubmit = async () => {
+    if (!canSubmit) return;
+
+    setIsSigning(true);
+    const signedDate = new Date().toISOString();
+
+    try {
+      // Forward agreement to courthouses
+      const response = await base44.functions.invoke('forwardAgreementToCourthouses', {
         signature,
         address,
-        signedDate: new Date().toISOString(),
+        signedDate
       });
+
+      if (response.data.success) {
+        setFilingStatus(response.data);
+        toast.success(`Agreement filed with ${response.data.courthouses} courthouses`);
+        
+        // Wait a moment to show the filing status, then accept
+        setTimeout(() => {
+          onAccept({
+            signature,
+            address,
+            signedDate,
+            filings: response.data.filings
+          });
+        }, 3000);
+      } else {
+        throw new Error('Failed to file agreement');
+      }
+    } catch (error) {
+      toast.error('Failed to file agreement with courthouses');
+      setIsSigning(false);
     }
   };
 
@@ -201,22 +231,53 @@ export default function UnethicalModeAgreement({ onAccept, onCancel }) {
             Date: {currentDate}
           </div>
 
+          {/* Filing Status */}
+          <AnimatePresence>
+            {filingStatus && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-green-900/20 border border-green-500/30 rounded-lg p-4"
+              >
+                <div className="flex items-start gap-3">
+                  <Building2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-green-400 font-medium text-sm">Filing Complete</p>
+                    <p className="text-green-500/70 text-xs mt-1">
+                      Agreement filed with {filingStatus.courthouses} courthouses within 100km
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* Actions */}
           <div className="flex gap-3">
             <Button
               onClick={onCancel}
               variant="outline"
+              disabled={isSigning}
               className="flex-1 border-zinc-700 text-white"
             >
               Cancel
             </Button>
             <Button
               onClick={handleSubmit}
-              disabled={!canSubmit}
+              disabled={!canSubmit || isSigning}
               className="flex-1 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800"
             >
-              <Check className="w-4 h-4 mr-2" />
-              Sign Agreement
+              {isSigning ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Filing with Courthouses...
+                </>
+              ) : (
+                <>
+                  <Check className="w-4 h-4 mr-2" />
+                  Sign & File Agreement
+                </>
+              )}
             </Button>
           </div>
         </div>
