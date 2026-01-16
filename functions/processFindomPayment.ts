@@ -13,10 +13,6 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get user settings to lock interest rate
-    const settings = await base44.asServiceRole.entities.UserSettings.filter({ created_by: user.email });
-    const currentInterestRate = settings.length > 0 ? settings[0].interest_rate : 0;
-
     // Create a Payment Intent
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(amount * 100), // Convert to cents
@@ -42,11 +38,6 @@ Deno.serve(async (req) => {
       metadata: {
         payment_method_id: paymentMethodId
       }
-    });
-
-    // Update session with locked interest rate
-    await base44.entities.Session.update(sessionId, {
-      locked_interest_rate: currentInterestRate
     });
 
     return Response.json({
