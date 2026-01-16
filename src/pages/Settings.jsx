@@ -58,6 +58,7 @@ export default function Settings() {
     goonercam_enabled: false,
     broadcast_enabled: false,
     snuff_play_enabled: false,
+    unethical_mode_enabled: false,
   });
 
   useEffect(() => {
@@ -71,6 +72,7 @@ export default function Settings() {
         goonercam_enabled: existingSettings.goonercam_enabled ?? false,
         broadcast_enabled: existingSettings.broadcast_enabled ?? false,
         snuff_play_enabled: existingSettings.snuff_play_enabled ?? false,
+        unethical_mode_enabled: existingSettings.unethical_mode_enabled ?? false,
       });
     }
   }, [existingSettings]);
