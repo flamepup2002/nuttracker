@@ -42,7 +42,10 @@ export default function Settings() {
 
   const { data: paymentMethodData, refetch: refetchPaymentMethod } = useQuery({
     queryKey: ['paymentMethod'],
-    queryFn: () => base44.functions.getStripePaymentMethod(),
+    queryFn: async () => {
+      const response = await base44.functions.invoke('getStripePaymentMethod');
+      return response.data;
+    },
     initialData: { hasPaymentMethod: false },
   });
 

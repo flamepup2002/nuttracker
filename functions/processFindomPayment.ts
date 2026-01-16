@@ -1,9 +1,17 @@
-import { base44 } from '@/api/base44Client.backend';
-import Stripe from 'stripe';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
+import Stripe from 'npm:stripe@17.5.0';
 
-export default async function processFindomPayment({ sessionId, amount, stripeCustomerId, paymentMethodId }) {
+Deno.serve(async (req) => {
   try {
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+    const base44 = createClientFromRequest(req);
+    const { sessionId, amount, stripeCustomerId, paymentMethodId } = await req.json();
+    
+    const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY'));
+    
+    const user = await base44.auth.me();
+    if (!user) {
+      return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
     // Create a Payment Intent
     const paymentIntent = await stripe.paymentIntents.create({
@@ -32,7 +40,7 @@ export default async function processFindomPayment({ sessionId, amount, stripeCu
       }
     });
 
-    return {
+    return Response.json({
       success: true,
       payment,
       paymentIntent: {
@@ -40,9 +48,11 @@ export default async function processFindomPayment({ sessionId, amount, stripeCu
         status: paymentIntent.status,
         amount: paymentIntent.amount / 100
       }
-    };
+    });
   } catch (error) {
     console.error('Payment processing error:', error);
+    
+    const base44 = createClientFromRequest(req);
 
     // Record failed payment
     await base44.entities.Payment.create({
@@ -56,9 +66,9 @@ export default async function processFindomPayment({ sessionId, amount, stripeCu
       }
     });
 
-    return {
+    return Response.json({
       success: false,
       error: error.message
-    };
+    }, { status: 500 });
   }
-}
+});

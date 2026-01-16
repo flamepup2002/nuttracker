@@ -1,22 +1,27 @@
-import { base44 } from '@/api/base44Client.backend';
-import Stripe from 'stripe';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
+import Stripe from 'npm:stripe@17.5.0';
 
-export default async function getStripePaymentMethod() {
+Deno.serve(async (req) => {
   try {
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-    const user = await base44.auth.requireUser();
+    const base44 = createClientFromRequest(req);
+    const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY'));
+    const user = await base44.auth.me();
+    
+    if (!user) {
+      return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
     if (!user.stripe_payment_method_id) {
-      return {
+      return Response.json({
         success: true,
         hasPaymentMethod: false
-      };
+      });
     }
 
     // Get payment method details
     const paymentMethod = await stripe.paymentMethods.retrieve(user.stripe_payment_method_id);
 
-    return {
+    return Response.json({
       success: true,
       hasPaymentMethod: true,
       paymentMethod: {
@@ -26,12 +31,12 @@ export default async function getStripePaymentMethod() {
         exp_month: paymentMethod.card?.exp_month,
         exp_year: paymentMethod.card?.exp_year
       }
-    };
+    });
   } catch (error) {
     console.error('Get payment method error:', error);
-    return {
+    return Response.json({
       success: false,
       error: error.message
-    };
+    }, { status: 500 });
   }
-}
+});
