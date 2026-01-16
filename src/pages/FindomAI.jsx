@@ -7,7 +7,6 @@ import { useQuery } from '@tanstack/react-query';
 import { ArrowLeft, Send, Coins, AlertTriangle, Zap, Lock } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 export default function FindomAI() {
