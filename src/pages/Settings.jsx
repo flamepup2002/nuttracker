@@ -60,24 +60,26 @@ export default function Settings() {
     broadcast_enabled: false,
     ai_dangerous_encouragements: false,
     goon_captions_enabled: false,
-
+    goon_censor_enabled: false,
+    active_aura: null,
     });
 
   useEffect(() => {
-    if (existingSettings) {
-      setSettings({
-        findom_enabled: existingSettings.findom_enabled ?? false,
-        base_cost: existingSettings.base_cost ?? 5,
-        escalation_rate: existingSettings.escalation_rate ?? 10,
-        interest_rate: existingSettings.interest_rate ?? 0,
-        heart_monitor_connected: existingSettings.heart_monitor_connected ?? false,
-        goonercam_enabled: existingSettings.goonercam_enabled ?? false,
-        broadcast_enabled: existingSettings.broadcast_enabled ?? false,
-        ai_dangerous_encouragements: existingSettings.ai_dangerous_encouragements ?? false,
-        goon_captions_enabled: existingSettings.goon_captions_enabled ?? false,
-
-        });
-    }
+   if (existingSettings) {
+     setSettings({
+       findom_enabled: existingSettings.findom_enabled ?? false,
+       base_cost: existingSettings.base_cost ?? 5,
+       escalation_rate: existingSettings.escalation_rate ?? 10,
+       interest_rate: existingSettings.interest_rate ?? 0,
+       heart_monitor_connected: existingSettings.heart_monitor_connected ?? false,
+       goonercam_enabled: existingSettings.goonercam_enabled ?? false,
+       broadcast_enabled: existingSettings.broadcast_enabled ?? false,
+       ai_dangerous_encouragements: existingSettings.ai_dangerous_encouragements ?? false,
+       goon_captions_enabled: existingSettings.goon_captions_enabled ?? false,
+       goon_censor_enabled: existingSettings.goon_censor_enabled ?? false,
+       active_aura: existingSettings.active_aura ?? null,
+       });
+   }
   }, [existingSettings]);
 
   const saveMutation = useMutation({
@@ -584,6 +586,35 @@ export default function Settings() {
           )}
         </motion.div>
 
+
+        {/* Goon Censor Toggle */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="bg-zinc-900/50 rounded-2xl border border-zinc-800 p-6"
+        >
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-600 flex items-center justify-center">
+              <Info className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h2 className="text-white font-bold">Beta Censor</h2>
+              <p className="text-zinc-500 text-sm">Blur Goon Fuel content</p>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between p-4 bg-zinc-800/50 rounded-xl">
+            <div>
+              <p className="text-white font-medium">Enable Beta Censor</p>
+              <p className="text-zinc-500 text-xs mt-1">Apply blur effect to Goon Fuel</p>
+            </div>
+            <Switch
+              checked={settings.goon_censor_enabled}
+              onCheckedChange={(checked) => handleChange('goon_censor_enabled', checked)}
+            />
+          </div>
+        </motion.div>
 
         {/* Heart Monitor Info */}
         {!isIOS && (
