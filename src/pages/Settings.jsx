@@ -6,7 +6,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   ArrowLeft, DollarSign, Settings2, CreditCard, 
-  Bluetooth, Save, Info, AlertTriangle, Plus, Video
+  Bluetooth, Save, Info, AlertTriangle, Plus, Video, Skull
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -57,6 +57,7 @@ export default function Settings() {
     heart_monitor_connected: false,
     goonercam_enabled: false,
     broadcast_enabled: false,
+    snuff_play_enabled: false,
   });
 
   useEffect(() => {
@@ -69,6 +70,7 @@ export default function Settings() {
         heart_monitor_connected: existingSettings.heart_monitor_connected ?? false,
         goonercam_enabled: existingSettings.goonercam_enabled ?? false,
         broadcast_enabled: existingSettings.broadcast_enabled ?? false,
+        snuff_play_enabled: existingSettings.snuff_play_enabled ?? false,
       });
     }
   }, [existingSettings]);
@@ -464,12 +466,83 @@ export default function Settings() {
           )}
         </motion.div>
 
+        {/* Snuff Play Warning */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="bg-zinc-900/50 rounded-2xl border border-zinc-800 p-6"
+        >
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-600 to-red-800 flex items-center justify-center">
+              <Skull className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h2 className="text-white font-bold">Extreme Mode</h2>
+              <p className="text-zinc-500 text-sm">Disable safety features</p>
+            </div>
+          </div>
+
+          {/* Warning Banner */}
+          <div className="bg-red-900/30 border border-red-500/50 rounded-xl p-4 mb-4">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-red-400 font-bold text-sm">DANGER - READ CAREFULLY</p>
+                <p className="text-red-400/80 text-xs mt-1">
+                  Enabling this removes safety timers and warnings from breathplay sessions. 
+                  This is EXTREMELY DANGEROUS and can result in serious injury or death. 
+                  You are solely responsible for your safety.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Enable Toggle */}
+          <div className="flex items-center justify-between p-4 bg-zinc-800/50 rounded-xl">
+            <div>
+              <p className="text-white font-medium">Enable Extreme Mode</p>
+              <p className="text-zinc-500 text-xs mt-1">Use at your own risk</p>
+            </div>
+            <Switch
+              checked={settings.snuff_play_enabled}
+              onCheckedChange={(checked) => {
+                if (checked) {
+                  if (confirm('⚠️ WARNING: Enabling Extreme Mode removes all safety features. This is EXTREMELY DANGEROUS. You could seriously injure or kill yourself. By enabling this, you accept full responsibility for any consequences. Continue?')) {
+                    handleChange('snuff_play_enabled', checked);
+                  }
+                } else {
+                  handleChange('snuff_play_enabled', checked);
+                }
+              }}
+            />
+          </div>
+
+          {settings.snuff_play_enabled && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              className="mt-4 bg-red-900/20 border border-red-500/30 rounded-xl p-4"
+            >
+              <div className="flex items-start gap-3">
+                <Skull className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-red-400 font-medium text-sm">Extreme Mode Active</p>
+                  <p className="text-red-500/70 text-xs mt-1">
+                    Safety features disabled. You are responsible for your own safety.
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </motion.div>
+
         {/* Heart Monitor Info */}
         {!isIOS && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
+            transition={{ delay: 0.4 }}
             className="bg-zinc-900/50 rounded-2xl border border-zinc-800 p-6"
           >
             <div className="flex items-center gap-3 mb-4">
