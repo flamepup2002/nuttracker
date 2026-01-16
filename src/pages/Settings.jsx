@@ -62,6 +62,7 @@ export default function Settings() {
     snuff_play_enabled: false,
     unethical_mode_enabled: false,
     ai_dangerous_encouragements: false,
+    goon_captions_enabled: false,
 
     });
 
@@ -78,6 +79,7 @@ export default function Settings() {
         snuff_play_enabled: existingSettings.snuff_play_enabled ?? false,
         unethical_mode_enabled: existingSettings.unethical_mode_enabled ?? false,
         ai_dangerous_encouragements: existingSettings.ai_dangerous_encouragements ?? false,
+        goon_captions_enabled: existingSettings.goon_captions_enabled ?? false,
 
         });
     }
@@ -540,11 +542,59 @@ export default function Settings() {
           )}
         </motion.div>
 
-        {/* AI Dangerous Encouragements */}
+        {/* Goon Captions */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
+          className="bg-zinc-900/50 rounded-2xl border border-zinc-800 p-6"
+        >
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center">
+              <Sparkles className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h2 className="text-white font-bold">Goon Captions</h2>
+              <p className="text-zinc-500 text-sm">On-screen messages during sessions</p>
+            </div>
+          </div>
+
+          {/* Enable Toggle */}
+          <div className="flex items-center justify-between p-4 bg-zinc-800/50 rounded-xl">
+            <div>
+              <p className="text-white font-medium">Enable Goon Captions</p>
+              <p className="text-zinc-500 text-xs mt-1">Show motivational messages</p>
+            </div>
+            <Switch
+              checked={settings.goon_captions_enabled}
+              onCheckedChange={(checked) => handleChange('goon_captions_enabled', checked)}
+            />
+          </div>
+
+          {settings.goon_captions_enabled && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              className="mt-4 bg-purple-900/20 border border-purple-500/30 rounded-xl p-4"
+            >
+              <div className="flex items-start gap-3">
+                <Sparkles className="w-5 h-5 text-purple-400 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-purple-400 font-medium text-sm">Captions Active</p>
+                  <p className="text-purple-500/70 text-xs mt-1">
+                    Random messages will appear on screen during goon sessions
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </motion.div>
+
+        {/* AI Dangerous Encouragements */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
           className="bg-zinc-900/50 rounded-2xl border border-zinc-800 p-6"
         >
           <div className="flex items-center gap-3 mb-6">
@@ -607,7 +657,7 @@ export default function Settings() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
+          transition={{ delay: 0.5 }}
           className="bg-zinc-900/50 rounded-2xl border border-zinc-800 p-6"
         >
           <div className="flex items-center gap-3 mb-6">
@@ -679,7 +729,7 @@ export default function Settings() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
+            transition={{ delay: 0.6 }}
             className="bg-zinc-900/50 rounded-2xl border border-zinc-800 p-6"
           >
             <div className="flex items-center gap-3 mb-4">
