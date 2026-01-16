@@ -96,7 +96,7 @@ const KINK_SESSIONS = [
   }
 ];
 
-function SessionRunner({ session, onEnd }) {
+function SessionRunner({ session, onEnd, snuffPlayEnabled }) {
   const [isActive, setIsActive] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [currentCycle, setCurrentCycle] = useState(0);
@@ -125,11 +125,17 @@ function SessionRunner({ session, onEnd }) {
   };
 
   const getNextInstruction = () => {
-    if (session.id === 'breathplay' && session.cycles) {
+    if ((session.id === 'breathplay' || session.id === 'suffocation') && session.cycles) {
       const cycle = session.cycles[currentCycle % session.cycles.length];
       if (phase === 'hold') {
+        if (snuffPlayEnabled) {
+          return `Hold as long as you want - NO LIMITS`;
+        }
         return `Hold your breath for ${cycle.hold}s`;
       } else {
+        if (snuffPlayEnabled) {
+          return `Rest when ready - NO SAFETY TIMER`;
+        }
         return `Rest and breathe for ${cycle.rest}s`;
       }
     }
@@ -166,14 +172,34 @@ function SessionRunner({ session, onEnd }) {
 
       {/* Instructions */}
       {isActive && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-gradient-to-r from-purple-900/30 to-pink-900/30 border border-purple-500/30 rounded-2xl p-6"
-        >
-          <p className="text-purple-400 text-sm mb-2">Current Instruction</p>
-          <p className="text-white text-lg font-medium">{getNextInstruction()}</p>
-        </motion.div>
+        <>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-gradient-to-r from-purple-900/30 to-pink-900/30 border border-purple-500/30 rounded-2xl p-6"
+          >
+            <p className="text-purple-400 text-sm mb-2">Current Instruction</p>
+            <p className="text-white text-lg font-medium">{getNextInstruction()}</p>
+          </motion.div>
+          
+          {snuffPlayEnabled && (session.id === 'breathplay' || session.id === 'suffocation') && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-red-900/30 border border-red-500/50 rounded-2xl p-4"
+            >
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-red-400 font-bold text-sm">⚠️ EXTREME MODE ACTIVE</p>
+                  <p className="text-red-400/70 text-xs mt-1">
+                    Safety features disabled. You are responsible for your own safety.
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </>
       )}
 
       {/* Controls */}
@@ -198,8 +224,8 @@ function SessionRunner({ session, onEnd }) {
         )}
       </div>
 
-      {/* Cycle Control for Breathplay */}
-      {isActive && session.id === 'breathplay' && (
+      {/* Cycle Control for Breathplay/Suffocation */}
+      {isActive && (session.id === 'breathplay' || session.id === 'suffocation') && (
         <Button
           onClick={() => {
             setPhase(prev => prev === 'hold' ? 'rest' : 'hold');
@@ -217,6 +243,14 @@ function SessionRunner({ session, onEnd }) {
 export default function KinkSessions() {
   const navigate = useNavigate();
   const [selectedSession, setSelectedSession] = useState(null);
+
+  const { data: settings } = useQuery({
+    queryKey: ['userSettings'],
+    queryFn: async () => {
+      const list = await base44.entities.UserSettings.list();
+      return list[0] || { snuff_play_enabled: false };
+    },
+  });
 
   return (
     <div className="min-h-screen bg-black text-white pb-24">
@@ -336,6 +370,7 @@ export default function KinkSessions() {
               <SessionRunner 
                 session={selectedSession} 
                 onEnd={() => setSelectedSession(null)}
+                snuffPlayEnabled={settings?.snuff_play_enabled}
               />
             </motion.div>
           )}
