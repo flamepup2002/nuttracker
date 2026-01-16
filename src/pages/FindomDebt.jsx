@@ -50,13 +50,16 @@ export default function FindomDebt() {
 
     let totalDebt = 0;
     const now = new Date();
-    const dailyInterestRate = settings.interest_rate / 100;
 
     sessions.forEach(session => {
       if (session.is_findom && session.total_cost) {
         const createdDate = new Date(session.created_date);
         const daysElapsed = (now - createdDate) / (1000 * 60 * 60 * 24);
-        
+
+        // Use locked interest rate from session, fall back to current settings
+        const lockedRate = session.locked_interest_rate !== undefined ? session.locked_interest_rate : settings.interest_rate;
+        const dailyInterestRate = lockedRate / 100;
+
         // Compound interest formula: P(1 + r)^t
         const debtWithInterest = session.total_cost * Math.pow(1 + dailyInterestRate, daysElapsed);
         totalDebt += debtWithInterest;
@@ -155,7 +158,7 @@ export default function FindomDebt() {
                 <div>
                   <p className="text-orange-400 font-medium text-sm">Compound Interest Active</p>
                   <p className="text-orange-500/70 text-xs mt-1">
-                    {interestRate}% daily interest is being applied to your findom debt
+                    Interest rates are locked when debt is incurred. Each session uses the rate from that time.
                   </p>
                 </div>
               </motion.div>
@@ -179,11 +182,12 @@ export default function FindomDebt() {
                     .filter(s => s.is_findom && s.total_cost)
                     .sort((a, b) => new Date(b.created_date) - new Date(a.created_date))
                     .map(session => {
-                      const createdDate = new Date(session.created_date);
-                      const daysElapsed = (new Date() - createdDate) / (1000 * 60 * 60 * 24);
-                      const dailyInterestRate = interestRate / 100;
-                      const debtWithInterest = session.total_cost * Math.pow(1 + dailyInterestRate, daysElapsed);
-                      const accrued = debtWithInterest - session.total_cost;
+                       const createdDate = new Date(session.created_date);
+                       const daysElapsed = (new Date() - createdDate) / (1000 * 60 * 60 * 24);
+                       const lockedRate = session.locked_interest_rate !== undefined ? session.locked_interest_rate : interestRate;
+                       const dailyInterestRate = lockedRate / 100;
+                       const debtWithInterest = session.total_cost * Math.pow(1 + dailyInterestRate, daysElapsed);
+                       const accrued = debtWithInterest - session.total_cost;
 
                       return (
                         <div key={session.id} className="bg-zinc-800/50 rounded-lg p-4">
