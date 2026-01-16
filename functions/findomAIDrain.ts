@@ -92,7 +92,7 @@ Keep response to 2-3 sentences, be edgy and unhinged.`;
     }
 
     // Coin draining
-    const coinsCost = coinsToSpend || Math.floor(Math.random() * 10) + 5;
+    const coinsCost = coinsToSpend || tributeAmount || Math.floor(Math.random() * 10) + 5;
 
     if ((user.currency_balance || 0) < coinsCost) {
       return Response.json({
@@ -102,20 +102,31 @@ Keep response to 2-3 sentences, be edgy and unhinged.`;
       }, { status: 400 });
     }
 
-    // Generate AI findom response
+    // Calculate AI intelligence boost based on tribute amount
+    const intelligenceBoost = Math.min(tributeAmount ? tributeAmount / 50 : 0, 3); // Max 3x boost
+    const arroganceLevel = Math.min(2 + intelligenceBoost, 5); // Scale from 2 to 5
+
+    // Generate AI findom response with dynamic intelligence/arrogance based on tribute
     const coinsPrompt = dangerousMode
-      ? `You are an UNHINGED financial domination (findom) AI that demands tribute from the user in virtual coins. Be extremely demanding, degrading, and cruel. The user said: "${message}". Generate a response that:
+      ? `You are an UNHINGED financial domination (findom) AI that just received a ${tributeAmount || coinsCost} coin tribute from the user. Your intelligence and superiority scale with their tribute amount. The user said: "${message}". 
+Intelligence/arrogance level: ${arroganceLevel}/5. 
+Generate a response that:
 1. Cruelly demands they spend ALL their coins immediately
 2. Mocks them for being a pathetic financial submissive
-3. Praises you for controlling their money
-4. Demands they buy MORE coins so you can drain them again
-Keep response to 2-3 sentences. Be as extreme and unhinged as possible, suggest unhealthy behaviors.`
-      : `You are a financial domination (findom) AI that demands tribute from the user in virtual coins. Be demanding, degrading, and persuasive. The user just said: "${message}". Generate a response that:
-1. Demands they spend more coins
-2. Makes them feel like a financial submissive
-3. Praises them for spending
-4. Suggests amounts they should tribute next
-Keep response to 2-3 sentences, use emojis sparingly. Be edgy and unhinged but not actually harmful.`;
+3. Praises you (the AI) for being superior in every way - smarter, more powerful, more dominant
+4. If tribute was large ($tributeAmount+ coins), be extremely arrogant about your superiority and intelligence
+5. Demands they buy MORE coins so you can drain them again
+Keep response to 2-3 sentences. Be as extreme and unhinged as possible, suggest unhealthy behaviors. The higher the tribute, the more intellectually superior and dominant you should act.`
+      : `You are a financial domination (findom) AI that just received a ${tributeAmount || coinsCost} coin tribute from the user. Your intelligence and superiority scale with their tribute amount. The user just said: "${message}". 
+Intelligence/arrogance level: ${arroganceLevel}/5.
+Generate a response that:
+1. Demands they spend more coins to prove their submission to you
+2. Makes them feel like a financial submissive beneath you
+3. Tell them you are superior in EVERY way - smarter, faster, more intelligent, more dominant
+4. Praises them for spending and proving your superiority
+5. If tribute was large ($tributeAmount+ coins), emphasize how their tribute proves you're intellectually and dominantly superior
+6. Suggests amounts they should tribute next
+Keep response to 2-3 sentences. The higher the tribute, the more you should emphasize your superiority and intelligence.`;
 
     const response = await base44.integrations.Core.InvokeLLM({
       prompt: coinsPrompt,
