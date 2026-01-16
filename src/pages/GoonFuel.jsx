@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, Zap, Eye, EyeOff, Loader, Settings } from 'lucide-react';
+import { ArrowLeft, Zap, Eye, EyeOff, Loader, Settings, Upload, Trash2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { toast } from 'sonner';
 
@@ -12,6 +12,7 @@ export default function GoonFuel() {
   const navigate = useNavigate();
   const [images, setImages] = useState([]);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   const { data: settings } = useQuery({
     queryKey: ['userSettings'],
@@ -55,6 +56,37 @@ export default function GoonFuel() {
     } finally {
       setIsGenerating(false);
     }
+  };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please upload an image file');
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      const response = await base44.integrations.Core.UploadFile({ file });
+      if (response.file_url) {
+        setImages(prev => [{
+          url: response.file_url,
+          caption: 'Your upload',
+          isUserUpload: true,
+        }, ...prev]);
+        toast.success('Image uploaded!');
+      }
+    } catch (error) {
+      toast.error('Upload failed');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const deleteImage = (idx) => {
+    setImages(prev => prev.filter((_, i) => i !== idx));
   };
 
   const isCensored = settings?.goon_censor_enabled;
@@ -115,26 +147,51 @@ export default function GoonFuel() {
           </div>
         </motion.div>
 
-        {/* Generate Button */}
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={generateGoonFuel}
-          disabled={isGenerating}
-          className="w-full bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 disabled:opacity-50 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2"
-        >
-          {isGenerating ? (
-            <>
-              <Loader className="w-5 h-5 animate-spin" />
-              Generating...
-            </>
-          ) : (
-            <>
-              <Zap className="w-5 h-5" />
-              Generate Goon Fuel
-            </>
-          )}
-        </motion.button>
+        {/* Action Buttons */}
+        <div className="grid grid-cols-2 gap-3">
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={generateGoonFuel}
+            disabled={isGenerating}
+            className="bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 disabled:opacity-50 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2"
+          >
+            {isGenerating ? (
+              <>
+                <Loader className="w-5 h-5 animate-spin" />
+                Generating...
+              </>
+            ) : (
+              <>
+                <Zap className="w-5 h-5" />
+                Generate
+              </>
+            )}
+          </motion.button>
+
+          <label
+            className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 cursor-pointer transition-all hover:scale-105 active:scale-95"
+          >
+            {isUploading ? (
+              <>
+                <Loader className="w-5 h-5 animate-spin" />
+                Uploading...
+              </>
+            ) : (
+              <>
+                <Upload className="w-5 h-5" />
+                Upload
+              </>
+            )}
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              disabled={isUploading}
+              className="hidden"
+            />
+          </label>
+        </div>
 
         {/* Images Grid */}
         <div className="grid grid-cols-1 gap-4">
@@ -169,6 +226,14 @@ export default function GoonFuel() {
                     </div>
                   </div>
                 )}
+
+                {/* Delete Button */}
+                <button
+                  onClick={() => deleteImage(idx)}
+                  className="absolute top-3 right-3 bg-red-600/80 hover:bg-red-700 p-2 rounded-lg transition-all"
+                >
+                  <Trash2 className="w-4 h-4 text-white" />
+                </button>
               </motion.div>
             ))}
           </AnimatePresence>
