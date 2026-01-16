@@ -256,6 +256,7 @@ export default function GoonSession() {
             heartRate={heartRate}
             isFindom={false}
           />
+          <GoonCam isActive={isActive} />
         </>
       )}
     </div>
