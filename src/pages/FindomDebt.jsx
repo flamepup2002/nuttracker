@@ -175,17 +175,15 @@ export default function FindomDebt() {
                 </h2>
 
                 <div className="space-y-3 max-h-96 overflow-y-auto">
-                {sessions
-                .filter(s => s.is_findom && s.total_cost)
-                .sort((a, b) => new Date(b.created_date) - new Date(a.created_date))
-                .map(session => {
-                  const createdDate = new Date(session.created_date);
-                  const daysElapsed = (new Date() - createdDate) / (1000 * 60 * 60 * 24);
-                  // Use locked interest rate from session, fallback to current if not set
-                  const lockedRate = session.locked_interest_rate ?? interestRate;
-                  const dailyInterestRate = lockedRate / 100;
-                  const debtWithInterest = session.total_cost * Math.pow(1 + dailyInterestRate, daysElapsed);
-                  const accrued = debtWithInterest - session.total_cost;
+                  {sessions
+                    .filter(s => s.is_findom && s.total_cost)
+                    .sort((a, b) => new Date(b.created_date) - new Date(a.created_date))
+                    .map(session => {
+                      const createdDate = new Date(session.created_date);
+                      const daysElapsed = (new Date() - createdDate) / (1000 * 60 * 60 * 24);
+                      const dailyInterestRate = interestRate / 100;
+                      const debtWithInterest = session.total_cost * Math.pow(1 + dailyInterestRate, daysElapsed);
+                      const accrued = debtWithInterest - session.total_cost;
 
                       return (
                         <div key={session.id} className="bg-zinc-800/50 rounded-lg p-4">
@@ -204,7 +202,7 @@ export default function FindomDebt() {
                               </p>
                               {accrued > 0 && (
                                 <p className="text-orange-400 text-xs mt-1">
-                                  +{currency.symbol}{accrued.toFixed(2)} interest ({lockedRate}%/day)
+                                  +{currency.symbol}{accrued.toFixed(2)} interest
                                 </p>
                               )}
                             </div>
