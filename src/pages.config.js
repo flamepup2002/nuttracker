@@ -14,6 +14,7 @@ import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import Shop from './pages/Shop';
 import FindomAI from './pages/FindomAI';
+import GoonFuel from './pages/GoonFuel';
 import __Layout from './Layout.jsx';
 
 
@@ -34,6 +35,7 @@ export const PAGES = {
     "Settings": Settings,
     "Shop": Shop,
     "FindomAI": FindomAI,
+    "GoonFuel": GoonFuel,
 }
 
 export const pagesConfig = {
