@@ -46,7 +46,7 @@ export default function FindomSession() {
     queryKey: ['userSettings'],
     queryFn: async () => {
       const list = await base44.entities.UserSettings.list();
-      return list[0] || { base_cost: 5, escalation_rate: 0.5, interest_rate: 0, findom_enabled: false };
+      return list[0] || { base_cost: 5, escalation_rate: 10, interest_rate: 0, findom_enabled: false };
     },
   });
 
@@ -54,9 +54,9 @@ export default function FindomSession() {
   useEffect(() => {
     if (isActive && settings) {
       const minutes = duration / 60;
-      const linearCost = settings.base_cost + (settings.escalation_rate * minutes);
-      const compoundMultiplier = Math.pow(1 + (settings.interest_rate || 0) / 100, minutes);
-      const escalatedCost = linearCost * compoundMultiplier;
+      const escalationMultiplier = Math.pow(1 + settings.escalation_rate / 100, minutes);
+      const interestMultiplier = Math.pow(1 + (settings.interest_rate || 0) / 100, minutes);
+      const escalatedCost = settings.base_cost * escalationMultiplier * interestMultiplier;
       setCurrentCost(escalatedCost);
     }
   }, [duration, isActive, settings]);
@@ -336,7 +336,7 @@ export default function FindomSession() {
             <div>
               <p className="text-yellow-400 font-medium text-sm">Escalating Costs Active</p>
               <p className="text-yellow-500/70 text-xs mt-1">
-                Cost per orgasm increases by ${settings.escalation_rate}/min{settings.interest_rate > 0 ? ` with ${settings.interest_rate}% compound interest` : ''}. No cap - cost escalates indefinitely!
+                Cost per orgasm increases by {settings.escalation_rate}%/min{settings.interest_rate > 0 ? ` with ${settings.interest_rate}% compound interest` : ''}. No cap - cost escalates indefinitely!
               </p>
             </div>
           </motion.div>
