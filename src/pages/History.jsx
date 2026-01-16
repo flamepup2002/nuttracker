@@ -3,10 +3,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import { 
   ArrowLeft, Droplet, X, Ban, DollarSign, 
-  Calendar, Activity, Clock, Filter, ChevronDown
+  Calendar, Activity, Clock, Filter, ChevronDown, Trash2
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -28,6 +29,7 @@ const orgasmTypeConfig = {
 
 export default function History() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [filter, setFilter] = useState('all');
   const [timeRange, setTimeRange] = useState('all');
 
@@ -76,6 +78,24 @@ export default function History() {
   const stats = {
     total: filteredOrgasms.length,
     totalCost: filteredOrgasms.reduce((sum, o) => sum + (o.cost || 0), 0),
+  };
+
+  const deleteMutation = useMutation({
+    mutationFn: (id) => base44.entities.Orgasm.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['orgasms'] });
+      toast.success('Orgasm deleted');
+    },
+    onError: () => {
+      toast.error('Failed to delete');
+    },
+  });
+
+  const handleDelete = (e, id) => {
+    e.stopPropagation();
+    if (confirm('Delete this entry?')) {
+      deleteMutation.mutate(id);
+    }
   };
 
   return (
@@ -209,11 +229,19 @@ export default function History() {
                               )}
                             </div>
                           </div>
-                          {orgasm.cost > 0 && (
-                            <span className="text-green-400 font-bold text-lg">
-                              ${orgasm.cost.toFixed(2)}
-                            </span>
-                          )}
+                          <div className="flex items-center gap-2">
+                            {orgasm.cost > 0 && (
+                              <span className="text-green-400 font-bold text-lg">
+                                ${orgasm.cost.toFixed(2)}
+                              </span>
+                            )}
+                            <button
+                              onClick={(e) => handleDelete(e, orgasm.id)}
+                              className="p-2 rounded-lg text-zinc-500 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
                         </div>
                         {orgasm.notes && (
                           <p className="text-zinc-400 text-sm mt-3 pl-13">{orgasm.notes}</p>
