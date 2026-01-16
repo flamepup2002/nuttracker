@@ -6,7 +6,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { 
   Flame, Activity, DollarSign, Droplet, X, Ban, 
-  TrendingUp, Calendar, Play, Settings, ChevronRight
+  TrendingUp, Calendar, Play, Settings, ChevronRight, Coins
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import StatsCard from '@/components/StatsCard';
@@ -74,7 +74,7 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             className="flex items-center justify-between"
           >
-            <div>
+            <div className="flex-1">
               <h1 className="text-3xl font-bold flex items-center gap-2">
                 <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
                   NUT
@@ -84,6 +84,13 @@ export default function Home() {
               <p className="text-zinc-400 mt-1">
                 {user?.full_name ? `Welcome back, ${user.full_name.split(' ')[0]}` : 'Track your pleasure'}
               </p>
+              {user && (
+                <div className="flex items-center gap-2 mt-2 bg-gradient-to-r from-yellow-600/20 to-amber-600/20 border border-yellow-500/30 rounded-lg px-3 py-1.5 w-fit">
+                  <Coins className="w-4 h-4 text-yellow-400" />
+                  <span className="text-yellow-400 font-bold">{user.currency_balance || 0}</span>
+                  <span className="text-yellow-500 text-xs">coins</span>
+                </div>
+              )}
             </div>
             <Link to={createPageUrl('Settings')}>
               <Button variant="ghost" size="icon" className="text-zinc-400 hover:text-white">
