@@ -12,6 +12,7 @@ import KinkSessions from './pages/KinkSessions';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import Shop from './pages/Shop';
+import PremiumFindom from './pages/PremiumFindom';
 import __Layout from './Layout.jsx';
 
 
@@ -30,6 +31,7 @@ export const PAGES = {
     "Profile": Profile,
     "Settings": Settings,
     "Shop": Shop,
+    "PremiumFindom": PremiumFindom,
 }
 
 export const pagesConfig = {
