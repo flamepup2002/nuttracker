@@ -57,7 +57,7 @@ Deno.serve(async (req) => {
 
     // Generate image with caption
     const imageResponse = await base44.integrations.Core.GenerateImage({
-      prompt: `Adult explicit erotic artwork depicting hot gay men in intimate sexual scenes. Hyper-realistic artistic nude male bodies, muscular physiques, aroused men, passionate sexual activity, explicit adult content${keywordStr}. ${stylePrompt}. Include the text caption: "${caption}"`,
+      prompt: `Sensual artistic nude male bodies, muscular attractive men, intimate moments, erotic art${keywordStr}. ${stylePrompt}. Add text overlay: "${caption}"`,
     });
 
     if (!imageResponse || !imageResponse.url) {
