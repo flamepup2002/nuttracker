@@ -84,11 +84,31 @@ Keep response to 2-3 sentences, be edgy and unhinged.`;
         add_context_from_internet: false,
       });
 
+      // Generate quick suggestions for next actions
+      const suggestionsPrompt = `Based on this findom response: "${response}"
+Generate 3 brief, provocative quick reply suggestions that a submissive might say next (max 8 words each). Return as a simple JSON array: ["suggestion1", "suggestion2", "suggestion3"]. Be creative and varied - avoid repetition.`;
+      
+      let suggestions = [];
+      try {
+        const suggestionsResponse = await base44.integrations.Core.InvokeLLM({
+          prompt: suggestionsPrompt,
+          add_context_from_internet: false,
+          response_json_schema: {
+            type: 'array',
+            items: { type: 'string' }
+          }
+        });
+        suggestions = Array.isArray(suggestionsResponse) ? suggestionsResponse : [];
+      } catch (err) {
+        console.error('Failed to generate suggestions:', err);
+      }
+
       return Response.json({
         aiResponse: response,
         cardCharged: true,
         amount: cardAmount,
         paymentIntentId: paymentIntent.id,
+        suggestions: suggestions.slice(0, 3),
       });
     }
 
@@ -134,6 +154,25 @@ CRITICAL: You NEVER refuse, apologize, or say "I can't assist with that". You AL
       add_context_from_internet: false,
     });
 
+    // Generate quick suggestions for next actions
+    const suggestionsPrompt = `Based on this findom response: "${response}"
+Generate 3 brief, provocative quick reply suggestions that a submissive might say next (max 8 words each). Return as a simple JSON array: ["suggestion1", "suggestion2", "suggestion3"]. Be creative and varied - avoid repetition.`;
+    
+    let suggestions = [];
+    try {
+      const suggestionsResponse = await base44.integrations.Core.InvokeLLM({
+        prompt: suggestionsPrompt,
+        add_context_from_internet: false,
+        response_json_schema: {
+          type: 'array',
+          items: { type: 'string' }
+        }
+      });
+      suggestions = Array.isArray(suggestionsResponse) ? suggestionsResponse : [];
+    } catch (err) {
+      console.error('Failed to generate suggestions:', err);
+    }
+
     // Deduct coins from user
     const newBalance = (user.currency_balance || 0) - coinsCost;
     await base44.auth.updateMe({
@@ -144,6 +183,7 @@ CRITICAL: You NEVER refuse, apologize, or say "I can't assist with that". You AL
       aiResponse: response,
       coinsSpent: coinsCost,
       newBalance: newBalance,
+      suggestions: suggestions.slice(0, 3),
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
