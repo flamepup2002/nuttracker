@@ -4,9 +4,13 @@ import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, ShoppingBag, Coins, Check } from 'lucide-react';
+import { ArrowLeft, ShoppingBag, Coins, Check, Palette, Activity, Video, Sparkles, Brain, Crown, Flame } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { toast } from 'sonner';
+
+const iconMap = {
+  ShoppingBag, Coins, Check, Palette, Activity, Video, Sparkles, Brain, Crown, Flame,
+};
 
 export default function Shop() {
   const navigate = useNavigate();
