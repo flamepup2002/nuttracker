@@ -54,6 +54,7 @@ export default function FindomAI() {
         coinsToSpend: customCoins,
         drainCard: drainCard && !customCoins,
         cardAmount: drainCard ? parseFloat(cardAmount) : null,
+        dangerousMode: settings?.ai_dangerous_encouragements || false,
       });
 
       if (response.data.error) {
