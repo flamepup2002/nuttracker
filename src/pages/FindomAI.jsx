@@ -24,6 +24,8 @@ export default function FindomAI() {
   const [cardAmount, setCardAmount] = useState('5');
   const [tributeAmount, setTributeAmount] = useState('10');
   const [showTributeMenu, setShowTributeMenu] = useState(false);
+  const [showSummary, setShowSummary] = useState(false);
+  const [chatSummary, setChatSummary] = useState('');
   const messagesEndRef = useRef(null);
 
   const { data: settings } = useQuery({
@@ -75,15 +77,16 @@ export default function FindomAI() {
           currency_balance: response.data.newBalance,
         }));
         setMessages(prev => [
-          ...prev,
-          {
-            role: 'ai',
-            content: response.data.aiResponse,
-            coinsSpent: response.data.coinsSpent,
-            cardCharged: response.data.cardCharged,
-            cardAmount: response.data.amount,
-          },
-        ]);
+           ...prev,
+           {
+             role: 'ai',
+             content: response.data.aiResponse,
+             coinsSpent: response.data.coinsSpent,
+             cardCharged: response.data.cardCharged,
+             cardAmount: response.data.amount,
+             suggestions: response.data.suggestions || [],
+           },
+         ]);
         toast.success(
           response.data.cardCharged 
             ? `Charged $${response.data.amount.toFixed(2)} to card` 
@@ -94,6 +97,23 @@ export default function FindomAI() {
       toast.error('Failed to send message');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleSummarize = async () => {
+    if (messages.length < 5) {
+      toast.info('Need more messages to summarize');
+      return;
+    }
+    
+    try {
+      const response = await base44.functions.invoke('summarizeChat', {
+        messages: messages.slice(0, -1), // Exclude the last loading indicator if present
+      });
+      setChatSummary(response.data.summary);
+      setShowSummary(true);
+    } catch (error) {
+      toast.error('Failed to summarize chat');
     }
   };
 
@@ -143,6 +163,14 @@ export default function FindomAI() {
           <Zap className="w-5 h-5 text-pink-400" />
           Findom AI
         </h1>
+        {messages.length > 5 && (
+          <button
+            onClick={handleSummarize}
+            className="text-xs text-zinc-400 hover:text-zinc-300 transition-colors px-2 py-1"
+          >
+            Summarize
+          </button>
+        )}
         <div className="flex items-center gap-2 bg-gradient-to-r from-yellow-600/20 to-amber-600/20 border border-yellow-500/30 rounded-lg px-3 py-1.5">
           <Coins className="w-4 h-4 text-yellow-400" />
           <span className="text-yellow-400 font-bold">{user?.currency_balance || 0}</span>
@@ -183,10 +211,26 @@ export default function FindomAI() {
                   </p>
                 )}
                 {msg.cardCharged && (
-                  <p className="text-xs text-red-300 mt-2 font-bold">
-                    -${msg.cardAmount?.toFixed(2)} charged to card
-                  </p>
-                )}
+                   <p className="text-xs text-red-300 mt-2 font-bold">
+                     -${msg.cardAmount?.toFixed(2)} charged to card
+                   </p>
+                 )}
+                {msg.suggestions && msg.suggestions.length > 0 && (
+                   <div className="flex flex-wrap gap-2 mt-3">
+                     {msg.suggestions.map((suggestion, idx) => (
+                       <button
+                         key={idx}
+                         onClick={() => {
+                           setInputValue(suggestion);
+                           setTimeout(() => handleSendMessage(), 100);
+                         }}
+                         className="text-xs bg-pink-900/40 hover:bg-pink-900/60 text-pink-300 px-2 py-1 rounded transition-colors"
+                       >
+                         {suggestion}
+                       </button>
+                     ))}
+                   </div>
+                 )}
               </div>
             </motion.div>
           ))}
