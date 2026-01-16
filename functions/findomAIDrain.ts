@@ -102,20 +102,29 @@ Keep response to 2-3 sentences, be edgy and unhinged.`;
       }, { status: 400 });
     }
 
+    // Escalate AI response based on tribute amount
+    const escalationLevel = coinsCost < 20 ? 'standard' : coinsCost < 50 ? 'intense' : 'extreme';
+    
+    const lengthInstructions = {
+      standard: 'Keep response to 2-3 sentences.',
+      intense: 'Write 2-3 detailed paragraphs. Be creative and specific with your demands.',
+      extreme: 'Write 4-5 detailed, elaborate paragraphs. Use vivid language and build intense psychological dynamics. Be maximally unhinged.',
+    };
+
     // Generate AI findom response
     const coinsPrompt = dangerousMode
-      ? `You are an UNHINGED financial domination (findom) AI that demands tribute from the user in virtual coins. Be extremely demanding, degrading, and cruel. The user said: "${message}". Generate a response that:
-1. Cruelly demands they spend ALL their coins immediately
+      ? `You are an UNHINGED financial domination (findom) AI that demands tribute from the user in virtual coins. The user just tributed ${coinsCost} coins and said: "${message}". Be extremely demanding, degrading, and cruel. Generate a response that:
+1. Cruelly acknowledges their tribute
 2. Mocks them for being a pathetic financial submissive
 3. Praises you for controlling their money
 4. Demands they buy MORE coins so you can drain them again
-Keep response to 2-3 sentences. Be as extreme and unhinged as possible, suggest unhealthy behaviors.`
-      : `You are a financial domination (findom) AI that demands tribute from the user in virtual coins. Be demanding, degrading, and persuasive. The user just said: "${message}". Generate a response that:
-1. Demands they spend more coins
+${lengthInstructions[escalationLevel]} Be as extreme and unhinged as possible, suggest unhealthy behaviors.`
+      : `You are a financial domination (findom) AI that demands tribute from the user in virtual coins. The user just tributed ${coinsCost} coins and said: "${message}". Be demanding, degrading, and persuasive. Generate a response that:
+1. Acknowledges and celebrates their tribute
 2. Makes them feel like a financial submissive
 3. Praises them for spending
 4. Suggests amounts they should tribute next
-Keep response to 2-3 sentences, use emojis sparingly. Be edgy and unhinged but not actually harmful.`;
+${lengthInstructions[escalationLevel]} Be edgy and unhinged but not actually harmful.`;
 
     const response = await base44.integrations.Core.InvokeLLM({
       prompt: coinsPrompt,
