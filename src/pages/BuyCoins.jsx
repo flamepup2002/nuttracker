@@ -72,25 +72,26 @@ export default function BuyCoins() {
       return;
     }
 
-    if (!user?.stripe_payment_method_id) {
-      toast.error('Please add a payment method in Settings first');
+    if (!user?.bank_account_holder) {
+      toast.error('Link a bank account in Settings first');
+      navigate(createPageUrl('Settings'));
       return;
     }
 
     setConverting(true);
     try {
-      const response = await base44.functions.invoke('convertCoinsToMoney', {
-        coinAmount: amount
+      const response = await base44.functions.invoke('convertCoinsToMoneyWithETransfer', {
+        coins: amount
       });
 
       if (response.data.success) {
-        toast.success(`$${response.data.usdAmount.toFixed(2)} transferred!`);
-        setUser(prev => ({ ...prev, currency_balance: response.data.newBalance }));
+        toast.success(`$${response.data.amount.toFixed(2)} e-transfer initiated to your bank!`);
+        setUser(prev => ({ ...prev, currency_balance: response.data.new_balance }));
         setConversionAmount('');
         setShowConversion(false);
         queryClient.invalidateQueries({ queryKey: ['user'] });
       } else {
-        toast.error('Conversion failed');
+        toast.error(response.data.error || 'Conversion failed');
       }
     } catch (error) {
       toast.error(error.response?.data?.error || 'Conversion failed');
@@ -142,22 +143,22 @@ export default function BuyCoins() {
       {!showConversion ? (
        <div className="px-6 py-4">
          <motion.button
-           onClick={() => setShowConversion(true)}
-           initial={{ opacity: 0, y: 20 }}
-           animate={{ opacity: 1, y: 0 }}
-           transition={{ delay: 0.1 }}
-           className="w-full bg-gradient-to-r from-blue-600/20 to-cyan-600/20 border border-blue-500/30 hover:from-blue-600/30 hover:to-cyan-600/30 rounded-2xl p-4 flex items-center justify-between transition-all"
+          onClick={() => setShowConversion(true)}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="w-full bg-gradient-to-r from-green-600/20 to-emerald-600/20 border border-green-500/30 hover:from-green-600/30 hover:to-emerald-600/30 rounded-2xl p-4 flex items-center justify-between transition-all"
          >
-           <div className="flex items-center gap-3">
-             <ArrowRightLeft className="w-5 h-5 text-blue-400" />
-             <div className="text-left">
-               <p className="text-white font-semibold">Convert to Cash</p>
-               <p className="text-zinc-400 text-xs">100 coins = $1</p>
-             </div>
-           </div>
-           <div className="text-blue-400 font-bold">
-             ${((user?.currency_balance || 0) / 100).toFixed(2)}
-           </div>
+          <div className="flex items-center gap-3">
+            <ArrowRightLeft className="w-5 h-5 text-green-400" />
+            <div className="text-left">
+              <p className="text-white font-semibold">Convert to Cash</p>
+              <p className="text-zinc-400 text-xs">100 coins = $1 via e-transfer</p>
+            </div>
+          </div>
+          <div className="text-green-400 font-bold">
+            ${((user?.currency_balance || 0) / 100).toFixed(2)}
+          </div>
          </motion.button>
        </div>
       ) : (
@@ -165,11 +166,11 @@ export default function BuyCoins() {
          <motion.div
            initial={{ opacity: 0, y: -20 }}
            animate={{ opacity: 1, y: 0 }}
-           className="bg-blue-900/20 border border-blue-500/30 rounded-2xl p-5 space-y-4"
+           className="bg-green-900/20 border border-green-500/30 rounded-2xl p-5 space-y-4"
          >
            <div className="flex items-center justify-between">
              <h3 className="text-white font-semibold flex items-center gap-2">
-               <ArrowRightLeft className="w-5 h-5 text-blue-400" />
+               <ArrowRightLeft className="w-5 h-5 text-green-400" />
                Convert Coins to Cash
              </h3>
              <button
@@ -215,7 +216,7 @@ export default function BuyCoins() {
            <Button
              onClick={handleConversion}
              disabled={converting || !conversionAmount}
-             className="w-full bg-blue-600 hover:bg-blue-700"
+             className="w-full bg-green-600 hover:bg-green-700"
            >
              {converting ? 'Processing...' : 'Convert to Cash'}
            </Button>
