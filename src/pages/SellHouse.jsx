@@ -13,6 +13,10 @@ import { toast } from 'sonner';
 export default function SellHouse() {
   const navigate = useNavigate();
   const [houseValue, setHouseValue] = useState('');
+  const [bedrooms, setBedrooms] = useState('');
+  const [bathrooms, setBathrooms] = useState('');
+  const [squareFootage, setSquareFootage] = useState('');
+  const [location, setLocation] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
 
   // Check if extreme mode is enabled
