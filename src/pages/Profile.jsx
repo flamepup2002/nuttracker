@@ -124,14 +124,17 @@ export default function Profile() {
 
       {/* Content */}
       <div className="px-6 pb-24 space-y-6 mt-6">
-        {/* Profile Picture Placeholder */}
+        {/* Profile Picture with Aura */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="flex justify-center"
         >
-          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center">
-            <User className="w-12 h-12 text-white" />
+          <div className="relative flex items-center justify-center">
+            <div className="absolute w-32 h-32 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 opacity-20 blur-2xl" />
+            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center relative z-10">
+              <User className="w-12 h-12 text-white" />
+            </div>
           </div>
         </motion.div>
 
