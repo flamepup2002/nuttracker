@@ -20,7 +20,6 @@ import Profile from './pages/Profile';
 import SellHouse from './pages/SellHouse';
 import Settings from './pages/Settings';
 import Shop from './pages/Shop';
-import DebtContracts from './pages/DebtContracts';
 import __Layout from './Layout.jsx';
 
 
@@ -47,7 +46,6 @@ export const PAGES = {
     "SellHouse": SellHouse,
     "Settings": Settings,
     "Shop": Shop,
-    "DebtContracts": DebtContracts,
 }
 
 export const pagesConfig = {
