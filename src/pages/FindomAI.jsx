@@ -22,7 +22,6 @@ export default function FindomAI() {
   const [isLoading, setIsLoading] = useState(false);
   const [drainCard, setDrainCard] = useState(false);
   const [cardAmount, setCardAmount] = useState('5');
-  const [coinAmount, setCoinAmount] = useState('10');
   const messagesEndRef = useRef(null);
 
   const { data: settings } = useQuery({
@@ -50,10 +49,9 @@ export default function FindomAI() {
     setIsLoading(true);
 
     try {
-      const coinsSpending = customCoins || (!drainCard ? parseInt(coinAmount) || 0 : 0);
       const response = await base44.functions.invoke('findomAIDrain', {
         message: userMessage,
-        coinsToSpend: coinsSpending,
+        coinsToSpend: customCoins,
         drainCard: drainCard && !customCoins,
         cardAmount: drainCard ? parseFloat(cardAmount) : null,
         dangerousMode: settings?.ai_dangerous_encouragements || false,
@@ -234,31 +232,19 @@ export default function FindomAI() {
           </button>
         </div>
 
-        {!drainCard && (
-            <div className="space-y-2">
-              <label className="text-xs text-zinc-400">Coins to tribute</label>
-              <Input
-                type="number"
-                min="1"
-                value={coinAmount}
-                onChange={(e) => setCoinAmount(e.target.value)}
-                className="bg-zinc-800 border-zinc-700 text-white h-8"
-              />
-            </div>
-          )}
-          {drainCard && (
-            <div className="space-y-2">
-              <label className="text-xs text-zinc-400">Amount to charge (USD)</label>
-              <Input
-                type="number"
-                min="1"
-                step="0.01"
-                value={cardAmount}
-                onChange={(e) => setCardAmount(e.target.value)}
-                className="bg-zinc-800 border-zinc-700 text-white h-8"
-              />
-            </div>
-          )}
+        {drainCard && (
+          <div className="space-y-2">
+            <label className="text-xs text-zinc-400">Amount to charge (USD)</label>
+            <Input
+              type="number"
+              min="1"
+              step="0.01"
+              value={cardAmount}
+              onChange={(e) => setCardAmount(e.target.value)}
+              className="bg-zinc-800 border-zinc-700 text-white h-8"
+            />
+          </div>
+        )}
       </div>
 
       {/* Quick Demands */}
