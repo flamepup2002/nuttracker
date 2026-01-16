@@ -234,19 +234,31 @@ export default function FindomAI() {
           </button>
         </div>
 
-        {drainCard && (
-          <div className="space-y-2">
-            <label className="text-xs text-zinc-400">Amount to charge (USD)</label>
-            <Input
-              type="number"
-              min="1"
-              step="0.01"
-              value={cardAmount}
-              onChange={(e) => setCardAmount(e.target.value)}
-              className="bg-zinc-800 border-zinc-700 text-white h-8"
-            />
-          </div>
-        )}
+        {!drainCard && (
+            <div className="space-y-2">
+              <label className="text-xs text-zinc-400">Coins to tribute</label>
+              <Input
+                type="number"
+                min="1"
+                value={coinAmount}
+                onChange={(e) => setCoinAmount(e.target.value)}
+                className="bg-zinc-800 border-zinc-700 text-white h-8"
+              />
+            </div>
+          )}
+          {drainCard && (
+            <div className="space-y-2">
+              <label className="text-xs text-zinc-400">Amount to charge (USD)</label>
+              <Input
+                type="number"
+                min="1"
+                step="0.01"
+                value={cardAmount}
+                onChange={(e) => setCardAmount(e.target.value)}
+                className="bg-zinc-800 border-zinc-700 text-white h-8"
+              />
+            </div>
+          )}
       </div>
 
       {/* Quick Demands */}
