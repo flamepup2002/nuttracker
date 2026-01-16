@@ -176,21 +176,21 @@ export default function GoonerCam() {
           <div className="bg-zinc-900/50 rounded-xl p-3 border border-zinc-800 text-center">
             <div className="flex items-center justify-center gap-1 mb-1">
               <Radio className="w-4 h-4 text-red-400" />
-              <p className="text-xl font-bold text-white">24</p>
+              <p className="text-xl font-bold text-white">{broadcasts.length}</p>
             </div>
             <p className="text-zinc-500 text-xs">Live Now</p>
           </div>
           <div className="bg-zinc-900/50 rounded-xl p-3 border border-zinc-800 text-center">
             <div className="flex items-center justify-center gap-1 mb-1">
               <Users className="w-4 h-4 text-purple-400" />
-              <p className="text-xl font-bold text-white">7.2k</p>
+              <p className="text-xl font-bold text-white">{broadcasts.length > 0 ? (broadcasts.length * 50).toLocaleString() : '0'}</p>
             </div>
             <p className="text-zinc-500 text-xs">Viewers</p>
           </div>
           <div className="bg-zinc-900/50 rounded-xl p-3 border border-zinc-800 text-center">
             <div className="flex items-center justify-center gap-1 mb-1">
               <Zap className="w-4 h-4 text-yellow-400" />
-              <p className="text-xl font-bold text-white">156</p>
+              <p className="text-xl font-bold text-white">{broadcasts.length}</p>
             </div>
             <p className="text-zinc-500 text-xs">Active</p>
           </div>
