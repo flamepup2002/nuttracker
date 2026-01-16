@@ -34,7 +34,29 @@ export default function Home() {
   });
 
   useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {});
+    const initUser = async () => {
+      const userData = await base44.auth.me().catch(() => null);
+      setUser(userData);
+      
+      // Claim welcome bonus on first visit
+      if (userData && !userData.welcome_bonus_claimed) {
+        try {
+          const response = await base44.functions.invoke('claimWelcomeBonus');
+          if (response.data.success) {
+            setUser(prev => ({
+              ...prev,
+              currency_balance: response.data.newBalance,
+              welcome_bonus_claimed: true
+            }));
+            toast.success('Welcome! Claimed 1000 kinkcoins!');
+          }
+        } catch (error) {
+          console.error('Failed to claim welcome bonus:', error);
+        }
+      }
+    };
+    
+    initUser();
   }, []);
 
   const stats = {
