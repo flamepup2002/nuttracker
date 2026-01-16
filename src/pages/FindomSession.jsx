@@ -130,7 +130,7 @@ export default function FindomSession() {
 
           toast.loading('Processing payment...', { id: 'payment' });
 
-          const result = await base44.functions.processFindomPayment({
+          const response = await base44.functions.invoke('processFindomPayment', {
             sessionId: session.id,
             amount: totalCost,
             stripeCustomerId: user.stripe_customer_id,
@@ -139,13 +139,13 @@ export default function FindomSession() {
 
           toast.dismiss('payment');
 
-          if (result.success) {
+          if (response.data.success) {
             toast.success(`Payment processed: $${totalCost.toFixed(2)}`, {
               description: 'Thank you for your submission'
             });
           } else {
             toast.error('Payment failed', {
-              description: result.error || 'Please check your payment method'
+              description: response.data.error || 'Please check your payment method'
             });
           }
         } catch (paymentError) {
