@@ -235,6 +235,40 @@ export default function FindomAI() {
           </button>
         </div>
 
+        {!drainCard && (
+          <div className="space-y-2 relative">
+            <label className="text-xs text-zinc-400">Tribute Amount (coins)</label>
+            <button
+              onClick={() => setShowTributeMenu(!showTributeMenu)}
+              className="w-full bg-zinc-800 border border-zinc-700 text-white rounded-lg px-3 py-2 text-sm font-semibold flex items-center justify-between hover:bg-zinc-700 transition-all"
+            >
+              <Coins className="w-4 h-4" />
+              {tributeAmount} coins
+              <ChevronDown className="w-4 h-4" />
+            </button>
+            {showTributeMenu && (
+              <div className="absolute bottom-full mb-2 w-full bg-zinc-900 border border-zinc-700 rounded-lg p-2 space-y-1 z-10">
+                {[5, 10, 25, 50, 100, 250, 500].map(amount => (
+                  <button
+                    key={amount}
+                    onClick={() => {
+                      setTributeAmount(amount.toString());
+                      setShowTributeMenu(false);
+                    }}
+                    className={`w-full text-left px-3 py-2 rounded text-sm transition-all ${
+                      tributeAmount === amount.toString()
+                        ? 'bg-pink-600 text-white'
+                        : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+                    }`}
+                  >
+                    {amount} coins
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         {drainCard && (
           <div className="space-y-2">
             <label className="text-xs text-zinc-400">Amount to charge (USD)</label>
