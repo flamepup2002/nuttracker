@@ -4,6 +4,7 @@ import History from './pages/History';
 import Home from './pages/Home';
 import Settings from './pages/Settings';
 import BuyCoins from './pages/BuyCoins';
+import FindomAnalytics from './pages/FindomAnalytics';
 import __Layout from './Layout.jsx';
 
 
@@ -14,6 +15,7 @@ export const PAGES = {
     "Home": Home,
     "Settings": Settings,
     "BuyCoins": BuyCoins,
+    "FindomAnalytics": FindomAnalytics,
 }
 
 export const pagesConfig = {
