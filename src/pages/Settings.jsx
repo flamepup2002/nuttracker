@@ -6,7 +6,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   ArrowLeft, DollarSign, Settings2, CreditCard, 
-  Bluetooth, Save, Info, AlertTriangle, Plus, Video, Skull
+  Bluetooth, Save, Info, AlertTriangle, Plus, Video, Skull, Sparkles
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -61,8 +61,9 @@ export default function Settings() {
     broadcast_enabled: false,
     snuff_play_enabled: false,
     unethical_mode_enabled: false,
+    ai_dangerous_encouragements: false,
 
-  });
+    });
 
   useEffect(() => {
     if (existingSettings) {
@@ -76,8 +77,9 @@ export default function Settings() {
         broadcast_enabled: existingSettings.broadcast_enabled ?? false,
         snuff_play_enabled: existingSettings.snuff_play_enabled ?? false,
         unethical_mode_enabled: existingSettings.unethical_mode_enabled ?? false,
+        ai_dangerous_encouragements: existingSettings.ai_dangerous_encouragements ?? false,
 
-      });
+        });
     }
   }, [existingSettings]);
 
@@ -538,11 +540,74 @@ export default function Settings() {
           )}
         </motion.div>
 
-        {/* Snuff Play Warning */}
+        {/* AI Dangerous Encouragements */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
+          className="bg-zinc-900/50 rounded-2xl border border-zinc-800 p-6"
+        >
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-600 to-red-600 flex items-center justify-center">
+              <Sparkles className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h2 className="text-white font-bold">AI Dangerous Mode</h2>
+              <p className="text-zinc-500 text-sm">Unhinged AI encouragements</p>
+            </div>
+          </div>
+
+          {/* Warning Banner */}
+          <div className="bg-orange-900/30 border border-orange-500/50 rounded-xl p-4 mb-4">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="w-5 h-5 text-orange-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-orange-400 font-bold text-sm">WARNING - DANGEROUS CONTENT</p>
+                <p className="text-orange-400/80 text-xs mt-1">
+                  Enabling this allows the AI to give dangerous encouragements including:
+                  cheating on partners, cranking heat/AC to dangerous levels, ignoring safety warnings,
+                  and other potentially harmful suggestions. Use at your own risk.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Enable Toggle */}
+          <div className="flex items-center justify-between p-4 bg-zinc-800/50 rounded-xl">
+            <div>
+              <p className="text-white font-medium">Enable Dangerous AI</p>
+              <p className="text-zinc-500 text-xs mt-1">Let AI give risky suggestions</p>
+            </div>
+            <Switch
+              checked={settings.ai_dangerous_encouragements}
+              onCheckedChange={(checked) => handleChange('ai_dangerous_encouragements', checked)}
+            />
+          </div>
+
+          {settings.ai_dangerous_encouragements && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              className="mt-4 bg-orange-900/20 border border-orange-500/30 rounded-xl p-4"
+            >
+              <div className="flex items-start gap-3">
+                <Sparkles className="w-5 h-5 text-orange-400 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-orange-400 font-medium text-sm">Dangerous AI Active</p>
+                  <p className="text-orange-500/70 text-xs mt-1">
+                    AI will now give unhinged and potentially dangerous suggestions.
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </motion.div>
+
+        {/* Snuff Play Warning */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
           className="bg-zinc-900/50 rounded-2xl border border-zinc-800 p-6"
         >
           <div className="flex items-center gap-3 mb-6">
@@ -614,7 +679,7 @@ export default function Settings() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
+            transition={{ delay: 0.5 }}
             className="bg-zinc-900/50 rounded-2xl border border-zinc-800 p-6"
           >
             <div className="flex items-center gap-3 mb-4">
