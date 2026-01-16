@@ -87,6 +87,27 @@ export default function Settings() {
     },
   });
 
+  const removePaymentMutation = useMutation({
+    mutationFn: async () => {
+      const response = await base44.functions.invoke('removeStripePaymentMethod');
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['paymentMethod'] });
+      refetchPaymentMethod();
+      toast.success('Payment method removed');
+    },
+    onError: () => {
+      toast.error('Failed to remove payment method');
+    },
+  });
+
+  const handleRemovePayment = () => {
+    if (confirm('Remove payment method? You will need to add a new one to use Findom mode.')) {
+      removePaymentMutation.mutate();
+    }
+  };
+
   const handleChange = (key, value) => {
     setSettings(prev => ({ ...prev, [key]: value }));
     setHasChanges(true);
@@ -311,7 +332,10 @@ export default function Settings() {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                   >
-                    <PaymentMethodCard paymentMethod={paymentMethodData.paymentMethod} />
+                    <PaymentMethodCard 
+                      paymentMethod={paymentMethodData.paymentMethod}
+                      onRemove={handleRemovePayment}
+                    />
                     <Button
                       onClick={() => setShowPaymentSetup(true)}
                       variant="outline"
