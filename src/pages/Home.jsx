@@ -305,7 +305,20 @@ export default function Home() {
               <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
             </motion.div>
           </Link>
-        </div>
+
+          <Link to={createPageUrl('GoonFuel')}>
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-orange-600 to-pink-600"
+            >
+              <Flame className="w-8 h-8 text-white mb-3" />
+              <p className="text-white font-bold text-lg">Goon Fuel</p>
+              <p className="text-white/70 text-sm">Captions & fuel</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+          </div>
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 gap-4">
