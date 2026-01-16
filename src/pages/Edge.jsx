@@ -6,7 +6,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { 
   ArrowLeft, Zap, AlertTriangle, Bluetooth, Activity, 
-  Play, Pause, X, Info, Heart
+  Play, Pause, X, Info, Heart, Plus
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { toast } from 'sonner';
