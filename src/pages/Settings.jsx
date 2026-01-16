@@ -50,7 +50,6 @@ export default function Settings() {
     findom_enabled: false,
     base_cost: 5,
     escalation_rate: 0.5,
-    max_cost_cap: 100,
     heart_monitor_connected: false,
   });
 
@@ -60,7 +59,6 @@ export default function Settings() {
         findom_enabled: existingSettings.findom_enabled ?? false,
         base_cost: existingSettings.base_cost ?? 5,
         escalation_rate: existingSettings.escalation_rate ?? 0.5,
-        max_cost_cap: existingSettings.max_cost_cap ?? 100,
         heart_monitor_connected: existingSettings.heart_monitor_connected ?? false,
       });
     }
@@ -225,34 +223,6 @@ export default function Settings() {
                 />
               </div>
 
-              {/* Max Cap */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Label className="text-zinc-300 flex items-center gap-2">
-                    Maximum Cost Cap
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <Info className="w-4 h-4 text-zinc-500" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Maximum cost per orgasm regardless of session length</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </Label>
-                  <span className="text-green-400 font-bold">${settings.max_cost_cap}</span>
-                </div>
-                <Slider
-                  value={[settings.max_cost_cap]}
-                  onValueChange={([value]) => handleChange('max_cost_cap', value)}
-                  min={10}
-                  max={500}
-                  step={10}
-                  className="py-4"
-                />
-              </div>
-
               {/* Cost Preview */}
               <div className="bg-zinc-800/50 rounded-xl p-4">
                 <p className="text-zinc-400 text-sm mb-3">Cost Preview (example)</p>
@@ -260,19 +230,19 @@ export default function Settings() {
                   <div>
                     <p className="text-zinc-500 text-xs">5 min</p>
                     <p className="text-white font-bold">
-                      ${Math.min(settings.base_cost + (settings.escalation_rate * 5), settings.max_cost_cap).toFixed(2)}
+                      ${(settings.base_cost + (settings.escalation_rate * 5)).toFixed(2)}
                     </p>
                   </div>
                   <div>
                     <p className="text-zinc-500 text-xs">15 min</p>
                     <p className="text-white font-bold">
-                      ${Math.min(settings.base_cost + (settings.escalation_rate * 15), settings.max_cost_cap).toFixed(2)}
+                      ${(settings.base_cost + (settings.escalation_rate * 15)).toFixed(2)}
                     </p>
                   </div>
                   <div>
                     <p className="text-zinc-500 text-xs">30 min</p>
                     <p className="text-white font-bold">
-                      ${Math.min(settings.base_cost + (settings.escalation_rate * 30), settings.max_cost_cap).toFixed(2)}
+                      ${(settings.base_cost + (settings.escalation_rate * 30)).toFixed(2)}
                     </p>
                   </div>
                 </div>
