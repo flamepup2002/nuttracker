@@ -12,7 +12,7 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { message, coinsToSpend, drainCard, cardAmount, dangerousMode } = await req.json();
+    const { message, coinsToSpend, drainCard, cardAmount, dangerousMode, tributeAmount } = await req.json();
 
     if (!message) {
       return Response.json({ error: 'Message required' }, { status: 400 });
