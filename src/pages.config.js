@@ -7,6 +7,7 @@ import Home from './pages/Home';
 import Settings from './pages/Settings';
 import AICoach from './pages/AICoach';
 import Achievements from './pages/Achievements';
+import KinkSessions from './pages/KinkSessions';
 import __Layout from './Layout.jsx';
 
 
@@ -20,6 +21,7 @@ export const PAGES = {
     "Settings": Settings,
     "AICoach": AICoach,
     "Achievements": Achievements,
+    "KinkSessions": KinkSessions,
 }
 
 export const pagesConfig = {
