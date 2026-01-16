@@ -23,6 +23,7 @@ import {
 import StripePaymentSetup from '@/components/StripePaymentSetup';
 import PaymentMethodCard from '@/components/PaymentMethodCard';
 import BankAccountSetup from '@/components/BankAccountSetup';
+import BluetoothToyConnect from '@/components/BluetoothToyConnect';
 
 
 export default function Settings() {
@@ -790,6 +791,26 @@ export default function Settings() {
               onCheckedChange={(checked) => handleChange('goon_censor_enabled', checked)}
             />
           </div>
+        </motion.div>
+
+        {/* Bluetooth Sex Toy Connection */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.55 }}
+          className="bg-zinc-900/50 rounded-2xl border border-zinc-800 p-6"
+        >
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center">
+              <Bluetooth className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h2 className="text-white font-bold">Bluetooth Toys</h2>
+              <p className="text-zinc-500 text-sm">Connect smart toys for control</p>
+            </div>
+          </div>
+
+          <BluetoothToyConnect />
         </motion.div>
 
         {/* Heart Monitor Info */}
