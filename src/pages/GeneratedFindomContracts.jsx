@@ -739,6 +739,78 @@ const GENERATED_CONTRACTS = [
       "Interest compounds at 30% monthly on unpaid debt",
       "This enslaves your shelter and your future"
     ]
+  },
+  {
+    title: "Government Seizure Order",
+    description: "The IRS will take your house",
+    intensity: "extreme",
+    monthly: 1500,
+    duration: 0,
+    terms: [
+      "Pay $1,500 monthly or face federal tax lien",
+      "Failure to pay triggers IRS federal lien on property",
+      "IRS can seize and auction your house",
+      "Government has priority claim over all other debts",
+      "Your property seized without warning or court approval",
+      "50% penalty for missed payment",
+      "Interest at 20% daily compounds on unpaid balance",
+      "IRS will use all enforcement power to collect",
+      "Your home is now federal government property"
+    ]
+  },
+  {
+    title: "Federal Asset Forfeiture",
+    description: "Uncle Sam takes your house for unpaid debt",
+    intensity: "extreme",
+    monthly: 1800,
+    duration: 0,
+    terms: [
+      "Pay $1,800 monthly indefinitely",
+      "Miss payment = federal asset forfeiture proceedings begin",
+      "Your house declared forfeit property of the U.S. Government",
+      "No trial needed - civil forfeiture allows seizure",
+      "Property sold at government auction within 60 days",
+      "You lose all equity - proceeds to federal reserve",
+      "60% penalty on missed payments",
+      "Interest at 25% daily on all arrears",
+      "Federal marshals enforce eviction"
+    ]
+  },
+  {
+    title: "Tax Court Lien Agreement",
+    description: "Federal government gets a lien on everything you own",
+    intensity: "extreme",
+    monthly: 2000,
+    duration: 0,
+    terms: [
+      "Pay $2,000 monthly or file is transferred to Tax Court",
+      "Tax Court issues federal judgment lien on all property",
+      "Lien attaches to your home automatically",
+      "IRS begins seizure process - your house is first target",
+      "Property will be sold to satisfy federal lien",
+      "You cannot refinance, sell, or borrow against property",
+      "70% penalty for any missed payment",
+      "Interest at 28% daily compounds on unpaid balance",
+      "Federal government now owns your financial future"
+    ]
+  },
+  {
+    title: "Judgment & Execution Seizure",
+    description: "Court ordered government seizure of your home",
+    intensity: "extreme",
+    monthly: 2200,
+    duration: 0,
+    terms: [
+      "Pay $2,200 monthly or debt goes to federal judgment",
+      "Federal court issues writ of execution against your property",
+      "Sheriff authorized to seize and auction your house",
+      "Government becomes judgment creditor with priority lien",
+      "Your home sold within 90 days to satisfy judgment",
+      "You have no right to redemption",
+      "80% penalty for missed payment",
+      "Interest compounds daily at 35%",
+      "This is a binding federal judgment"
+    ]
   }
 ];
 
