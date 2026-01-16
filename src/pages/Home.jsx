@@ -194,11 +194,17 @@ export default function Home() {
             <motion.div
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-pink-600 to-rose-600"
+              className={`relative overflow-hidden rounded-2xl p-6 ${
+                settings?.goonercam_enabled
+                  ? 'bg-gradient-to-br from-pink-600 to-rose-600'
+                  : 'bg-zinc-900 border border-zinc-800'
+              }`}
             >
               <Video className="w-8 h-8 text-white mb-3" />
               <p className="text-white font-bold text-lg">GoonerCam</p>
-              <p className="text-white/70 text-sm">Watch live gooners</p>
+              <p className="text-white/70 text-sm">
+                {settings?.goonercam_enabled ? 'Watch live gooners' : 'Enable in settings'}
+              </p>
               <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
             </motion.div>
           </Link>

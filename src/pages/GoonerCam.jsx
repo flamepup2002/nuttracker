@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import { base44 } from '@/api/base44Client';
+import { useQuery } from '@tanstack/react-query';
 import { 
   ArrowLeft, Video, Users, Eye, Heart, MessageCircle,
-  Radio, Zap, Crown, Search
+  Radio, Zap, Crown, Search, Lock
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -133,6 +135,50 @@ function CamCard({ cam }) {
 export default function GoonerCam() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
+
+  const { data: settings, isLoading } = useQuery({
+    queryKey: ['userSettings'],
+    queryFn: async () => {
+      const list = await base44.entities.UserSettings.list();
+      return list[0] || { goonercam_enabled: false };
+    },
+  });
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-2 border-pink-500 border-t-transparent rounded-full" />
+      </div>
+    );
+  }
+
+  if (!settings?.goonercam_enabled) {
+    return (
+      <div className="min-h-screen bg-black text-white px-6 py-12">
+        <button 
+          onClick={() => navigate(createPageUrl('Home'))}
+          className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors mb-8"
+        >
+          <ArrowLeft className="w-5 h-5" />
+          <span>Back</span>
+        </button>
+
+        <div className="text-center py-12">
+          <div className="w-20 h-20 mx-auto rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-6">
+            <Lock className="w-10 h-10 text-zinc-600" />
+          </div>
+          <h2 className="text-2xl font-bold text-white mb-2">GoonerCam Locked</h2>
+          <p className="text-zinc-400 mb-6">Enable GoonerCam in Settings to access live sessions</p>
+          <Button
+            onClick={() => navigate(createPageUrl('Settings'))}
+            className="bg-gradient-to-r from-pink-600 to-rose-600"
+          >
+            Go to Settings
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black text-white pb-24">

@@ -55,6 +55,7 @@ export default function Settings() {
     escalation_rate: 0.5,
     interest_rate: 0,
     heart_monitor_connected: false,
+    goonercam_enabled: false,
     broadcast_enabled: false,
   });
 
@@ -66,6 +67,7 @@ export default function Settings() {
         escalation_rate: existingSettings.escalation_rate ?? 0.5,
         interest_rate: existingSettings.interest_rate ?? 0,
         heart_monitor_connected: existingSettings.heart_monitor_connected ?? false,
+        goonercam_enabled: existingSettings.goonercam_enabled ?? false,
         broadcast_enabled: existingSettings.broadcast_enabled ?? false,
       });
     }
@@ -395,7 +397,7 @@ export default function Settings() {
           </motion.div>
         )}
 
-        {/* Broadcasting Settings */}
+        {/* GoonerCam Settings */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -407,38 +409,57 @@ export default function Settings() {
               <Video className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h2 className="text-white font-bold">GoonerCam Broadcasting</h2>
-              <p className="text-zinc-500 text-sm">Stream your sessions live</p>
+              <h2 className="text-white font-bold">GoonerCam</h2>
+              <p className="text-zinc-500 text-sm">View and broadcast sessions</p>
             </div>
           </div>
 
-          {/* Enable Toggle */}
-          <div className="flex items-center justify-between p-4 bg-zinc-800/50 rounded-xl">
+          {/* Enable GoonerCam */}
+          <div className="flex items-center justify-between p-4 bg-zinc-800/50 rounded-xl mb-4">
             <div>
-              <p className="text-white font-medium">Enable Broadcasting</p>
-              <p className="text-zinc-500 text-xs mt-1">Allow others to watch your sessions</p>
+              <p className="text-white font-medium">Enable GoonerCam</p>
+              <p className="text-zinc-500 text-xs mt-1">Access to view live sessions</p>
             </div>
             <Switch
-              checked={settings.broadcast_enabled}
-              onCheckedChange={(checked) => handleChange('broadcast_enabled', checked)}
+              checked={settings.goonercam_enabled}
+              onCheckedChange={(checked) => handleChange('goonercam_enabled', checked)}
             />
           </div>
 
-          {settings.broadcast_enabled && (
+          {/* Enable Broadcasting */}
+          {settings.goonercam_enabled && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
-              className="mt-4 bg-purple-900/20 border border-purple-500/30 rounded-xl p-4"
             >
-              <div className="flex items-start gap-3">
-                <Info className="w-5 h-5 text-purple-400 flex-shrink-0 mt-0.5" />
+              <div className="flex items-center justify-between p-4 bg-zinc-800/50 rounded-xl">
                 <div>
-                  <p className="text-purple-400 font-medium text-sm">Broadcasting Active</p>
-                  <p className="text-purple-500/70 text-xs mt-1">
-                    Your sessions will be visible on GoonerCam when you start broadcasting
-                  </p>
+                  <p className="text-white font-medium">Enable Broadcasting</p>
+                  <p className="text-zinc-500 text-xs mt-1">Allow others to watch your sessions</p>
                 </div>
+                <Switch
+                  checked={settings.broadcast_enabled}
+                  onCheckedChange={(checked) => handleChange('broadcast_enabled', checked)}
+                />
               </div>
+
+              {settings.broadcast_enabled && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  className="mt-4 bg-purple-900/20 border border-purple-500/30 rounded-xl p-4"
+                >
+                  <div className="flex items-start gap-3">
+                    <Info className="w-5 h-5 text-purple-400 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-purple-400 font-medium text-sm">Broadcasting Active</p>
+                      <p className="text-purple-500/70 text-xs mt-1">
+                        Your sessions will be visible on GoonerCam when you start broadcasting
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
             </motion.div>
           )}
         </motion.div>
