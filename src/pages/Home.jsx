@@ -239,6 +239,19 @@ export default function Home() {
               <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
             </motion.div>
           </Link>
+
+          <Link to={createPageUrl('PremiumFindom')}>
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-pink-700 to-rose-700"
+            >
+              <DollarSign className="w-8 h-8 text-white mb-3" />
+              <p className="text-white font-bold text-lg">Premium Content</p>
+              <p className="text-white/70 text-sm">Exclusive findom</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
         </div>
 
         {/* Stats Grid */}
