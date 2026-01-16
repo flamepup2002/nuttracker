@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, Send, Coins, AlertTriangle, Zap, Lock } from 'lucide-react';
+import { ArrowLeft, Send, Coins, AlertTriangle, Zap } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from 'sonner';
@@ -22,53 +22,9 @@ export default function FindomAI() {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
 
-  const { data: settings, isLoadingSettings } = useQuery({
-    queryKey: ['userSettings'],
-    queryFn: async () => {
-      const list = await base44.entities.UserSettings.list();
-      return list[0] || null;
-    },
-  });
-
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
   }, []);
-
-  if (isLoadingSettings) {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-pink-500 border-t-transparent rounded-full" />
-      </div>
-    );
-  }
-
-  if (!settings?.findom_enabled) {
-    return (
-      <div className="min-h-screen bg-black text-white px-6 py-12">
-        <button 
-          onClick={() => navigate(createPageUrl('Home'))}
-          className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors mb-8"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          <span>Back</span>
-        </button>
-
-        <div className="text-center py-12">
-          <div className="w-20 h-20 mx-auto rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-6">
-            <Lock className="w-10 h-10 text-zinc-600" />
-          </div>
-          <h2 className="text-2xl font-bold text-white mb-2">Findom Mode Locked</h2>
-          <p className="text-zinc-400 mb-6">Enable Findom mode in Settings to access this feature</p>
-          <Button
-            onClick={() => navigate(createPageUrl('Settings'))}
-            className="bg-gradient-to-r from-green-600 to-emerald-600"
-          >
-            Go to Settings
-          </Button>
-        </div>
-      </div>
-    );
-  }
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -119,59 +75,10 @@ export default function FindomAI() {
     }
   };
 
-  const handleCardDrain = async () => {
-    if (!cardAmount || parseFloat(cardAmount) <= 0) {
-      toast.error('Enter a valid amount');
-      return;
-    }
-
-    const userMessage = inputValue || 'I submit my card as tribute';
-    setInputValue('');
-    setMessages(prev => [...prev, { role: 'user', content: `Charges $${cardAmount} to card` }]);
-    setIsLoading(true);
-
-    try {
-      const response = await base44.functions.invoke('findomCardDrain', {
-        message: userMessage,
-        amount: parseFloat(cardAmount),
-      });
-
-      if (response.data.error) {
-        toast.error(response.data.error);
-        setMessages(prev => [
-          ...prev,
-          {
-            role: 'ai',
-            content: response.data.error,
-          },
-        ]);
-      } else {
-        setMessages(prev => [
-          ...prev,
-          {
-            role: 'ai',
-            content: response.data.aiResponse,
-            cardCharged: response.data.amountCharged,
-          },
-        ]);
-        toast.success(`$${response.data.amountCharged} charged`);
-        setCardAmount('');
-        setShowCardPayment(false);
-      }
-    } catch (error) {
-      toast.error('Payment failed');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const [showCardPayment, setShowCardPayment] = useState(false);
-  const [cardAmount, setCardAmount] = useState('');
-
   const quickDemands = [
-    { text: 'I want to tribute coins', coins: 10 },
+    { text: 'I want to tribute', coins: 10 },
     { text: 'Drain me completely', coins: 25 },
-    { text: 'Take my money instead...', card: true },
+    { text: 'Tell me what I deserve', coins: null },
   ];
 
   return (
@@ -228,11 +135,6 @@ export default function FindomAI() {
                     -{msg.coinsSpent} coins
                   </p>
                 )}
-                {msg.cardCharged && (
-                  <p className="text-xs text-red-300 mt-2 font-bold">
-                    CHARGED -${msg.cardCharged}
-                  </p>
-                )}
               </div>
             </motion.div>
           ))}
@@ -266,62 +168,17 @@ export default function FindomAI() {
               variant="outline"
               className="bg-zinc-900 border-pink-500/30 text-pink-400 hover:bg-pink-900/30 text-xs"
               onClick={() => {
-                if (demand.card) {
-                  setShowCardPayment(true);
-                } else {
-                  setInputValue(demand.text);
-                  setTimeout(() => handleSendMessage(demand.coins), 100);
-                }
+                setInputValue(demand.text);
+                setTimeout(() => handleSendMessage(demand.coins), 100);
               }}
               disabled={isLoading}
             >
               {demand.text}
               {demand.coins && <Coins className="w-3 h-3 ml-1" />}
               {demand.coins && <span className="text-xs">{demand.coins}</span>}
-              {demand.card && <span className="text-red-400 ml-1">💳</span>}
             </Button>
           ))}
         </div>
-
-        {showCardPayment && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mt-3 p-3 bg-red-900/30 border border-red-500/30 rounded-lg"
-          >
-            <p className="text-xs text-red-400 mb-2">Enter amount to charge:</p>
-            <div className="flex gap-2">
-              <Input
-                type="number"
-                placeholder="$0.00"
-                value={cardAmount}
-                onChange={(e) => setCardAmount(e.target.value)}
-                min="0.50"
-                step="0.50"
-                className="bg-zinc-900 border-red-500/30 text-white placeholder-zinc-600 h-8"
-              />
-              <Button
-                size="sm"
-                onClick={handleCardDrain}
-                disabled={isLoading || !cardAmount}
-                className="bg-red-600 hover:bg-red-700 text-xs"
-              >
-                Charge
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => {
-                  setShowCardPayment(false);
-                  setCardAmount('');
-                }}
-                className="bg-zinc-900 border-zinc-700 text-xs"
-              >
-                Cancel
-              </Button>
-            </div>
-          </motion.div>
-        )}
       </div>
 
       {/* Input Area */}
