@@ -247,6 +247,333 @@ const ACHIEVEMENTS = [
     color: 'from-red-600 to-pink-600',
     checkFn: (data) => data.sessions.some(s => s.peak_heart_rate >= 180),
   },
+  {
+    id: 'three_hundred_club',
+    title: '300 Club',
+    description: 'Log 300 orgasms',
+    icon: Trophy,
+    color: 'from-purple-500 to-pink-500',
+    checkFn: (data) => data.orgasms.length >= 300,
+  },
+  {
+    id: 'thousand_dollar_whale',
+    title: '$1000 Whale',
+    description: 'Spend exactly $1000 on findom',
+    icon: Crown,
+    color: 'from-green-600 to-emerald-600',
+    checkFn: (data) => data.orgasms.filter(o => o.is_findom).reduce((sum, o) => sum + o.cost, 0) >= 1000,
+  },
+  {
+    id: 'balanced_diet',
+    title: 'Balanced Diet',
+    description: 'Have 10 of each orgasm type',
+    icon: Target,
+    color: 'from-orange-500 to-yellow-500',
+    checkFn: (data) => {
+      const cumshots = data.orgasms.filter(o => o.type === 'cumshot').length;
+      const ruined = data.orgasms.filter(o => o.type === 'ruined').length;
+      const denied = data.orgasms.filter(o => o.type === 'denied').length;
+      const cashgasms = data.orgasms.filter(o => o.type === 'cashgasm').length;
+      return cumshots >= 10 && ruined >= 10 && denied >= 10 && cashgasms >= 10;
+    },
+  },
+  {
+    id: 'five_star_session',
+    title: 'Five Star Session',
+    description: 'Complete a 5+ hour session',
+    icon: Star,
+    color: 'from-yellow-500 to-orange-500',
+    checkFn: (data) => data.sessions.some(s => s.duration_seconds >= 18000),
+  },
+  {
+    id: 'golden_gooner',
+    title: 'Golden Gooner',
+    description: 'Reach 100+ BPM average during session',
+    icon: Flame,
+    color: 'from-amber-500 to-orange-500',
+    checkFn: (data) => data.sessions.some(s => s.avg_heart_rate >= 100),
+  },
+  {
+    id: 'denial_legend',
+    title: 'Denial Legend',
+    description: 'Deny yourself 100 times',
+    icon: Ban,
+    color: 'from-purple-700 to-pink-700',
+    checkFn: (data) => data.orgasms.filter(o => o.type === 'denied').length >= 100,
+  },
+  {
+    id: 'ruin_king',
+    title: 'Ruin King',
+    description: 'Ruin yourself 100 times',
+    icon: Zap,
+    color: 'from-orange-600 to-red-600',
+    checkFn: (data) => data.orgasms.filter(o => o.type === 'ruined').length >= 100,
+  },
+  {
+    id: 'million_heart_beats',
+    title: 'Million Heart Beats',
+    description: 'Accumulate 1,000,000+ total BPM across sessions',
+    icon: Heart,
+    color: 'from-red-600 to-pink-600',
+    checkFn: (data) => {
+      const totalBpm = data.sessions.reduce((sum, s) => sum + (s.peak_heart_rate || 0) * (s.duration_seconds || 1), 0);
+      return totalBpm >= 1000000;
+    },
+  },
+  {
+    id: 'session_centennial',
+    title: 'Session Centennial',
+    description: 'Complete 100 sessions',
+    icon: Activity,
+    color: 'from-blue-600 to-indigo-600',
+    checkFn: (data) => data.sessions.filter(s => s.status === 'completed').length >= 100,
+  },
+  {
+    id: 'cashgasm_lord',
+    title: 'Cashgasm Lord',
+    description: 'Have 50 cashgasms',
+    icon: Coins,
+    color: 'from-green-600 to-emerald-600',
+    checkFn: (data) => data.orgasms.filter(o => o.type === 'cashgasm').length >= 50,
+  },
+  {
+    id: 'two_grand_spender',
+    title: '$2000 Patriot',
+    description: 'Spend $2000 on findom',
+    icon: DollarSign,
+    color: 'from-green-700 to-emerald-700',
+    checkFn: (data) => data.orgasms.filter(o => o.is_findom).reduce((sum, o) => sum + o.cost, 0) >= 2000,
+  },
+  {
+    id: 'goon_scholar',
+    title: 'Goon Scholar',
+    description: 'Complete 25 sessions',
+    icon: Target,
+    color: 'from-indigo-500 to-purple-500',
+    checkFn: (data) => data.sessions.filter(s => s.status === 'completed').length >= 25,
+  },
+  {
+    id: 'streaker',
+    title: 'Streaker',
+    description: 'Log at least one orgasm every day for 14 days',
+    icon: Calendar,
+    color: 'from-pink-500 to-red-500',
+    checkFn: (data) => {
+      const last14Days = Array.from({ length: 14 }, (_, i) => {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        return date.toDateString();
+      });
+      const orgasmDates = data.orgasms.map(o => new Date(o.created_date).toDateString());
+      return last14Days.every(day => orgasmDates.includes(day));
+    },
+  },
+  {
+    id: 'half_grand_session',
+    title: 'Half Grand Session',
+    description: 'Spend $500+ in a single session',
+    icon: DollarSign,
+    color: 'from-emerald-700 to-green-800',
+    checkFn: (data) => data.sessions.some(s => s.is_findom && s.total_cost >= 500),
+  },
+  {
+    id: 'elite_gooner',
+    title: 'Elite Gooner',
+    description: 'Complete 75 sessions',
+    icon: Trophy,
+    color: 'from-purple-600 to-indigo-600',
+    checkFn: (data) => data.sessions.filter(s => s.status === 'completed').length >= 75,
+  },
+  {
+    id: 'speed_demon',
+    title: 'Speed Demon',
+    description: 'Log 10 orgasms in a single day',
+    icon: FastForward,
+    color: 'from-red-600 to-orange-600',
+    checkFn: (data) => {
+      const orgasmsByDay = {};
+      data.orgasms.forEach(o => {
+        const day = new Date(o.created_date).toDateString();
+        orgasmsByDay[day] = (orgasmsByDay[day] || 0) + 1;
+      });
+      return Object.values(orgasmsByDay).some(count => count >= 10);
+    },
+  },
+  {
+    id: 'broadcaster_elite',
+    title: 'Broadcaster Elite',
+    description: 'Complete 5 broadcasted sessions',
+    icon: Video,
+    color: 'from-pink-700 to-rose-700',
+    checkFn: (data) => data.sessions.filter(s => s.broadcast_enabled === true).length >= 5,
+  },
+  {
+    id: 'cumshot_master',
+    title: 'Cumshot Master',
+    description: 'Have 50 cumshots',
+    icon: Droplet,
+    color: 'from-blue-600 to-cyan-600',
+    checkFn: (data) => data.orgasms.filter(o => o.type === 'cumshot').length >= 50,
+  },
+  {
+    id: 'twelve_hour_warrior',
+    title: '12 Hour Warrior',
+    description: 'Complete a 12+ hour session',
+    icon: Timer,
+    color: 'from-indigo-700 to-purple-700',
+    checkFn: (data) => data.sessions.some(s => s.duration_seconds >= 43200),
+  },
+  {
+    id: 'financial_tyrant',
+    title: 'Financial Tyrant',
+    description: 'Spend $5000 on findom',
+    icon: Crown,
+    color: 'from-yellow-700 to-amber-700',
+    checkFn: (data) => data.orgasms.filter(o => o.is_findom).reduce((sum, o) => sum + o.cost, 0) >= 5000,
+  },
+  {
+    id: 'heart_rate_addict',
+    title: 'Heart Rate Addict',
+    description: 'Complete 10 sessions with heart rate tracking',
+    icon: Heart,
+    color: 'from-red-700 to-pink-700',
+    checkFn: (data) => data.sessions.filter(s => s.heart_rate_data && s.heart_rate_data.length > 0).length >= 10,
+  },
+  {
+    id: 'session_milestone',
+    title: 'Session Milestone',
+    description: 'Complete 150 sessions',
+    icon: Milestone,
+    color: 'from-orange-600 to-yellow-600',
+    checkFn: (data) => data.sessions.filter(s => s.status === 'completed').length >= 150,
+  },
+  {
+    id: 'endurance_master',
+    title: 'Endurance Master',
+    description: 'Complete 5 sessions over 3 hours each',
+    icon: Hourglass,
+    color: 'from-purple-700 to-indigo-700',
+    checkFn: (data) => data.sessions.filter(s => s.duration_seconds >= 10800).length >= 5,
+  },
+  {
+    id: 'ultimate_cashgasm',
+    title: 'Ultimate Cashgasm',
+    description: 'Have 100 cashgasms',
+    icon: Coins,
+    color: 'from-green-700 to-emerald-700',
+    checkFn: (data) => data.orgasms.filter(o => o.type === 'cashgasm').length >= 100,
+  },
+  {
+    id: 'month_warrior',
+    title: '30 Day Warrior',
+    description: 'Log at least one orgasm every day for 30 days',
+    icon: Calendar,
+    color: 'from-purple-600 to-pink-600',
+    checkFn: (data) => {
+      const last30Days = Array.from({ length: 30 }, (_, i) => {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        return date.toDateString();
+      });
+      const orgasmDates = data.orgasms.map(o => new Date(o.created_date).toDateString());
+      return last30Days.every(day => orgasmDates.includes(day));
+    },
+  },
+  {
+    id: 'mega_session',
+    title: 'Mega Session',
+    description: 'Spend $1000+ in a single session',
+    icon: DollarSign,
+    color: 'from-green-800 to-emerald-800',
+    checkFn: (data) => data.sessions.some(s => s.is_findom && s.total_cost >= 1000),
+  },
+  {
+    id: 'peak_seeker',
+    title: 'Peak Seeker',
+    description: 'Reach 200+ BPM during a session',
+    icon: Gauge,
+    color: 'from-red-700 to-orange-700',
+    checkFn: (data) => data.sessions.some(s => s.peak_heart_rate >= 200),
+  },
+  {
+    id: 'ten_grand_lord',
+    title: '$10,000 Lord',
+    description: 'Spend $10,000 on findom',
+    icon: Crown,
+    color: 'from-yellow-800 to-amber-800',
+    checkFn: (data) => data.orgasms.filter(o => o.is_findom).reduce((sum, o) => sum + o.cost, 0) >= 10000,
+  },
+  {
+    id: 'thousand_orgasm_god',
+    title: 'Thousand Orgasm God',
+    description: 'Log 1000 orgasms',
+    icon: Star,
+    color: 'from-purple-800 to-pink-800',
+    checkFn: (data) => data.orgasms.length >= 1000,
+  },
+  {
+    id: 'session_king',
+    title: 'Session King',
+    description: 'Complete 200 sessions',
+    icon: Crown,
+    color: 'from-indigo-700 to-purple-700',
+    checkFn: (data) => data.sessions.filter(s => s.status === 'completed').length >= 200,
+  },
+  {
+    id: 'findom_emperor',
+    title: 'Findom Emperor',
+    description: 'Spend $20,000 on findom',
+    icon: Crown,
+    color: 'from-yellow-900 to-amber-900',
+    checkFn: (data) => data.orgasms.filter(o => o.is_findom).reduce((sum, o) => sum + o.cost, 0) >= 20000,
+  },
+  {
+    id: 'blessed_day',
+    title: 'Blessed Day',
+    description: 'Log 20 orgasms in a single day',
+    icon: Flame,
+    color: 'from-orange-700 to-red-700',
+    checkFn: (data) => {
+      const orgasmsByDay = {};
+      data.orgasms.forEach(o => {
+        const day = new Date(o.created_date).toDateString();
+        orgasmsByDay[day] = (orgasmsByDay[day] || 0) + 1;
+      });
+      return Object.values(orgasmsByDay).some(count => count >= 20);
+    },
+  },
+  {
+    id: 'ultra_endurance',
+    title: 'Ultra Endurance',
+    description: 'Complete a 24+ hour session',
+    icon: Infinity,
+    color: 'from-purple-800 to-indigo-800',
+    checkFn: (data) => data.sessions.some(s => s.duration_seconds >= 86400),
+  },
+  {
+    id: 'goon_legend',
+    title: 'Goon Legend',
+    description: 'Complete 300 sessions',
+    icon: Trophy,
+    color: 'from-gold-600 to-yellow-600',
+    checkFn: (data) => data.sessions.filter(s => s.status === 'completed').length >= 300,
+  },
+  {
+    id: 'cumshot_collector',
+    title: 'Cumshot Collector',
+    description: 'Have 100 cumshots',
+    icon: Droplet,
+    color: 'from-blue-700 to-cyan-700',
+    checkFn: (data) => data.orgasms.filter(o => o.type === 'cumshot').length >= 100,
+  },
+  {
+    id: 'ruined_master',
+    title: 'Ruined Master',
+    description: 'Ruin yourself 200 times',
+    icon: Zap,
+    color: 'from-orange-700 to-red-700',
+    checkFn: (data) => data.orgasms.filter(o => o.type === 'ruined').length >= 200,
+  },
 ];
 
 export default function Achievements() {
