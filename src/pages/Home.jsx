@@ -179,8 +179,7 @@ export default function Home() {
               <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
             </motion.div>
           </Link>
-
-
+        </div>
 
         <div className="grid grid-cols-2 gap-4 mt-4">
           <Link to={createPageUrl('FindomAnalytics')}>
