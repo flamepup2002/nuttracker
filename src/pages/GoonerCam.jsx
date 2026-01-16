@@ -12,62 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 
-const FEATURED_CAMS = [
-  {
-    id: 1,
-    username: 'edgegod420',
-    viewers: 1234,
-    duration: '2h 15m',
-    tags: ['edging', 'marathon', 'findom'],
-    isLive: true,
-    isPremium: false
-  },
-  {
-    id: 2,
-    username: 'ruinedking',
-    viewers: 892,
-    duration: '45m',
-    tags: ['ruined', 'denial', 'bdsm'],
-    isLive: true,
-    isPremium: true
-  },
-  {
-    id: 3,
-    username: 'goonstick69',
-    viewers: 2156,
-    duration: '3h 30m',
-    tags: ['endurance', 'breathplay'],
-    isLive: true,
-    isPremium: false
-  },
-  {
-    id: 4,
-    username: 'drained247',
-    viewers: 567,
-    duration: '1h 10m',
-    tags: ['findom', 'cashgasm', 'drain'],
-    isLive: true,
-    isPremium: true
-  },
-  {
-    id: 5,
-    username: 'edgemaster',
-    viewers: 1890,
-    duration: '4h 05m',
-    tags: ['marathon', 'poppers', 'extreme'],
-    isLive: true,
-    isPremium: false
-  },
-  {
-    id: 6,
-    username: 'deniedslut',
-    viewers: 445,
-    duration: '55m',
-    tags: ['denial', 'chastity', 'tease'],
-    isLive: true,
-    isPremium: false
-  }
-];
+
 
 function CamCard({ cam }) {
   return (
