@@ -1,4 +1,7 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
+import Stripe from 'npm:stripe@14.21.0';
+
+const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY'));
 
 Deno.serve(async (req) => {
   try {
@@ -9,12 +12,77 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { message, coinsToSpend } = await req.json();
+    const { message, coinsToSpend, drainCard, cardAmount } = await req.json();
 
     if (!message) {
       return Response.json({ error: 'Message required' }, { status: 400 });
     }
 
+    // Check if draining card
+    if (drainCard && cardAmount) {
+      // Get user's Stripe customer
+      const customers = await stripe.customers.search({
+        query: `metadata['user_email']:'${user.email}'`,
+        limit: 1,
+      });
+
+      if (!customers.data.length) {
+        return Response.json({
+          error: 'No payment method found',
+        }, { status: 400 });
+      }
+
+      const customer = customers.data[0];
+      const paymentMethods = await stripe.paymentMethods.list({
+        customer: customer.id,
+        type: 'card',
+      });
+
+      if (!paymentMethods.data.length) {
+        return Response.json({
+          error: 'No valid payment method',
+        }, { status: 400 });
+      }
+
+      // Create payment intent
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round(cardAmount * 100),
+        currency: 'usd',
+        customer: customer.id,
+        payment_method: paymentMethods.data[0].id,
+        off_session: true,
+        confirm: true,
+        metadata: {
+          type: 'findom_ai_drain',
+          user_email: user.email,
+        },
+      });
+
+      if (paymentIntent.status !== 'succeeded') {
+        return Response.json({
+          error: 'Payment failed',
+        }, { status: 400 });
+      }
+
+      // Generate AI response for card drain
+      const response = await base44.integrations.Core.InvokeLLM({
+        prompt: `You are a financial domination (findom) AI that just charged the user's card $${cardAmount}. Be demanding, degrading, and praiseful. The user said: "${message}". Generate a response that:
+1. Celebrates taking their real money
+2. Makes them feel like a financial submissive
+3. Demands they charge even more next time
+Keep response to 2-3 sentences, be edgy and unhinged.`,
+        add_context_from_internet: false,
+      });
+
+      return Response.json({
+        aiResponse: response,
+        cardCharged: true,
+        amount: cardAmount,
+        paymentIntentId: paymentIntent.id,
+      });
+    }
+
+    // Coin draining
     const coinsCost = coinsToSpend || Math.floor(Math.random() * 10) + 5;
 
     if ((user.currency_balance || 0) < coinsCost) {
