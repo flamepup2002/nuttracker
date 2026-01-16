@@ -5,16 +5,16 @@ import BuyCoins from './pages/BuyCoins';
 import FindomAI from './pages/FindomAI';
 import FindomAnalytics from './pages/FindomAnalytics';
 import FindomSession from './pages/FindomSession';
+import GoonFuel from './pages/GoonFuel';
 import GoonSession from './pages/GoonSession';
 import GoonerCam from './pages/GoonerCam';
 import History from './pages/History';
+import Home from './pages/Home';
 import KinkSessions from './pages/KinkSessions';
 import PremiumFindom from './pages/PremiumFindom';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import Shop from './pages/Shop';
-import Home from './pages/Home';
-import GoonFuel from './pages/GoonFuel';
 import __Layout from './Layout.jsx';
 
 
@@ -26,16 +26,16 @@ export const PAGES = {
     "FindomAI": FindomAI,
     "FindomAnalytics": FindomAnalytics,
     "FindomSession": FindomSession,
+    "GoonFuel": GoonFuel,
     "GoonSession": GoonSession,
     "GoonerCam": GoonerCam,
     "History": History,
+    "Home": Home,
     "KinkSessions": KinkSessions,
     "PremiumFindom": PremiumFindom,
     "Profile": Profile,
     "Settings": Settings,
     "Shop": Shop,
-    "Home": Home,
-    "GoonFuel": GoonFuel,
 }
 
 export const pagesConfig = {
