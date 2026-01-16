@@ -32,7 +32,7 @@ Signed by: ${signature}
 Email: ${user.email}
 Date: ${signedDate}
 
-This document has been filed with all courthouses within 100km radius for legal enforcement.
+This document has been emailed to all courthouses within 100km radius for legal enforcement.
     `.trim();
 
     // In a real implementation, you would:
@@ -62,7 +62,7 @@ This document has been filed with all courthouses within 100km radius for legal 
 
     return Response.json({
       success: true,
-      message: 'Agreement forwarded to all courthouses within 100km',
+      message: 'Agreement emailed to all courthouses within 100km',
       document: documentContent,
       courthouses: filings.length,
       filings: filings

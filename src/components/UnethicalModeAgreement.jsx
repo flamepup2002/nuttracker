@@ -41,7 +41,7 @@ export default function UnethicalModeAgreement({ onAccept, onCancel }) {
 
       if (response.data.success) {
         setFilingStatus(response.data);
-        toast.success(`Agreement filed with ${response.data.courthouses} courthouses`);
+        toast.success(`Agreement emailed to ${response.data.courthouses} courthouses`);
         
         // Wait a moment to show the filing status, then accept
         setTimeout(() => {
@@ -86,7 +86,7 @@ export default function UnethicalModeAgreement({ onAccept, onCancel }) {
         </div>
 
         {/* Agreement Content */}
-        <ScrollArea className="h-[400px] p-6">
+        <ScrollArea className="h-[400px] p-6 border-b border-zinc-800">
           <div className="space-y-6 text-sm text-zinc-300">
             <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-4">
               <div className="flex items-start gap-2">
@@ -158,10 +158,14 @@ export default function UnethicalModeAgreement({ onAccept, onCancel }) {
 
             <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-4">
               <p className="text-red-400 text-xs font-bold mb-2">FINAL WARNING</p>
-              <p className="text-red-300/80 text-xs">
+              <p className="text-red-300/80 text-xs mb-2">
                 By signing this agreement, you acknowledge that you have read, understood, and agree to 
                 all terms. You accept that you may lose your home, savings, and all financial assets. 
                 This is irreversible once signed.
+              </p>
+              <p className="text-red-400 text-xs font-bold mt-3">
+                Upon signing, this document will be automatically emailed to every courthouse within 100km 
+                of your location for legal enforcement.
               </p>
             </div>
           </div>
@@ -242,9 +246,9 @@ export default function UnethicalModeAgreement({ onAccept, onCancel }) {
                 <div className="flex items-start gap-3">
                   <Building2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-green-400 font-medium text-sm">Filing Complete</p>
+                    <p className="text-green-400 font-medium text-sm">Document Sent</p>
                     <p className="text-green-500/70 text-xs mt-1">
-                      Agreement filed with {filingStatus.courthouses} courthouses within 100km
+                      Agreement emailed to {filingStatus.courthouses} courthouses within 100km
                     </p>
                   </div>
                 </div>
@@ -270,12 +274,12 @@ export default function UnethicalModeAgreement({ onAccept, onCancel }) {
               {isSigning ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Filing with Courthouses...
+                  Emailing to Courthouses...
                 </>
               ) : (
                 <>
                   <Check className="w-4 h-4 mr-2" />
-                  Sign & File Agreement
+                  Sign & Email to Courthouses
                 </>
               )}
             </Button>
