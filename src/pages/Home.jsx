@@ -7,7 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { 
   Flame, Activity, DollarSign, Droplet, X, Ban, 
-  TrendingUp, Calendar, Play, Settings, ChevronRight, Coins, Sparkles, Trophy, Video, User, Zap
+  TrendingUp, Calendar, Play, Settings, ChevronRight, Coins, Sparkles, Trophy, Video, User
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import StatsCard from '@/components/StatsCard';
@@ -302,19 +302,6 @@ export default function Home() {
               <DollarSign className="w-8 h-8 text-white mb-3" />
               <p className="text-white font-bold text-lg">Premium Content</p>
               <p className="text-white/70 text-sm">Exclusive findom</p>
-              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
-            </motion.div>
-          </Link>
-
-          <Link to={createPageUrl('GoonFuel')}>
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-purple-600 to-pink-600"
-            >
-              <Zap className="w-8 h-8 text-white mb-3" />
-              <p className="text-white font-bold text-lg">Goon Fuel</p>
-              <p className="text-white/70 text-sm">Fuel your sessions</p>
               <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
             </motion.div>
           </Link>
