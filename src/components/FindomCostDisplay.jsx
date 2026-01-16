@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { DollarSign, TrendingUp, AlertTriangle } from 'lucide-react';
 
-export default function FindomCostDisplay({ currentCost, baseCost, escalationRate, duration }) {
+export default function FindomCostDisplay({ currentCost, baseCost, escalationRate, interestRate, duration }) {
   return (
     <div className="bg-gradient-to-br from-green-900/30 to-emerald-900/20 rounded-2xl border border-green-500/30 p-6">
       <div className="flex items-center justify-between mb-4">
@@ -26,7 +26,7 @@ export default function FindomCostDisplay({ currentCost, baseCost, escalationRat
         </span>
       </motion.div>
 
-      <div className="grid grid-cols-2 gap-4 mt-6 pt-4 border-t border-zinc-800">
+      <div className="grid grid-cols-3 gap-4 mt-6 pt-4 border-t border-zinc-800">
         <div className="text-center">
           <p className="text-zinc-500 text-xs mb-1">Base</p>
           <p className="text-white font-semibold">${baseCost}</p>
@@ -37,6 +37,10 @@ export default function FindomCostDisplay({ currentCost, baseCost, escalationRat
             <TrendingUp className="w-3 h-3 text-green-400" />
             ${escalationRate}/min
           </p>
+        </div>
+        <div className="text-center">
+          <p className="text-zinc-500 text-xs mb-1">Interest</p>
+          <p className="text-white font-semibold">{interestRate}%</p>
         </div>
       </div>
     </div>
