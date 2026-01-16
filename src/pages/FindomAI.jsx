@@ -153,6 +153,11 @@ export default function FindomAI() {
                     -{msg.coinsSpent} coins
                   </p>
                 )}
+                {msg.cardCharged && (
+                  <p className="text-xs text-red-300 mt-2 font-bold">
+                    -${msg.cardAmount?.toFixed(2)} charged to card
+                  </p>
+                )}
               </div>
             </motion.div>
           ))}
