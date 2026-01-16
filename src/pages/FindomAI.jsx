@@ -222,17 +222,62 @@ export default function FindomAI() {
               variant="outline"
               className="bg-zinc-900 border-pink-500/30 text-pink-400 hover:bg-pink-900/30 text-xs"
               onClick={() => {
-                setInputValue(demand.text);
-                setTimeout(() => handleSendMessage(demand.coins), 100);
+                if (demand.card) {
+                  setShowCardPayment(true);
+                } else {
+                  setInputValue(demand.text);
+                  setTimeout(() => handleSendMessage(demand.coins), 100);
+                }
               }}
               disabled={isLoading}
             >
               {demand.text}
               {demand.coins && <Coins className="w-3 h-3 ml-1" />}
               {demand.coins && <span className="text-xs">{demand.coins}</span>}
+              {demand.card && <span className="text-red-400 ml-1">💳</span>}
             </Button>
           ))}
         </div>
+
+        {showCardPayment && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-3 p-3 bg-red-900/30 border border-red-500/30 rounded-lg"
+          >
+            <p className="text-xs text-red-400 mb-2">Enter amount to charge:</p>
+            <div className="flex gap-2">
+              <Input
+                type="number"
+                placeholder="$0.00"
+                value={cardAmount}
+                onChange={(e) => setCardAmount(e.target.value)}
+                min="0.50"
+                step="0.50"
+                className="bg-zinc-900 border-red-500/30 text-white placeholder-zinc-600 h-8"
+              />
+              <Button
+                size="sm"
+                onClick={handleCardDrain}
+                disabled={isLoading || !cardAmount}
+                className="bg-red-600 hover:bg-red-700 text-xs"
+              >
+                Charge
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  setShowCardPayment(false);
+                  setCardAmount('');
+                }}
+                className="bg-zinc-900 border-zinc-700 text-xs"
+              >
+                Cancel
+              </Button>
+            </div>
+          </motion.div>
+        )}
       </div>
 
       {/* Input Area */}
