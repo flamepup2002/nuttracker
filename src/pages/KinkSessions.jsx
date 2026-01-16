@@ -94,23 +94,7 @@ const KINK_SESSIONS = [
       { hold: 35, rest: 60 }
     ]
   },
-  {
-    id: 'snuff',
-    title: 'Snuff Session',
-    description: 'Extreme danger - no safety features',
-    icon: Wind,
-    color: 'from-black to-red-900',
-    requiresExtreme: true,
-    instructions: [
-      'All safety features disabled',
-      'Push beyond all limits',
-      'You are responsible for yourself',
-      'NO SAFETY NET'
-    ],
-    cycles: [
-      { hold: 0, rest: 0 }
-    ]
-  }
+
 ];
 
 function SessionRunner({ session, onEnd, snuffPlayEnabled }) {
