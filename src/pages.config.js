@@ -9,12 +9,13 @@ import GoonFuel from './pages/GoonFuel';
 import GoonSession from './pages/GoonSession';
 import GoonerCam from './pages/GoonerCam';
 import History from './pages/History';
-import Home from './pages/Home';
 import KinkSessions from './pages/KinkSessions';
 import PremiumFindom from './pages/PremiumFindom';
 import Profile from './pages/Profile';
-import Settings from './pages/Settings';
 import Shop from './pages/Shop';
+import Home from './pages/Home';
+import Settings from './pages/Settings';
+import FindomDebt from './pages/FindomDebt';
 import __Layout from './Layout.jsx';
 
 
@@ -30,12 +31,13 @@ export const PAGES = {
     "GoonSession": GoonSession,
     "GoonerCam": GoonerCam,
     "History": History,
-    "Home": Home,
     "KinkSessions": KinkSessions,
     "PremiumFindom": PremiumFindom,
     "Profile": Profile,
-    "Settings": Settings,
     "Shop": Shop,
+    "Home": Home,
+    "Settings": Settings,
+    "FindomDebt": FindomDebt,
 }
 
 export const pagesConfig = {
