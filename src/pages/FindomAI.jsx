@@ -4,10 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, Send, Coins, AlertTriangle, Zap, ChevronDown } from 'lucide-react';
+import { ArrowLeft, Send, Coins, AlertTriangle, Zap, ChevronDown, BarChart3 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from 'sonner';
+import TributeGoalManager from '@/components/TributeGoalManager';
+import MonetizationSuggestions from '@/components/MonetizationSuggestions';
 
 export default function FindomAI() {
   const navigate = useNavigate();
@@ -26,6 +28,7 @@ export default function FindomAI() {
   const [showTributeMenu, setShowTributeMenu] = useState(false);
   const [showSummary, setShowSummary] = useState(false);
   const [chatSummary, setChatSummary] = useState('');
+  const [showMonetization, setShowMonetization] = useState(false);
   const messagesEndRef = useRef(null);
 
   const { data: settings } = useQuery({
@@ -163,14 +166,26 @@ export default function FindomAI() {
           <Zap className="w-5 h-5 text-pink-400" />
           Findom AI
         </h1>
-        {messages.length > 5 && (
+        <div className="flex gap-2">
+          {messages.length > 5 && (
+            <button
+              onClick={handleSummarize}
+              className="text-xs text-zinc-400 hover:text-zinc-300 transition-colors px-2 py-1"
+            >
+              Summarize
+            </button>
+          )}
           <button
-            onClick={handleSummarize}
-            className="text-xs text-zinc-400 hover:text-zinc-300 transition-colors px-2 py-1"
+            onClick={() => setShowMonetization(!showMonetization)}
+            className={`text-xs px-2 py-1 rounded transition-colors ${
+              showMonetization
+                ? 'bg-purple-600 text-white'
+                : 'text-zinc-400 hover:text-zinc-300'
+            }`}
           >
-            Summarize
+            <BarChart3 className="w-4 h-4" />
           </button>
-        )}
+        </div>
         <div className="flex items-center gap-2 bg-gradient-to-r from-yellow-600/20 to-amber-600/20 border border-yellow-500/30 rounded-lg px-3 py-1.5">
           <Coins className="w-4 h-4 text-yellow-400" />
           <span className="text-yellow-400 font-bold">{user?.currency_balance || 0}</span>
@@ -186,6 +201,23 @@ export default function FindomAI() {
           </p>
         </div>
       </div>
+
+      {/* Monetization Panel */}
+      <AnimatePresence>
+        {showMonetization && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="px-6 py-4 bg-zinc-900/50 border-b border-zinc-800 max-h-96 overflow-y-auto"
+          >
+            <div className="space-y-6">
+              <TributeGoalManager />
+              <MonetizationSuggestions />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Chat Container */}
       <div className="flex-1 overflow-y-auto px-6 py-4">
