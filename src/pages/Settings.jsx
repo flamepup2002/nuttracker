@@ -22,24 +22,30 @@ import {
 } from "@/components/ui/tooltip";
 import StripePaymentSetup from '@/components/StripePaymentSetup';
 import PaymentMethodCard from '@/components/PaymentMethodCard';
+import BankAccountSetup from '@/components/BankAccountSetup';
 
 
 export default function Settings() {
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const [hasChanges, setHasChanges] = useState(false);
-  const [showPaymentSetup, setShowPaymentSetup] = useState(false);
-  
-  // Detect iOS (Web Bluetooth not supported)
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        const navigate = useNavigate();
+        const queryClient = useQueryClient();
+        const [hasChanges, setHasChanges] = useState(false);
+        const [showPaymentSetup, setShowPaymentSetup] = useState(false);
+        const [user, setUser] = useState(null);
 
-  const { data: existingSettings, isLoading } = useQuery({
-    queryKey: ['userSettings'],
-    queryFn: async () => {
-      const list = await base44.entities.UserSettings.list();
-      return list[0] || null;
-    },
-  });
+        // Detect iOS (Web Bluetooth not supported)
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+        useEffect(() => {
+          base44.auth.me().then(setUser).catch(() => {});
+        }, []);
+
+        const { data: existingSettings, isLoading } = useQuery({
+          queryKey: ['userSettings'],
+          queryFn: async () => {
+            const list = await base44.entities.UserSettings.list();
+            return list[0] || null;
+          },
+        });
 
   const { data: paymentMethodData, refetch: refetchPaymentMethod } = useQuery({
     queryKey: ['paymentMethod'],
@@ -411,10 +417,32 @@ export default function Settings() {
                 </motion.div>
               )}
             </AnimatePresence>
-          </motion.div>
-        )}
+            </motion.div>
+            )}
 
-        {/* GoonerCam Settings */}
+            {/* Bank Account Setup */}
+            {settings.findom_enabled && (
+            <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="bg-zinc-900/50 rounded-2xl border border-zinc-800 p-6"
+            >
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center">
+                <DollarSign className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h2 className="text-white font-bold">Bank Account</h2>
+                <p className="text-zinc-500 text-sm">For e-transfer payouts</p>
+              </div>
+            </div>
+
+            {user && <BankAccountSetup user={user} />}
+            </motion.div>
+            )}
+
+            {/* GoonerCam Settings */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
