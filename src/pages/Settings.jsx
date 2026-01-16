@@ -58,7 +58,6 @@ export default function Settings() {
     goonercam_enabled: false,
     broadcast_enabled: false,
     snuff_play_enabled: false,
-    unethical_mode_enabled: false,
   });
 
   useEffect(() => {
@@ -72,7 +71,6 @@ export default function Settings() {
         goonercam_enabled: existingSettings.goonercam_enabled ?? false,
         broadcast_enabled: existingSettings.broadcast_enabled ?? false,
         snuff_play_enabled: existingSettings.snuff_play_enabled ?? false,
-        unethical_mode_enabled: existingSettings.unethical_mode_enabled ?? false,
       });
     }
   }, [existingSettings]);
@@ -308,58 +306,6 @@ export default function Settings() {
                     </p>
                   </div>
                 </div>
-              </div>
-
-              {/* Unethical Mode */}
-              <div className="mt-4">
-                <div className="bg-red-900/30 border border-red-500/50 rounded-xl p-4 mb-4">
-                  <div className="flex items-start gap-3">
-                    <Skull className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-                    <div>
-                      <p className="text-red-400 font-bold text-sm">⚠️ FINANCIAL RUIN WARNING</p>
-                      <p className="text-red-400/80 text-xs mt-1">
-                        Enabling Unethical Mode removes ALL spending limits. You could lose everything you own. This is EXTREMELY DANGEROUS financially.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between p-4 bg-zinc-800/50 rounded-xl">
-                  <div>
-                    <p className="text-white font-medium">Enable Unethical Mode</p>
-                    <p className="text-zinc-500 text-xs mt-1">Remove all financial limits</p>
-                  </div>
-                  <Switch
-                    checked={settings.unethical_mode_enabled}
-                    onCheckedChange={(checked) => {
-                      if (checked) {
-                        if (confirm('⚠️ FINAL WARNING: Enabling Unethical Mode removes ALL spending limits and financial protections. You could drain your entire bank account. This app will NOT be responsible for your financial ruin. You accept 100% responsibility. Continue?')) {
-                          handleChange('unethical_mode_enabled', checked);
-                        }
-                      } else {
-                        handleChange('unethical_mode_enabled', checked);
-                      }
-                    }}
-                  />
-                </div>
-
-                {settings.unethical_mode_enabled && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    className="mt-4 bg-red-900/20 border border-red-500/30 rounded-xl p-4"
-                  >
-                    <div className="flex items-start gap-3">
-                      <Skull className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-                      <div>
-                        <p className="text-red-400 font-medium text-sm">Unethical Mode Active</p>
-                        <p className="text-red-500/70 text-xs mt-1">
-                          All spending limits removed. Financial ruin is possible.
-                        </p>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
               </div>
             </motion.div>
           )}
