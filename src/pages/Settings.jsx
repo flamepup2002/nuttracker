@@ -6,7 +6,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   ArrowLeft, DollarSign, Settings2, CreditCard, 
-  Bluetooth, Save, Info, AlertTriangle, Plus
+  Bluetooth, Save, Info, AlertTriangle, Plus, Video
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -55,6 +55,7 @@ export default function Settings() {
     escalation_rate: 0.5,
     interest_rate: 0,
     heart_monitor_connected: false,
+    broadcast_enabled: false,
   });
 
   useEffect(() => {
@@ -65,6 +66,7 @@ export default function Settings() {
         escalation_rate: existingSettings.escalation_rate ?? 0.5,
         interest_rate: existingSettings.interest_rate ?? 0,
         heart_monitor_connected: existingSettings.heart_monitor_connected ?? false,
+        broadcast_enabled: existingSettings.broadcast_enabled ?? false,
       });
     }
   }, [existingSettings]);
@@ -393,12 +395,60 @@ export default function Settings() {
           </motion.div>
         )}
 
+        {/* Broadcasting Settings */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="bg-zinc-900/50 rounded-2xl border border-zinc-800 p-6"
+        >
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center">
+              <Video className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h2 className="text-white font-bold">GoonerCam Broadcasting</h2>
+              <p className="text-zinc-500 text-sm">Stream your sessions live</p>
+            </div>
+          </div>
+
+          {/* Enable Toggle */}
+          <div className="flex items-center justify-between p-4 bg-zinc-800/50 rounded-xl">
+            <div>
+              <p className="text-white font-medium">Enable Broadcasting</p>
+              <p className="text-zinc-500 text-xs mt-1">Allow others to watch your sessions</p>
+            </div>
+            <Switch
+              checked={settings.broadcast_enabled}
+              onCheckedChange={(checked) => handleChange('broadcast_enabled', checked)}
+            />
+          </div>
+
+          {settings.broadcast_enabled && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              className="mt-4 bg-purple-900/20 border border-purple-500/30 rounded-xl p-4"
+            >
+              <div className="flex items-start gap-3">
+                <Info className="w-5 h-5 text-purple-400 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-purple-400 font-medium text-sm">Broadcasting Active</p>
+                  <p className="text-purple-500/70 text-xs mt-1">
+                    Your sessions will be visible on GoonerCam when you start broadcasting
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </motion.div>
+
         {/* Heart Monitor Info */}
         {!isIOS && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+            transition={{ delay: 0.3 }}
             className="bg-zinc-900/50 rounded-2xl border border-zinc-800 p-6"
           >
             <div className="flex items-center gap-3 mb-4">
