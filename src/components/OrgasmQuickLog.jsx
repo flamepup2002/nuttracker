@@ -1,18 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Droplet, X, Ban, DollarSign, Flame, Plus } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
+import { useQuery } from '@tanstack/react-query';
 
-const orgasmTypes = [
+const baseOrgasmTypes = [
   { id: 'cumshot', label: 'Cumshot', icon: Droplet, color: 'from-blue-500 to-cyan-400', description: 'Full release' },
   { id: 'ruined', label: 'Ruined', icon: X, color: 'from-orange-500 to-red-500', description: 'Stopped at edge' },
   { id: 'denied', label: 'Denied', icon: Ban, color: 'from-purple-500 to-pink-500', description: 'No release allowed' },
-  { id: 'cashgasm', label: 'Cashgasm', icon: DollarSign, color: 'from-green-400 to-emerald-500', description: 'Financial tribute' },
+  { id: 'cashgasm', label: 'Cashgasm', icon: DollarSign, color: 'from-green-400 to-emerald-500', description: 'Financial tribute', requiresFindom: true },
 ];
 
 export default function OrgasmQuickLog({ sessionId, isFindom, currentCost, heartRate, onLog }) {
+  const { data: settings } = useQuery({
+    queryKey: ['userSettings'],
+    queryFn: async () => {
+      const list = await base44.entities.UserSettings.list();
+      return list[0] || { findom_enabled: false };
+    },
+  });
+
+  const orgasmTypes = baseOrgasmTypes.filter(type => !type.requiresFindom || settings?.findom_enabled);
   const [isOpen, setIsOpen] = useState(false);
   const [logging, setLogging] = useState(null);
 
