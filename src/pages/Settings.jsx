@@ -6,7 +6,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   ArrowLeft, DollarSign, Settings2, CreditCard, 
-  Bluetooth, Save, Info, AlertTriangle, Plus, Video, Sparkles
+  Bluetooth, Save, Info, AlertTriangle, Plus, Video, Sparkles, Zap, X
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -62,6 +62,9 @@ export default function Settings() {
     goon_captions_enabled: false,
     goon_censor_enabled: false,
     active_aura: null,
+    goon_fuel_style: 'realistic',
+    goon_fuel_keywords: [],
+    goon_fuel_frequency_limit: 0,
     });
 
   useEffect(() => {
@@ -78,6 +81,9 @@ export default function Settings() {
        goon_captions_enabled: existingSettings.goon_captions_enabled ?? false,
        goon_censor_enabled: existingSettings.goon_censor_enabled ?? false,
        active_aura: existingSettings.active_aura ?? null,
+       goon_fuel_style: existingSettings.goon_fuel_style ?? 'realistic',
+       goon_fuel_keywords: existingSettings.goon_fuel_keywords ?? [],
+       goon_fuel_frequency_limit: existingSettings.goon_fuel_frequency_limit ?? 0,
        });
    }
   }, [existingSettings]);
@@ -586,6 +592,94 @@ export default function Settings() {
           )}
         </motion.div>
 
+
+        {/* Goon Fuel Settings */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="bg-zinc-900/50 rounded-2xl border border-zinc-800 p-6"
+        >
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center">
+              <Zap className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h2 className="text-white font-bold">Goon Fuel Settings</h2>
+              <p className="text-zinc-500 text-sm">Customize generation preferences</p>
+            </div>
+          </div>
+
+          {/* Image Style */}
+          <div className="space-y-4">
+            <div>
+              <Label className="text-zinc-300 mb-2 block">Preferred Image Style</Label>
+              <div className="grid grid-cols-3 gap-2">
+                {['realistic', 'anime', 'fantasy'].map(style => (
+                  <button
+                    key={style}
+                    onClick={() => handleChange('goon_fuel_style', style)}
+                    className={`py-2 px-3 rounded-lg text-sm font-medium transition-all ${
+                      settings.goon_fuel_style === style
+                        ? 'bg-pink-600 text-white'
+                        : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
+                    }`}
+                  >
+                    {style.charAt(0).toUpperCase() + style.slice(1)}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Custom Keywords */}
+            <div>
+              <Label className="text-zinc-300 mb-2 block">Custom Keywords</Label>
+              <div className="flex gap-2 mb-2 flex-wrap">
+                {settings.goon_fuel_keywords.map((keyword, idx) => (
+                  <div key={idx} className="bg-pink-600/30 border border-pink-500/50 rounded-lg px-3 py-1 flex items-center gap-2">
+                    <span className="text-pink-300 text-sm">{keyword}</span>
+                    <button
+                      onClick={() => handleChange('goon_fuel_keywords', settings.goon_fuel_keywords.filter((_, i) => i !== idx))}
+                      className="text-pink-400 hover:text-pink-300"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Add keyword (e.g., 'muscular', 'rough')"
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' && e.target.value) {
+                      handleChange('goon_fuel_keywords', [...settings.goon_fuel_keywords, e.target.value]);
+                      e.target.value = '';
+                    }
+                  }}
+                  className="flex-1 bg-zinc-800 border border-zinc-700 text-white rounded-lg px-3 py-2 text-sm"
+                />
+              </div>
+            </div>
+
+            {/* Frequency Limit */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <Label className="text-zinc-300">Generation Frequency Limit</Label>
+                <span className="text-yellow-400 font-bold">{settings.goon_fuel_frequency_limit === 0 ? 'Unlimited' : `${settings.goon_fuel_frequency_limit}/hr`}</span>
+              </div>
+              <Slider
+                value={[settings.goon_fuel_frequency_limit]}
+                onValueChange={([value]) => handleChange('goon_fuel_frequency_limit', value)}
+                min={0}
+                max={10}
+                step={1}
+                className="py-4"
+              />
+              <p className="text-zinc-500 text-xs mt-2">0 = Unlimited generations per hour</p>
+            </div>
+          </div>
+        </motion.div>
 
         {/* Goon Censor Toggle */}
         <motion.div
