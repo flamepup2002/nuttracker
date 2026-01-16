@@ -20,7 +20,17 @@ export default function FindomAI() {
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [drainCard, setDrainCard] = useState(false);
+  const [cardAmount, setCardAmount] = useState('5');
   const messagesEndRef = useRef(null);
+
+  const { data: settings } = useQuery({
+    queryKey: ['userSettings'],
+    queryFn: async () => {
+      const list = await base44.entities.UserSettings.list();
+      return list[0] || { findom_enabled: false };
+    },
+  });
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
