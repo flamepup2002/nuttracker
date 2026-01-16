@@ -73,6 +73,26 @@ const KINK_SESSIONS = [
       'Push your limits'
     ],
     goals: [30, 60, 90, 120]
+  },
+  {
+    id: 'suffocation',
+    title: 'Suffocation Play',
+    description: 'Extreme breath restriction during edging',
+    icon: Wind,
+    color: 'from-red-600 to-purple-600',
+    instructions: [
+      'Edge while restricting airflow',
+      'Use safe methods only',
+      'Have a safety release ready',
+      'Stop immediately if dizzy'
+    ],
+    cycles: [
+      { hold: 15, rest: 30 },
+      { hold: 20, rest: 35 },
+      { hold: 25, rest: 40 },
+      { hold: 30, rest: 45 },
+      { hold: 35, rest: 60 }
+    ]
   }
 ];
 
