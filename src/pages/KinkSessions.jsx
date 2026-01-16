@@ -93,6 +93,23 @@ const KINK_SESSIONS = [
       { hold: 30, rest: 45 },
       { hold: 35, rest: 60 }
     ]
+  },
+  {
+    id: 'snuff',
+    title: 'Snuff Session',
+    description: 'Extreme danger - no safety features',
+    icon: Wind,
+    color: 'from-black to-red-900',
+    requiresExtreme: true,
+    instructions: [
+      'All safety features disabled',
+      'Push beyond all limits',
+      'You are responsible for yourself',
+      'NO SAFETY NET'
+    ],
+    cycles: [
+      { hold: 0, rest: 0 }
+    ]
   }
 ];
 
@@ -304,7 +321,9 @@ export default function KinkSessions() {
               </motion.div>
 
               {/* Session Cards */}
-              {KINK_SESSIONS.map((session, idx) => {
+              {KINK_SESSIONS
+                .filter(session => !session.requiresExtreme || settings?.snuff_play_enabled)
+                .map((session, idx) => {
                 const Icon = session.icon;
                 return (
                   <motion.button
