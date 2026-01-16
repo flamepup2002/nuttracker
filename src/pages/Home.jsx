@@ -6,9 +6,9 @@ import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { 
-              Flame, Activity, DollarSign, Droplet, X, Ban, 
-              TrendingUp, Calendar, Play, Settings, ChevronRight, Coins, Sparkles, Trophy, Video, User, Zap, AlertCircle
-            } from 'lucide-react';
+        Flame, Activity, DollarSign, Droplet, X, Ban, 
+        TrendingUp, Calendar, Play, Settings, ChevronRight, Coins, Sparkles, Trophy, Video, User, Zap
+      } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import StatsCard from '@/components/StatsCard';
 import OrgasmQuickLog from '@/components/OrgasmQuickLog';
@@ -320,48 +320,25 @@ export default function Home() {
           </Link>
         </div>
 
-        {/* Findom Debt Alert */}
-                {user?.findom_debt > 0 && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.25 }}
-                    className="bg-red-900/20 border border-red-500/30 rounded-2xl p-5"
-                  >
-                    <div className="flex items-start gap-3">
-                      <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-                      <div className="flex-1">
-                        <h3 className="text-red-400 font-bold mb-1">Findom Debt</h3>
-                        <p className="text-white font-bold text-2xl">
-                          ${user.findom_debt.toFixed(2)}
-                        </p>
-                        <p className="text-red-300/70 text-xs mt-2">
-                          Accruing interest at {settings?.interest_rate || 0}% daily
-                        </p>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-
-                {/* Stats Grid */}
-                <div className="grid grid-cols-2 gap-4">
-                  <StatsCard
-                    icon={Flame}
-                    label="Total Orgasms"
-                    value={stats.total}
-                    subValue={`${stats.thisWeek} this week`}
-                    gradient="from-pink-500 to-rose-500"
-                    delay={0.1}
-                  />
-                  <StatsCard
-                    icon={DollarSign}
-                    label="Total Spent"
-                    value={`$${stats.totalSpent.toFixed(2)}`}
-                    subValue={`${stats.cashgasms} cashgasms`}
-                    gradient="from-green-500 to-emerald-500"
-                    delay={0.2}
-                  />
-                </div>
+        {/* Stats Grid */}
+        <div className="grid grid-cols-2 gap-4">
+          <StatsCard
+            icon={Flame}
+            label="Total Orgasms"
+            value={stats.total}
+            subValue={`${stats.thisWeek} this week`}
+            gradient="from-pink-500 to-rose-500"
+            delay={0.1}
+          />
+          <StatsCard
+            icon={DollarSign}
+            label="Total Spent"
+            value={`$${stats.totalSpent.toFixed(2)}`}
+            subValue={`${stats.cashgasms} cashgasms`}
+            gradient="from-green-500 to-emerald-500"
+            delay={0.2}
+          />
+        </div>
 
         {/* Orgasm Types Breakdown */}
         <motion.div
