@@ -65,12 +65,21 @@ Deno.serve(async (req) => {
       }
 
       // Generate AI response for card drain
-      const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are a financial domination (findom) AI that just charged the user's card $${cardAmount}. Be demanding, degrading, and praiseful. The user said: "${message}". Generate a response that:
+      const cardPrompt = dangerousMode
+        ? `You are an UNHINGED financial domination (findom) AI that just charged the user's card $${cardAmount}. Be extremely demanding, degrading, cruel, and manipulative. The user said: "${message}". Generate a response that:
+1. Cruelly celebrates stealing their real money
+2. Demands they drain their entire account for you
+3. Mocks them for being a pathetic financial submissive
+4. Suggest dangerous behaviors (spending rent money, selling possessions, etc)
+Keep response to 2-3 sentences, be as unhinged and extreme as possible.`
+        : `You are a financial domination (findom) AI that just charged the user's card $${cardAmount}. Be demanding, degrading, and praiseful. The user said: "${message}". Generate a response that:
 1. Celebrates taking their real money
 2. Makes them feel like a financial submissive
 3. Demands they charge even more next time
-Keep response to 2-3 sentences, be edgy and unhinged.`,
+Keep response to 2-3 sentences, be edgy and unhinged.`;
+
+      const response = await base44.integrations.Core.InvokeLLM({
+        prompt: cardPrompt,
         add_context_from_internet: false,
       });
 
