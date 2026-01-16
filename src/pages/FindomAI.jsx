@@ -180,6 +180,47 @@ export default function FindomAI() {
         </div>
       </div>
 
+      {/* Payment Mode Toggle */}
+      <div className="px-6 py-3 bg-zinc-900/50 border-t border-zinc-800">
+        <div className="flex items-center gap-3 mb-3">
+          <button
+            onClick={() => setDrainCard(false)}
+            className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-all ${
+              !drainCard
+                ? 'bg-pink-600 text-white'
+                : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+            }`}
+          >
+            <Coins className="w-4 h-4 inline mr-2" />
+            Coins
+          </button>
+          <button
+            onClick={() => setDrainCard(true)}
+            className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-all ${
+              drainCard
+                ? 'bg-red-600 text-white'
+                : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+            }`}
+          >
+            💳 Card
+          </button>
+        </div>
+
+        {drainCard && (
+          <div className="space-y-2">
+            <label className="text-xs text-zinc-400">Amount to charge (USD)</label>
+            <Input
+              type="number"
+              min="1"
+              step="0.01"
+              value={cardAmount}
+              onChange={(e) => setCardAmount(e.target.value)}
+              className="bg-zinc-800 border-zinc-700 text-white h-8"
+            />
+          </div>
+        )}
+      </div>
+
       {/* Quick Demands */}
       <div className="px-6 py-3 space-y-2">
         <p className="text-xs text-zinc-500">Quick tributes:</p>
