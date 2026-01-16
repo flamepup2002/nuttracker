@@ -61,6 +61,55 @@ export default function FindomSession() {
     }
   }, [duration, isActive, settings]);
 
+  // Auto-finish session on page unload if session is active
+  useEffect(() => {
+    const handleBeforeUnload = async () => {
+      if (isActive && session) {
+        try {
+          const peakHR = heartRateData.length > 0 
+            ? Math.max(...heartRateData.map(d => d.bpm))
+            : null;
+          const avgHR = heartRateData.length > 0
+            ? Math.round(heartRateData.reduce((sum, d) => sum + d.bpm, 0) / heartRateData.length)
+            : null;
+
+          const totalCost = sessionOrgasms.reduce((sum, o) => sum + (o.cost || 0), 0);
+
+          await base44.entities.Session.update(session.id, {
+            end_time: new Date().toISOString(),
+            duration_seconds: duration,
+            status: 'completed',
+            total_cost: totalCost,
+            heart_rate_data: heartRateData,
+            peak_heart_rate: peakHR,
+            avg_heart_rate: avgHR,
+          });
+
+          if (totalCost > 0) {
+            try {
+              const user = await base44.auth.me();
+              if (user.stripe_payment_method_id) {
+                await base44.functions.invoke('processFindomPayment', {
+                  sessionId: session.id,
+                  amount: totalCost,
+                  stripeCustomerId: user.stripe_customer_id,
+                  paymentMethodId: user.stripe_payment_method_id
+                });
+              }
+            } catch (err) {
+              console.error('Auto-finish payment error:', err);
+            }
+          }
+        } catch (err) {
+          console.error('Auto-finish session error:', err);
+        }
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [isActive, session, duration, heartRateData, sessionOrgasms]);
+
   const startSession = async () => {
     if (!settings?.findom_enabled) {
       toast.error('Findom mode not enabled', {
