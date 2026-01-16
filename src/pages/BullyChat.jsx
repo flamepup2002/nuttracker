@@ -12,7 +12,22 @@ export default function BullyChat() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [dangerousMode, setDangerousMode] = useState(false);
   const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const list = await base44.entities.UserSettings.list();
+        if (list[0]?.ai_dangerous_encouragements) {
+          setDangerousMode(true);
+        }
+      } catch (error) {
+        console.error('Failed to fetch settings:', error);
+      }
+    };
+    fetchSettings();
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
