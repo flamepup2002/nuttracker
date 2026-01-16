@@ -55,6 +55,23 @@ export default function Home() {
           console.error('Failed to claim welcome bonus:', error);
         }
       }
+
+      // Claim daily login bonus
+      if (userData) {
+        try {
+          const response = await base44.functions.invoke('claimDailyLoginBonus');
+          if (response.data.success) {
+            setUser(prev => ({
+              ...prev,
+              currency_balance: response.data.newBalance,
+              last_daily_bonus_date: new Date().toISOString().split('T')[0]
+            }));
+            toast.success('Daily login bonus! +100 kinkcoins');
+          }
+        } catch (error) {
+          console.error('Failed to claim daily bonus:', error);
+        }
+      }
     };
     
     initUser();
