@@ -56,6 +56,45 @@ export default function Settings() {
     initialData: { hasPaymentMethod: false },
   });
 
+  const { data: sessions = [] } = useQuery({
+    queryKey: ['sessions'],
+    queryFn: () => base44.entities.Session.list('-created_date', 100),
+  });
+
+  const { data: payments = [] } = useQuery({
+    queryKey: ['payments'],
+    queryFn: () => base44.entities.Payment.list('-created_date', 100),
+  });
+
+  // Calculate current debt
+  const calculateCurrentDebt = () => {
+    if (!sessions || !existingSettings) return 0;
+    
+    let totalDebt = 0;
+    const now = new Date();
+    const dailyInterestRate = existingSettings.interest_rate / 100;
+
+    sessions.forEach(session => {
+      if (session.is_findom && session.total_cost) {
+        const createdDate = new Date(session.created_date);
+        const daysElapsed = (now - createdDate) / (1000 * 60 * 60 * 24);
+        const debtWithInterest = session.total_cost * Math.pow(1 + dailyInterestRate, daysElapsed);
+        totalDebt += debtWithInterest;
+      }
+    });
+
+    payments.forEach(payment => {
+      if (payment.status === 'succeeded') {
+        totalDebt -= (payment.amount || 0);
+      }
+    });
+
+    return Math.max(0, totalDebt);
+  };
+
+  const currentDebt = calculateCurrentDebt();
+  const hasOutstandingDebt = currentDebt > 0;
+
   const [settings, setSettings] = useState({
     findom_enabled: false,
     base_cost: 5,
@@ -277,7 +316,7 @@ export default function Settings() {
               {/* Interest Rate */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <Label className="text-zinc-300 flex items-center gap-2">
+                  <Label className={`text-zinc-300 flex items-center gap-2 ${hasOutstandingDebt ? 'opacity-50' : ''}`}>
                     Interest Rate (Daily)
                     <TooltipProvider>
                       <Tooltip>
@@ -290,8 +329,22 @@ export default function Settings() {
                       </Tooltip>
                     </TooltipProvider>
                   </Label>
-                  <span className="text-green-400 font-bold">{settings.interest_rate}%/day</span>
+                  <span className={`font-bold ${hasOutstandingDebt ? 'text-red-400' : 'text-green-400'}`}>
+                    {settings.interest_rate}%/day
+                  </span>
                 </div>
+                {hasOutstandingDebt && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    className="bg-red-900/20 border border-red-500/30 rounded-lg p-3 mb-3 flex items-start gap-2"
+                  >
+                    <AlertTriangle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
+                    <p className="text-red-400 text-xs">
+                      Interest rate is locked due to outstanding debt. Pay your balance to unlock.
+                    </p>
+                  </motion.div>
+                )}
                 <Slider
                   value={[settings.interest_rate * 10]}
                   onValueChange={([value]) => handleChange('interest_rate', value / 10)}
@@ -299,6 +352,7 @@ export default function Settings() {
                   max={100}
                   step={1}
                   className="py-4"
+                  disabled={hasOutstandingDebt}
                 />
               </div>
 
