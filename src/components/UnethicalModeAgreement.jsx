@@ -9,13 +9,24 @@ import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
 
 export default function UnethicalModeAgreement({ onAccept, onCancel }) {
-  const [signature, setSignature] = useState('');
-  const [address, setAddress] = useState('');
+  const [user, setUser] = useState(null);
+  const [settings, setSettings] = useState(null);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [acceptedCollateral, setAcceptedCollateral] = useState(false);
   const [acceptedLiability, setAcceptedLiability] = useState(false);
   const [isSigning, setIsSigning] = useState(false);
   const [filingStatus, setFilingStatus] = useState(null);
+
+  useEffect(() => {
+    const loadUserData = async () => {
+      const userData = await base44.auth.me();
+      setUser(userData);
+      
+      const settingsList = await base44.entities.UserSettings.list();
+      setSettings(settingsList[0] || null);
+    };
+    loadUserData();
+  }, []);
 
   const currentDate = new Date().toLocaleDateString('en-US', { 
     year: 'numeric', 
@@ -23,6 +34,8 @@ export default function UnethicalModeAgreement({ onAccept, onCancel }) {
     day: 'numeric' 
   });
 
+  const signature = user?.full_name || '';
+  const address = settings?.property_address || '';
   const canSubmit = signature && address && acceptedTerms && acceptedCollateral && acceptedLiability;
 
   useEffect(() => {
@@ -216,26 +229,21 @@ export default function UnethicalModeAgreement({ onAccept, onCancel }) {
               </div>
             </div>
 
-            {/* Property Address */}
-            <div>
-              <label className="text-zinc-400 text-xs mb-2 block">Property Address (Collateral)</label>
-              <Input
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                placeholder="123 Main St, City, State, ZIP"
-                className="bg-zinc-800 border-zinc-700 text-white"
-              />
-            </div>
-
-            {/* Signature */}
-            <div>
-              <label className="text-zinc-400 text-xs mb-2 block">Electronic Signature (Type Full Legal Name)</label>
-              <Input
-                value={signature}
-                onChange={(e) => setSignature(e.target.value)}
-                placeholder="John Doe"
-                className="bg-zinc-800 border-zinc-700 text-white"
-              />
+            {/* Auto-filled Info */}
+            <div className="bg-zinc-800/50 rounded-lg p-4 space-y-2">
+              <div>
+                <p className="text-zinc-500 text-xs">Legal Name (from profile):</p>
+                <p className="text-white text-sm font-medium">{signature || 'Not set'}</p>
+              </div>
+              <div>
+                <p className="text-zinc-500 text-xs">Property Address (Collateral):</p>
+                <p className="text-white text-sm font-medium">{address || 'Not set in profile'}</p>
+              </div>
+              {(!signature || !address) && (
+                <p className="text-yellow-400 text-xs mt-2">
+                  ⚠️ Please add your property address in Settings before signing
+                </p>
+              )}
             </div>
 
             <div className="text-zinc-500 text-xs">
