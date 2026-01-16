@@ -335,6 +335,7 @@ export default function Settings() {
                     <PaymentMethodCard 
                       paymentMethod={paymentMethodData.paymentMethod}
                       onRemove={handleRemovePayment}
+                      showRemove={true}
                     />
                     <Button
                       onClick={() => setShowPaymentSetup(true)}
