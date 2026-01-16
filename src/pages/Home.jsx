@@ -6,7 +6,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { 
   Flame, Activity, DollarSign, Droplet, X, Ban, 
-  TrendingUp, Calendar, Play, Settings, ChevronRight, Coins, Sparkles, Trophy
+  TrendingUp, Calendar, Play, Settings, ChevronRight, Coins, Sparkles, Trophy, Video
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import StatsCard from '@/components/StatsCard';
@@ -176,7 +176,7 @@ export default function Home() {
           </Link>
         </div>
 
-        <div className="mt-4">
+        <div className="grid grid-cols-2 gap-4 mt-4">
           <Link to={createPageUrl('KinkSessions')}>
             <motion.div
               whileHover={{ scale: 1.02 }}
@@ -186,6 +186,19 @@ export default function Home() {
               <Activity className="w-8 h-8 text-white mb-3" />
               <p className="text-white font-bold text-lg">Kink Sessions</p>
               <p className="text-white/70 text-sm">Breathplay, intox & more</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+
+          <Link to={createPageUrl('GoonerCam')}>
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-pink-600 to-rose-600"
+            >
+              <Video className="w-8 h-8 text-white mb-3" />
+              <p className="text-white font-bold text-lg">GoonerCam</p>
+              <p className="text-white/70 text-sm">Watch live gooners</p>
               <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
             </motion.div>
           </Link>
