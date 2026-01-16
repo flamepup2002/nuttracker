@@ -52,6 +52,8 @@ export default function FindomAI() {
       const response = await base44.functions.invoke('findomAIDrain', {
         message: userMessage,
         coinsToSpend: customCoins,
+        drainCard: drainCard && !customCoins,
+        cardAmount: drainCard ? parseFloat(cardAmount) : null,
       });
 
       if (response.data.error) {
@@ -60,7 +62,7 @@ export default function FindomAI() {
           ...prev,
           {
             role: 'ai',
-            content: `You don't have enough coins! You need ${response.data.requiredCoins} but only have ${response.data.currentBalance}. Buy more coins if you want to continue.`,
+            content: `Error: ${response.data.error}`,
           },
         ]);
       } else {
@@ -74,9 +76,15 @@ export default function FindomAI() {
             role: 'ai',
             content: response.data.aiResponse,
             coinsSpent: response.data.coinsSpent,
+            cardCharged: response.data.cardCharged,
+            cardAmount: response.data.amount,
           },
         ]);
-        toast.success(`Spent ${response.data.coinsSpent} coins`);
+        toast.success(
+          response.data.cardCharged 
+            ? `Charged $${response.data.amount.toFixed(2)} to card` 
+            : `Spent ${response.data.coinsSpent} coins`
+        );
       }
     } catch (error) {
       toast.error('Failed to send message');
