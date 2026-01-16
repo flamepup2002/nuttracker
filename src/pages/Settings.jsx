@@ -5,9 +5,9 @@ import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
-        ArrowLeft, DollarSign, Settings2, CreditCard, 
-        Bluetooth, Save, Info, AlertTriangle, Plus, Video, Sparkles, Zap, X, TrendingUp
-      } from 'lucide-react';
+  ArrowLeft, DollarSign, Settings2, CreditCard, 
+  Bluetooth, Save, Info, AlertTriangle, Plus, Video, Sparkles, Zap, X
+} from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -51,45 +51,41 @@ export default function Settings() {
   });
 
   const [settings, setSettings] = useState({
-          findom_enabled: false,
-          base_cost: 5,
-          escalation_rate: 10,
-          interest_rate: 0,
-          unpaid_findom_debt: 0,
-          last_debt_update: null,
-          heart_monitor_connected: false,
-          goonercam_enabled: false,
-          broadcast_enabled: false,
-          ai_dangerous_encouragements: false,
-          goon_captions_enabled: false,
-          goon_censor_enabled: false,
-          active_aura: null,
-          goon_fuel_style: 'realistic',
-          goon_fuel_keywords: [],
-          goon_fuel_frequency_limit: 0,
-          });
+    findom_enabled: false,
+    base_cost: 5,
+    escalation_rate: 10,
+    interest_rate: 0,
+    heart_monitor_connected: false,
+    goonercam_enabled: false,
+    broadcast_enabled: false,
+    ai_dangerous_encouragements: false,
+    goon_captions_enabled: false,
+    goon_censor_enabled: false,
+    active_aura: null,
+    goon_fuel_style: 'realistic',
+    goon_fuel_keywords: [],
+    goon_fuel_frequency_limit: 0,
+    });
 
   useEffect(() => {
    if (existingSettings) {
-      setSettings({
-        findom_enabled: existingSettings.findom_enabled ?? false,
-        base_cost: existingSettings.base_cost ?? 5,
-        escalation_rate: existingSettings.escalation_rate ?? 10,
-        interest_rate: existingSettings.interest_rate ?? 0,
-        unpaid_findom_debt: existingSettings.unpaid_findom_debt ?? 0,
-        last_debt_update: existingSettings.last_debt_update ?? null,
-        heart_monitor_connected: existingSettings.heart_monitor_connected ?? false,
-        goonercam_enabled: existingSettings.goonercam_enabled ?? false,
-        broadcast_enabled: existingSettings.broadcast_enabled ?? false,
-        ai_dangerous_encouragements: existingSettings.ai_dangerous_encouragements ?? false,
-        goon_captions_enabled: existingSettings.goon_captions_enabled ?? false,
-        goon_censor_enabled: existingSettings.goon_censor_enabled ?? false,
-        active_aura: existingSettings.active_aura ?? null,
-        goon_fuel_style: existingSettings.goon_fuel_style ?? 'realistic',
-        goon_fuel_keywords: existingSettings.goon_fuel_keywords ?? [],
-        goon_fuel_frequency_limit: existingSettings.goon_fuel_frequency_limit ?? 0,
-        });
-    }
+     setSettings({
+       findom_enabled: existingSettings.findom_enabled ?? false,
+       base_cost: existingSettings.base_cost ?? 5,
+       escalation_rate: existingSettings.escalation_rate ?? 10,
+       interest_rate: existingSettings.interest_rate ?? 0,
+       heart_monitor_connected: existingSettings.heart_monitor_connected ?? false,
+       goonercam_enabled: existingSettings.goonercam_enabled ?? false,
+       broadcast_enabled: existingSettings.broadcast_enabled ?? false,
+       ai_dangerous_encouragements: existingSettings.ai_dangerous_encouragements ?? false,
+       goon_captions_enabled: existingSettings.goon_captions_enabled ?? false,
+       goon_censor_enabled: existingSettings.goon_censor_enabled ?? false,
+       active_aura: existingSettings.active_aura ?? null,
+       goon_fuel_style: existingSettings.goon_fuel_style ?? 'realistic',
+       goon_fuel_keywords: existingSettings.goon_fuel_keywords ?? [],
+       goon_fuel_frequency_limit: existingSettings.goon_fuel_frequency_limit ?? 0,
+       });
+   }
   }, [existingSettings]);
 
   const saveMutation = useMutation({
@@ -301,7 +297,7 @@ export default function Settings() {
               </div>
 
               {/* Cost Preview */}
-              <div className="bg-zinc-800/50 rounded-xl p-4 mb-4">
+              <div className="bg-zinc-800/50 rounded-xl p-4">
                 <p className="text-zinc-400 text-sm mb-3">Cost Preview (example)</p>
                 <div className="grid grid-cols-3 gap-3 text-center">
                   <div>
@@ -324,41 +320,6 @@ export default function Settings() {
                   </div>
                 </div>
               </div>
-
-              {/* Unpaid Debt Display */}
-              {settings.unpaid_findom_debt > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  className="bg-red-900/20 border border-red-500/30 rounded-xl p-4"
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-red-400 font-semibold flex items-center gap-2">
-                      <TrendingUp className="w-5 h-5" />
-                      Unpaid Findom Debt
-                    </h3>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-red-300 text-sm">Current Debt:</span>
-                      <span className="text-red-400 font-bold text-lg">${settings.unpaid_findom_debt.toFixed(2)}</span>
-                    </div>
-                    {settings.interest_rate > 0 && (
-                      <div className="flex items-center justify-between">
-                        <span className="text-red-300 text-sm">Daily Growth:</span>
-                        <span className="text-orange-400 font-bold">
-                          +${(settings.unpaid_findom_debt * (settings.interest_rate / 100)).toFixed(2)}/day
-                        </span>
-                      </div>
-                    )}
-                    <div className="mt-3 pt-3 border-t border-red-500/20">
-                      <p className="text-red-500/80 text-xs">
-                        Debt grows daily based on your interest rate setting. Pay off sessions to avoid escalating debt.
-                      </p>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
               </motion.div>
               )}
 
