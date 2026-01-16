@@ -132,11 +132,11 @@ export default function HouseAuction() {
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
+                      <div className="flex items-center gap-2 mb-3">
                         <Home className="w-4 h-4 text-orange-400" />
-                        <p className="text-white font-bold">Property</p>
+                        <p className="text-white font-bold">{listing.location || 'Property'}</p>
                       </div>
-                      <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div className="grid grid-cols-2 gap-4 text-sm mb-3">
                         <div>
                           <p className="text-zinc-500 text-xs">Starting Price</p>
                           <p className="text-green-400 font-bold">${listing.initial_value.toLocaleString()}</p>
@@ -146,6 +146,28 @@ export default function HouseAuction() {
                           <p className="text-pink-400 font-bold">${listing.current_bid.toLocaleString()}</p>
                         </div>
                       </div>
+                      {(listing.bedrooms || listing.bathrooms || listing.square_footage) && (
+                        <div className="flex flex-wrap gap-3 text-xs mb-2">
+                          {listing.bedrooms && (
+                            <div className="flex items-center gap-1 text-zinc-400">
+                              <span>🛏</span>
+                              <span>{listing.bedrooms} bed{listing.bedrooms !== 1 ? 's' : ''}</span>
+                            </div>
+                          )}
+                          {listing.bathrooms && (
+                            <div className="flex items-center gap-1 text-zinc-400">
+                              <span>🚿</span>
+                              <span>{listing.bathrooms} bath{listing.bathrooms !== 1 ? 's' : ''}</span>
+                            </div>
+                          )}
+                          {listing.square_footage && (
+                            <div className="flex items-center gap-1 text-zinc-400">
+                              <span>📐</span>
+                              <span>{listing.square_footage.toLocaleString()} sq ft</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
                       {listing.highest_bidder_email && (
                         <p className="text-zinc-400 text-xs mt-2">
                           Leading bid by: {listing.highest_bidder_email === user?.email ? 'You' : listing.highest_bidder_email}
