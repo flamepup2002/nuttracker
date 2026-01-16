@@ -20,6 +20,7 @@ import Profile from './pages/Profile';
 import SellHouse from './pages/SellHouse';
 import Settings from './pages/Settings';
 import Shop from './pages/Shop';
+import GeneratedFindomContracts from './pages/GeneratedFindomContracts';
 import __Layout from './Layout.jsx';
 
 
@@ -46,6 +47,7 @@ export const PAGES = {
     "SellHouse": SellHouse,
     "Settings": Settings,
     "Shop": Shop,
+    "GeneratedFindomContracts": GeneratedFindomContracts,
 }
 
 export const pagesConfig = {
