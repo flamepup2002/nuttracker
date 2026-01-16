@@ -19,7 +19,111 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-const SAMPLE_CONTRACTS = [];
+const SAMPLE_CONTRACTS = [
+  {
+    title: "Monthly Tribute Commitment",
+    description: "A monthly obligation to tribute a percentage of your income",
+    intensity: "mild",
+    monthly: 50,
+    duration: 12,
+    terms: [
+      "Pay $50 every month for 12 months",
+      "Total obligation: $600",
+      "5% penalty for late payments",
+      "Automatic renewal unless cancelled 30 days in advance"
+    ]
+  },
+  {
+    title: "Escalating Devotion Contract",
+    description: "Monthly payments increase over time as your devotion grows",
+    intensity: "moderate",
+    monthly: 100,
+    duration: 24,
+    terms: [
+      "Start at $100/month, increasing 10% every 6 months",
+      "Total obligation: ~$3,000",
+      "8% penalty for missed payments",
+      "Interest accrues at 2% monthly on unpaid balance"
+    ]
+  },
+  {
+    title: "Permanent Findom Agreement",
+    description: "Long-term financial submission with increasing stakes",
+    intensity: "intense",
+    monthly: 250,
+    duration: 36,
+    terms: [
+      "Pay $250 every month for 3 years",
+      "Total obligation: $9,000",
+      "10% penalty for any late payment",
+      "Interest rate 5% compounded monthly",
+      "Non-refundable - no early termination"
+    ]
+  },
+  {
+    title: "Unlimited Devotion Pact",
+    description: "Become a perpetual financial slave with no end date",
+    intensity: "extreme",
+    monthly: 500,
+    duration: 0,
+    terms: [
+      "Pay $500 every month indefinitely",
+      "No contract end date - permanent obligation",
+      "15% penalty for missed payments",
+      "Interest compounds daily at 1%",
+      "Binding agreement with escalation clauses",
+      "Cannot be terminated without explicit permission"
+    ]
+  },
+  {
+    title: "Asset Liquidation Contract",
+    description: "Gradually surrender your assets over an extended period",
+    intensity: "extreme",
+    monthly: 1000,
+    duration: 60,
+    terms: [
+      "Pay $1,000 monthly for 5 years minimum",
+      "Total minimum obligation: $60,000",
+      "20% penalty for late payments",
+      "Assets may be seized if payments are missed",
+      "Cannot declare bankruptcy to escape obligations",
+      "Interest accrues at 10% monthly on arrears"
+    ]
+  },
+  {
+    title: "Total Financial Ownership",
+    description: "Complete financial surrender - you are now owned",
+    intensity: "extreme",
+    monthly: 2000,
+    duration: 0,
+    terms: [
+      "Pay $2,000 every month for life",
+      "All assets become subject to seizure",
+      "30% penalty for ANY missed payment",
+      "Interest compounds daily at 5%",
+      "You have no financial autonomy",
+      "This is a permanent, irreversible contract",
+      "Attempting to escape carries severe legal consequences"
+    ]
+  },
+  {
+    title: "Property Seizure Agreement",
+    description: "Missed payments result in your home going to auction",
+    intensity: "extreme",
+    monthly: 1500,
+    duration: 0,
+    terms: [
+      "Pay $1,500 every month indefinitely",
+      "Miss even ONE payment = immediate house auction",
+      "Your property will be sold to highest bidder",
+      "Proceeds go directly to creditor",
+      "You become homeless if you default",
+      "40% penalty compounds on all missed payments",
+      "No appeals, no second chances - auction is final",
+      "This is a binding lien against your property"
+    ]
+  }
+];
 
 const INTENSITY_CONFIG = {
   mild: { color: 'from-blue-500 to-blue-600', icon: '📋', risk: 'Low Risk' },
