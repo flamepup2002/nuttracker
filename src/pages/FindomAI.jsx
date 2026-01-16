@@ -75,10 +75,13 @@ export default function FindomAI() {
     }
   };
 
+  const [showCardPayment, setShowCardPayment] = useState(false);
+  const [cardAmount, setCardAmount] = useState('');
+
   const quickDemands = [
-    { text: 'I want to tribute', coins: 10 },
+    { text: 'I want to tribute coins', coins: 10 },
     { text: 'Drain me completely', coins: 25 },
-    { text: 'Tell me what I deserve', coins: null },
+    { text: 'Take my money instead...', card: true },
   ];
 
   return (
