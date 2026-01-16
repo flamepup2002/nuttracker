@@ -18,6 +18,8 @@ import Profile from './pages/Profile';
 import SellHouse from './pages/SellHouse';
 import Settings from './pages/Settings';
 import Shop from './pages/Shop';
+import AIGuidedSession from './pages/AIGuidedSession';
+import FindomChallenges from './pages/FindomChallenges';
 import __Layout from './Layout.jsx';
 
 
@@ -42,6 +44,8 @@ export const PAGES = {
     "SellHouse": SellHouse,
     "Settings": Settings,
     "Shop": Shop,
+    "AIGuidedSession": AIGuidedSession,
+    "FindomChallenges": FindomChallenges,
 }
 
 export const pagesConfig = {
