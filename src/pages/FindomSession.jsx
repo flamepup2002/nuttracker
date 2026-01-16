@@ -258,7 +258,6 @@ export default function FindomSession() {
             baseCost={settings.base_cost}
             escalationRate={settings.escalation_rate}
             duration={duration}
-            maxCap={settings.max_cost_cap}
           />
         )}
 
