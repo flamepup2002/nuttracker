@@ -178,119 +178,121 @@ export default function UnethicalModeAgreement({ onAccept, onCancel }) {
         </ScrollArea>
 
         {/* Signature Section */}
-        <div className="border-t border-zinc-800 p-6 space-y-4">
-          {/* Checkboxes */}
-          <div className="space-y-3">
-            <div className="flex items-start gap-3">
-              <Checkbox
-                checked={acceptedTerms}
-                onCheckedChange={setAcceptedTerms}
-                className="mt-1"
-              />
-              <p className="text-zinc-300 text-sm">
-                I have read and understand all terms of this agreement
-              </p>
+        <ScrollArea className="max-h-[400px]">
+          <div className="border-t border-zinc-800 p-6 space-y-4">
+            {/* Checkboxes */}
+            <div className="space-y-3">
+              <div className="flex items-start gap-3">
+                <Checkbox
+                  checked={acceptedTerms}
+                  onCheckedChange={setAcceptedTerms}
+                  className="mt-1"
+                />
+                <p className="text-zinc-300 text-sm">
+                  I have read and understand all terms of this agreement
+                </p>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <Checkbox
+                  checked={acceptedCollateral}
+                  onCheckedChange={setAcceptedCollateral}
+                  className="mt-1"
+                />
+                <p className="text-zinc-300 text-sm">
+                  I pledge my home and property as collateral for all charges
+                </p>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <Checkbox
+                  checked={acceptedLiability}
+                  onCheckedChange={setAcceptedLiability}
+                  className="mt-1"
+                />
+                <p className="text-zinc-300 text-sm">
+                  I accept unlimited financial liability and potential total loss
+                </p>
+              </div>
             </div>
 
-            <div className="flex items-start gap-3">
-              <Checkbox
-                checked={acceptedCollateral}
-                onCheckedChange={setAcceptedCollateral}
-                className="mt-1"
+            {/* Property Address */}
+            <div>
+              <label className="text-zinc-400 text-xs mb-2 block">Property Address (Collateral)</label>
+              <Input
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                placeholder="123 Main St, City, State, ZIP"
+                className="bg-zinc-800 border-zinc-700 text-white"
               />
-              <p className="text-zinc-300 text-sm">
-                I pledge my home and property as collateral for all charges
-              </p>
             </div>
 
-            <div className="flex items-start gap-3">
-              <Checkbox
-                checked={acceptedLiability}
-                onCheckedChange={setAcceptedLiability}
-                className="mt-1"
+            {/* Signature */}
+            <div>
+              <label className="text-zinc-400 text-xs mb-2 block">Electronic Signature (Type Full Legal Name)</label>
+              <Input
+                value={signature}
+                onChange={(e) => setSignature(e.target.value)}
+                placeholder="John Doe"
+                className="bg-zinc-800 border-zinc-700 text-white"
               />
-              <p className="text-zinc-300 text-sm">
-                I accept unlimited financial liability and potential total loss
-              </p>
             </div>
-          </div>
 
-          {/* Property Address */}
-          <div>
-            <label className="text-zinc-400 text-xs mb-2 block">Property Address (Collateral)</label>
-            <Input
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              placeholder="123 Main St, City, State, ZIP"
-              className="bg-zinc-800 border-zinc-700 text-white"
-            />
-          </div>
+            <div className="text-zinc-500 text-xs">
+              Date: {currentDate}
+            </div>
 
-          {/* Signature */}
-          <div>
-            <label className="text-zinc-400 text-xs mb-2 block">Electronic Signature (Type Full Legal Name)</label>
-            <Input
-              value={signature}
-              onChange={(e) => setSignature(e.target.value)}
-              placeholder="John Doe"
-              className="bg-zinc-800 border-zinc-700 text-white"
-            />
-          </div>
-
-          <div className="text-zinc-500 text-xs">
-            Date: {currentDate}
-          </div>
-
-          {/* Filing Status */}
-          <AnimatePresence>
-            {filingStatus && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-green-900/20 border border-green-500/30 rounded-lg p-4"
-              >
-                <div className="flex items-start gap-3">
-                  <Building2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-green-400 font-medium text-sm">Document Sent</p>
-                    <p className="text-green-500/70 text-xs mt-1">
-                      Agreement emailed to {filingStatus.courthouses} courthouses within 100km
-                    </p>
+            {/* Filing Status */}
+            <AnimatePresence>
+              {filingStatus && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-green-900/20 border border-green-500/30 rounded-lg p-4"
+                >
+                  <div className="flex items-start gap-3">
+                    <Building2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-green-400 font-medium text-sm">Document Sent</p>
+                      <p className="text-green-500/70 text-xs mt-1">
+                        Agreement emailed to {filingStatus.courthouses} courthouses within 100km
+                      </p>
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Actions */}
-          <div className="flex gap-3">
-            <Button
-              onClick={onCancel}
-              variant="outline"
-              disabled={isSigning}
-              className="flex-1 border-zinc-700 text-white"
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleSubmit}
-              disabled={!canSubmit || isSigning}
-              className="flex-1 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800"
-            >
-              {isSigning ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Emailing to Courthouses...
-                </>
-              ) : (
-                <>
-                  <Check className="w-4 h-4 mr-2" />
-                  Sign & Email to Courthouses
-                </>
+                </motion.div>
               )}
-            </Button>
+            </AnimatePresence>
+
+            {/* Actions */}
+            <div className="flex gap-3">
+              <Button
+                onClick={onCancel}
+                variant="outline"
+                disabled={isSigning}
+                className="flex-1 border-zinc-700 text-white"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleSubmit}
+                disabled={!canSubmit || isSigning}
+                className="flex-1 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800"
+              >
+                {isSigning ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Emailing to Courthouses...
+                  </>
+                ) : (
+                  <>
+                    <Check className="w-4 h-4 mr-2" />
+                    Sign & Email to Courthouses
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
-        </div>
+        </ScrollArea>
       </motion.div>
     </motion.div>
   );
