@@ -218,27 +218,43 @@ export default function GoonerCam() {
 
       {/* Cam Grid */}
       <div className="px-6 space-y-6">
-        <div>
-          <h2 className="text-white font-bold text-lg mb-4">Featured Cams</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {FEATURED_CAMS.map((cam) => (
-              <CamCard key={cam.id} cam={cam} />
-            ))}
+        {broadcastsLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="animate-spin w-8 h-8 border-2 border-pink-500 border-t-transparent rounded-full" />
           </div>
-        </div>
-
-        {/* Coming Soon Banner */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-gradient-to-r from-purple-900/30 to-pink-900/30 border border-purple-500/30 rounded-2xl p-6 text-center"
-        >
-          <Zap className="w-12 h-12 text-purple-400 mx-auto mb-3" />
-          <h3 className="text-white font-bold text-xl mb-2">Go Live Soon!</h3>
-          <p className="text-zinc-400 text-sm">
-            Stream your goon sessions to the community. Coming in next update.
-          </p>
-        </motion.div>
+        ) : broadcasts.length > 0 ? (
+          <div>
+            <h2 className="text-white font-bold text-lg mb-4">Live Now</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {broadcasts.map((broadcast) => (
+                <CamCard 
+                  key={broadcast.id} 
+                  cam={{
+                    id: broadcast.id,
+                    username: broadcast.created_by?.split('@')[0] || 'Anonymous',
+                    viewers: Math.floor(Math.random() * 500) + 50,
+                    duration: broadcast.duration_seconds ? `${Math.floor(broadcast.duration_seconds / 60)}m` : '0m',
+                    tags: ['live', 'streaming'],
+                    isLive: true,
+                    isPremium: false
+                  }} 
+                />
+              ))}
+            </div>
+          </div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center py-12"
+          >
+            <Video className="w-12 h-12 text-zinc-700 mx-auto mb-3" />
+            <h3 className="text-white font-bold text-xl mb-2">No Live Broadcasts</h3>
+            <p className="text-zinc-400 text-sm mb-6">
+              No one is broadcasting right now. Check back later!
+            </p>
+          </motion.div>
+        )}
       </div>
     </div>
   );
