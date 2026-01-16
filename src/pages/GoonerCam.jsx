@@ -89,6 +89,15 @@ export default function GoonerCam() {
     },
   });
 
+  const { data: broadcasts = [], isLoading: broadcastsLoading } = useQuery({
+    queryKey: ['activeBroadcasts'],
+    queryFn: async () => {
+      const sessions = await base44.entities.Session.filter({ status: 'active' }, '-created_date', 100);
+      return sessions.filter(s => s.broadcast_enabled);
+    },
+    enabled: settings?.goonercam_enabled,
+  });
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
