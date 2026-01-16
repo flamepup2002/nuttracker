@@ -14,6 +14,7 @@ import HeartRateMonitor from '@/components/HeartRateMonitor';
 import HeartRateChart from '@/components/HeartRateChart';
 import OrgasmQuickLog from '@/components/OrgasmQuickLog';
 import AIBully from '@/components/AIBully';
+import GoonCam from '@/components/GoonCam';
 
 export default function GoonSession() {
   const navigate = useNavigate();
