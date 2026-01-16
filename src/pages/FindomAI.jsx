@@ -372,6 +372,36 @@ export default function FindomAI() {
           </Button>
         </div>
       </div>
-    </div>
-  );
-}
+
+      {/* Chat Summary Modal */}
+      <AnimatePresence>
+        {showSummary && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/80 flex items-end z-50"
+            onClick={() => setShowSummary(false)}
+          >
+            <motion.div
+              initial={{ y: 100, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 100, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full bg-zinc-900 border-t border-zinc-800 p-6 rounded-t-3xl"
+            >
+              <h3 className="text-white font-bold mb-3">Chat Summary</h3>
+              <p className="text-zinc-300 text-sm leading-relaxed mb-4">{chatSummary}</p>
+              <Button
+                onClick={() => setShowSummary(false)}
+                className="w-full bg-pink-600 hover:bg-pink-700 text-white"
+              >
+                Continue
+              </Button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      </div>
+      );
+      }
