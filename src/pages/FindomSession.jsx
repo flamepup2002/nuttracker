@@ -336,7 +336,7 @@ export default function FindomSession() {
             <div>
               <p className="text-yellow-400 font-medium text-sm">Escalating Costs Active</p>
               <p className="text-yellow-500/70 text-xs mt-1">
-                Cost per orgasm increases by {settings.escalation_rate}%/min{settings.interest_rate > 0 ? ` with ${settings.interest_rate}% compound interest` : ''}. No cap - cost escalates indefinitely!
+                Cost per orgasm increases by {settings.escalation_rate}%/min{settings.interest_rate > 0 ? ` with ${settings.interest_rate}% daily interest on unpaid balances` : ''}. No cap - cost escalates indefinitely!
               </p>
             </div>
           </motion.div>

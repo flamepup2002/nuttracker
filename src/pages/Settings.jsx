@@ -265,19 +265,19 @@ export default function Settings() {
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <Label className="text-zinc-300 flex items-center gap-2">
-                    Interest Rate (Compound)
+                    Interest Rate (Daily)
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger>
                           <Info className="w-4 h-4 text-zinc-500" />
                         </TooltipTrigger>
                         <TooltipContent>
-                          <p>Percentage that compounds per minute on the total cost</p>
+                          <p>Daily compound interest on unpaid balances</p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
                   </Label>
-                  <span className="text-green-400 font-bold">{settings.interest_rate}%</span>
+                  <span className="text-green-400 font-bold">{settings.interest_rate}%/day</span>
                 </div>
                 <Slider
                   value={[settings.interest_rate * 10]}
