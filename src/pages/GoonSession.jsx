@@ -15,6 +15,7 @@ import HeartRateMonitor from '@/components/HeartRateMonitor';
 import HeartRateChart from '@/components/HeartRateChart';
 import OrgasmQuickLog from '@/components/OrgasmQuickLog';
 import AIBully from '@/components/AIBully';
+import GoonCaptions from '@/components/GoonCaptions';
 
 export default function GoonSession() {
   const navigate = useNavigate();
@@ -279,6 +280,9 @@ export default function GoonSession() {
             heartRate={heartRate}
             isFindom={false}
           />
+          {settings?.goon_captions_enabled && (
+            <GoonCaptions isActive={isActive} />
+          )}
         </>
       )}
     </div>
