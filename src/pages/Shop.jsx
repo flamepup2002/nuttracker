@@ -4,13 +4,22 @@ import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, ShoppingBag, Coins, Check, Palette, Activity, Video, Sparkles, Brain, Crown, Flame } from 'lucide-react';
+import { ArrowLeft, ShoppingBag, Coins, Check, Palette, Activity, Video, Sparkles, Brain, Crown, Flame, Zap, Star, Shield } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { toast } from 'sonner';
 
 const iconMap = {
-  ShoppingBag, Coins, Check, Palette, Activity, Video, Sparkles, Brain, Crown, Flame,
+  ShoppingBag, Coins, Check, Palette, Activity, Video, Sparkles, Brain, Crown, Flame, Zap, Star, Shield,
 };
+
+const AURA_EFFECTS = [
+  { id: 'glow_pink', name: 'Pink Glow Aura', icon: 'Sparkles', color: 'from-pink-500 to-rose-500', price: 250, category: 'cosmetic' },
+  { id: 'inferno', name: 'Inferno Aura', icon: 'Flame', color: 'from-orange-500 to-red-600', price: 300, category: 'cosmetic' },
+  { id: 'lightning', name: 'Lightning Aura', icon: 'Zap', color: 'from-yellow-400 to-amber-500', price: 300, category: 'cosmetic' },
+  { id: 'regal', name: 'Regal Crown Aura', icon: 'Crown', color: 'from-yellow-600 to-amber-700', price: 350, category: 'premium' },
+  { id: 'mystic', name: 'Mystic Aura', icon: 'Sparkles', color: 'from-purple-600 to-indigo-700', price: 350, category: 'premium' },
+  { id: 'celestial', name: 'Celestial Aura', icon: 'Star', color: 'from-blue-400 to-purple-500', price: 400, category: 'limited' },
+];
 
 export default function Shop() {
   const navigate = useNavigate();
@@ -73,10 +82,45 @@ export default function Shop() {
   };
 
   const itemsByCategory = {
-    cosmetic: items.filter(i => i.category === 'cosmetic'),
+    cosmetic: [...items.filter(i => i.category === 'cosmetic'), ...AURA_EFFECTS.filter(a => a.category === 'cosmetic')],
     feature: items.filter(i => i.category === 'feature'),
-    premium: items.filter(i => i.category === 'premium'),
-    limited: items.filter(i => i.category === 'limited'),
+    premium: [...items.filter(i => i.category === 'premium'), ...AURA_EFFECTS.filter(a => a.category === 'premium')],
+    limited: [...items.filter(i => i.category === 'limited'), ...AURA_EFFECTS.filter(a => a.category === 'limited')],
+  };
+
+  const handleAuraPurchase = async (aura) => {
+    if (!user || !user.currency_balance) {
+      toast.error('Invalid user data');
+      return;
+    }
+
+    if (user.currency_balance < aura.price) {
+      toast.error('Insufficient coins');
+      return;
+    }
+
+    try {
+      // Create purchase record for aura
+      await base44.entities.Purchase.create({
+        shop_item_id: aura.id,
+        item_name: aura.name,
+        price: aura.price,
+      });
+
+      // Update user balance
+      await base44.auth.updateMe({
+        currency_balance: (user.currency_balance || 0) - aura.price,
+      });
+
+      setUser(prev => ({
+        ...prev,
+        currency_balance: (prev?.currency_balance || 0) - aura.price,
+      }));
+
+      toast.success(`${aura.name} purchased!`);
+    } catch (error) {
+      toast.error('Purchase failed');
+    }
   };
 
   return (
@@ -110,16 +154,19 @@ export default function Shop() {
               Cosmetics
             </h2>
             <div className="grid grid-cols-2 gap-4">
-              {itemsByCategory.cosmetic.map(item => (
-                <ShopCard
-                  key={item.id}
-                  item={item}
-                  isPurchased={isPurchased(item.id)}
-                  isLoading={purchaseMutation.isPending}
-                  onPurchase={() => purchaseMutation.mutate(item)}
-                  canAfford={(user?.currency_balance || 0) >= item.price}
-                />
-              ))}
+              {itemsByCategory.cosmetic.map(item => {
+                const isAura = item.id && item.id.includes('_');
+                return (
+                  <ShopCard
+                    key={item.id}
+                    item={item}
+                    isPurchased={isPurchased(item.id)}
+                    isLoading={purchaseMutation.isPending}
+                    onPurchase={() => isAura ? handleAuraPurchase(item) : purchaseMutation.mutate(item)}
+                    canAfford={(user?.currency_balance || 0) >= item.price}
+                  />
+                );
+              })}
             </div>
           </motion.div>
         )}
@@ -154,16 +201,19 @@ export default function Shop() {
               Premium
             </h2>
             <div className="grid gap-4">
-              {itemsByCategory.premium.map(item => (
-                <ShopCardWide
-                  key={item.id}
-                  item={item}
-                  isPurchased={isPurchased(item.id)}
-                  isLoading={purchaseMutation.isPending}
-                  onPurchase={() => purchaseMutation.mutate(item)}
-                  canAfford={(user?.currency_balance || 0) >= item.price}
-                />
-              ))}
+              {itemsByCategory.premium.map(item => {
+                const isAura = item.id && item.id.includes('_');
+                return (
+                  <ShopCardWide
+                    key={item.id}
+                    item={item}
+                    isPurchased={isPurchased(item.id)}
+                    isLoading={purchaseMutation.isPending}
+                    onPurchase={() => isAura ? handleAuraPurchase(item) : purchaseMutation.mutate(item)}
+                    canAfford={(user?.currency_balance || 0) >= item.price}
+                  />
+                );
+              })}
             </div>
           </motion.div>
         )}
@@ -176,16 +226,19 @@ export default function Shop() {
               Limited Edition
             </h2>
             <div className="grid gap-4">
-              {itemsByCategory.limited.map(item => (
-                <ShopCardWide
-                  key={item.id}
-                  item={item}
-                  isPurchased={isPurchased(item.id)}
-                  isLoading={purchaseMutation.isPending}
-                  onPurchase={() => purchaseMutation.mutate(item)}
-                  canAfford={(user?.currency_balance || 0) >= item.price}
-                />
-              ))}
+              {itemsByCategory.limited.map(item => {
+                const isAura = item.id && item.id.includes('_');
+                return (
+                  <ShopCardWide
+                    key={item.id}
+                    item={item}
+                    isPurchased={isPurchased(item.id)}
+                    isLoading={purchaseMutation.isPending}
+                    onPurchase={() => isAura ? handleAuraPurchase(item) : purchaseMutation.mutate(item)}
+                    canAfford={(user?.currency_balance || 0) >= item.price}
+                  />
+                );
+              })}
             </div>
           </motion.div>
         )}
