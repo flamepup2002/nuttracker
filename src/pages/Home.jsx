@@ -160,15 +160,20 @@ export default function Home() {
         >
           <h3 className="text-zinc-400 text-sm font-medium mb-4">Breakdown by Type</h3>
           <div className="grid grid-cols-4 gap-3">
-            {Object.entries(orgasmTypeConfig).map(([type, config]) => (
-              <div key={type} className="text-center">
-                <div className={`w-10 h-10 mx-auto rounded-xl bg-gradient-to-br ${config.color} flex items-center justify-center mb-2`}>
-                  <config.icon className="w-5 h-5 text-white" />
+            {Object.entries(orgasmTypeConfig).map(([type, config]) => {
+              const count = type === 'cumshot' ? stats.cumshots : 
+                            type === 'cashgasm' ? stats.cashgasms : 
+                            stats[type];
+              return (
+                <div key={type} className="text-center">
+                  <div className={`w-10 h-10 mx-auto rounded-xl bg-gradient-to-br ${config.color} flex items-center justify-center mb-2`}>
+                    <config.icon className="w-5 h-5 text-white" />
+                  </div>
+                  <p className="text-xl font-bold text-white">{count}</p>
+                  <p className="text-zinc-500 text-xs">{config.label}</p>
                 </div>
-                <p className="text-xl font-bold text-white">{stats[type === 'cashgasm' ? 'cashgasms' : type]}</p>
-                <p className="text-zinc-500 text-xs">{config.label}</p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </motion.div>
 
