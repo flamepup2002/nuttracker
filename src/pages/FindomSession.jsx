@@ -26,6 +26,7 @@ import HeartRateChart from '@/components/HeartRateChart';
 import FindomCostDisplay from '@/components/FindomCostDisplay';
 import OrgasmQuickLog from '@/components/OrgasmQuickLog';
 import AIBully from '@/components/AIBully';
+import GoonCam from '@/components/GoonCam';
 
 export default function FindomSession() {
   const navigate = useNavigate();
@@ -409,6 +410,7 @@ export default function FindomSession() {
             isFindom={true}
             currentCost={currentCost}
           />
+          <GoonCam isActive={isActive} />
         </>
       )}
 
