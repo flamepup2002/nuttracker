@@ -6,7 +6,9 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   ArrowLeft, Trophy, Lock, Sparkles, DollarSign, 
-  Ban, Flame, TrendingUp, Heart, Timer, Zap
+  Ban, Flame, TrendingUp, Heart, Timer, Zap, 
+  Droplet, Target, TrendingDown, Calendar, Award,
+  Star, Crown, Coins, Activity, Video
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -106,6 +108,141 @@ const ACHIEVEMENTS = [
     icon: Heart,
     color: 'from-red-500 to-pink-500',
     checkFn: (data) => data.sessions.some(s => s.heart_rate_data && s.heart_rate_data.length > 0),
+  },
+  {
+    id: 'cumshot_king',
+    title: 'Release King',
+    description: 'Have 25 cumshots',
+    icon: Droplet,
+    color: 'from-blue-500 to-cyan-500',
+    checkFn: (data) => data.orgasms.filter(o => o.type === 'cumshot').length >= 25,
+  },
+  {
+    id: 'denial_expert',
+    title: 'Denial Expert',
+    description: 'Deny yourself 50 times',
+    icon: Ban,
+    color: 'from-purple-600 to-pink-600',
+    checkFn: (data) => data.orgasms.filter(o => o.type === 'denied').length >= 50,
+  },
+  {
+    id: 'ultra_marathon',
+    title: 'Ultra Marathon',
+    description: 'Complete a 2+ hour session',
+    icon: Timer,
+    color: 'from-indigo-600 to-purple-600',
+    checkFn: (data) => data.sessions.some(s => s.duration_seconds >= 7200),
+  },
+  {
+    id: 'weekly_warrior',
+    title: 'Weekly Warrior',
+    description: 'Log at least one orgasm every day for 7 days',
+    icon: Calendar,
+    color: 'from-orange-500 to-red-500',
+    checkFn: (data) => {
+      const last7Days = Array.from({ length: 7 }, (_, i) => {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        return date.toDateString();
+      });
+      const orgasmDates = data.orgasms.map(o => new Date(o.created_date).toDateString());
+      return last7Days.every(day => orgasmDates.includes(day));
+    },
+  },
+  {
+    id: 'financial_domination',
+    title: 'Financial Domination',
+    description: 'Spend $1000 total on findom',
+    icon: Crown,
+    color: 'from-yellow-600 to-amber-600',
+    checkFn: (data) => data.orgasms.filter(o => o.is_findom).reduce((sum, o) => sum + o.cost, 0) >= 1000,
+  },
+  {
+    id: 'ruin_addict',
+    title: 'Ruin Addict',
+    description: 'Ruin yourself 50 times',
+    icon: Zap,
+    color: 'from-red-600 to-orange-600',
+    checkFn: (data) => data.orgasms.filter(o => o.type === 'ruined').length >= 50,
+  },
+  {
+    id: 'legend',
+    title: 'Legendary Gooner',
+    description: 'Log 500 orgasms',
+    icon: Star,
+    color: 'from-purple-600 to-pink-600',
+    checkFn: (data) => data.orgasms.length >= 500,
+  },
+  {
+    id: 'cashgasm_master',
+    title: 'Cashgasm Master',
+    description: 'Have 25 cashgasms',
+    icon: Coins,
+    color: 'from-green-500 to-emerald-500',
+    checkFn: (data) => data.orgasms.filter(o => o.type === 'cashgasm').length >= 25,
+  },
+  {
+    id: 'consistent_gooner',
+    title: 'Consistent Gooner',
+    description: 'Complete 10 sessions',
+    icon: Target,
+    color: 'from-blue-600 to-indigo-600',
+    checkFn: (data) => data.sessions.filter(s => s.status === 'completed').length >= 10,
+  },
+  {
+    id: 'session_beast',
+    title: 'Session Beast',
+    description: 'Complete 50 sessions',
+    icon: Activity,
+    color: 'from-orange-600 to-red-600',
+    checkFn: (data) => data.sessions.filter(s => s.status === 'completed').length >= 50,
+  },
+  {
+    id: 'endurance_god',
+    title: 'Endurance God',
+    description: 'Complete a 4+ hour session',
+    icon: Trophy,
+    color: 'from-yellow-500 to-orange-500',
+    checkFn: (data) => data.sessions.some(s => s.duration_seconds >= 14400),
+  },
+  {
+    id: 'big_tribute',
+    title: 'Big Tribute',
+    description: 'Spend $250+ in a single session',
+    icon: DollarSign,
+    color: 'from-emerald-600 to-green-700',
+    checkFn: (data) => data.sessions.some(s => s.is_findom && s.total_cost >= 250),
+  },
+  {
+    id: 'daily_dedication',
+    title: 'Daily Dedication',
+    description: 'Log 5+ orgasms in a single day',
+    icon: Flame,
+    color: 'from-red-500 to-pink-600',
+    checkFn: (data) => {
+      const orgasmsByDay = {};
+      data.orgasms.forEach(o => {
+        const day = new Date(o.created_date).toDateString();
+        orgasmsByDay[day] = (orgasmsByDay[day] || 0) + 1;
+      });
+      return Object.values(orgasmsByDay).some(count => count >= 5);
+    },
+  },
+  {
+    id: 'broadcaster',
+    title: 'GoonerCam Star',
+    description: 'Complete a broadcasted session',
+    icon: Video,
+    color: 'from-pink-600 to-rose-600',
+    checkFn: (data) => data.sessions.some(s => s.broadcast_enabled === true),
+  },
+  {
+    id: 'peak_performance',
+    title: 'Peak Performance',
+    description: 'Reach 180+ BPM during a session',
+    icon: Heart,
+    color: 'from-red-600 to-pink-600',
+    checkFn: (data) => data.sessions.some(s => s.peak_heart_rate >= 180),
   },
 ];
 
