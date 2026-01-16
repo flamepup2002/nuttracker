@@ -105,6 +105,23 @@ const SAMPLE_CONTRACTS = [
       "This is a permanent, irreversible contract",
       "Attempting to escape carries severe legal consequences"
     ]
+  },
+  {
+    title: "Property Seizure Agreement",
+    description: "Missed payments result in your home going to auction",
+    intensity: "extreme",
+    monthly: 1500,
+    duration: 0,
+    terms: [
+      "Pay $1,500 every month indefinitely",
+      "Miss even ONE payment = immediate house auction",
+      "Your property will be sold to highest bidder",
+      "Proceeds go directly to creditor",
+      "You become homeless if you default",
+      "40% penalty compounds on all missed payments",
+      "No appeals, no second chances - auction is final",
+      "This is a binding lien against your property"
+    ]
   }
 ];
 
