@@ -202,7 +202,7 @@ export default function Shop() {
 }
 
 function ShopCard({ item, isPurchased, isLoading, onPurchase, canAfford }) {
-  const IconComponent = require('lucide-react')[item.icon] || ShoppingBag;
+  const IconComponent = iconMap[item.icon] || ShoppingBag;
 
   return (
     <motion.button
