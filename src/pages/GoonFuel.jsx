@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, Zap, Eye, EyeOff, Loader } from 'lucide-react';
+import { ArrowLeft, Zap, Eye, EyeOff, Loader, Settings } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { toast } from 'sonner';
 
@@ -17,20 +17,37 @@ export default function GoonFuel() {
     queryKey: ['userSettings'],
     queryFn: async () => {
       const list = await base44.entities.UserSettings.list();
-      return list[0] || { goon_censor_enabled: false };
+      return list[0] || { goon_censor_enabled: false, goon_fuel_style: 'realistic', goon_fuel_keywords: [], goon_fuel_frequency_limit: 0 };
     },
   });
 
+  const [lastGenerations, setLastGenerations] = useState([]);
+
   const generateGoonFuel = async () => {
     if (isGenerating) return;
+
+    // Check frequency limit
+    if (settings?.goon_fuel_frequency_limit > 0) {
+      const now = Date.now();
+      const recentGenerations = lastGenerations.filter(t => now - t < 3600000);
+      if (recentGenerations.length >= settings.goon_fuel_frequency_limit) {
+        toast.error(`Generation limit reached (${settings.goon_fuel_frequency_limit}/hour)`);
+        return;
+      }
+    }
+
     setIsGenerating(true);
 
     try {
-      const response = await base44.functions.invoke('generateGoonFuel', {});
+      const response = await base44.functions.invoke('generateGoonFuel', {
+        style: settings?.goon_fuel_style || 'realistic',
+        keywords: settings?.goon_fuel_keywords || [],
+      });
       if (response.data.error) {
         toast.error(response.data.error);
       } else {
         setImages(prev => [response.data.image, ...prev]);
+        setLastGenerations(prev => [...prev, Date.now()]);
         toast.success('Goon fuel generated!');
       }
     } catch (error) {
@@ -57,7 +74,13 @@ export default function GoonFuel() {
           <Zap className="w-5 h-5 text-pink-400" />
           Goon Fuel
         </h1>
-        <div>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => navigate(createPageUrl('Settings'))}
+            className="text-zinc-400 hover:text-white transition-colors"
+          >
+            <Settings className="w-5 h-5" />
+          </button>
           {isCensored ? (
             <EyeOff className="w-5 h-5 text-blue-400" />
           ) : (
@@ -68,6 +91,30 @@ export default function GoonFuel() {
 
       {/* Content */}
       <div className="px-6 py-6 space-y-6">
+        {/* Current Settings Display */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="bg-zinc-900/50 rounded-xl border border-zinc-800 p-4"
+        >
+          <p className="text-zinc-400 text-xs mb-2">Active Settings:</p>
+          <div className="flex flex-wrap gap-2">
+            <span className="bg-zinc-800 text-zinc-300 text-xs rounded-lg px-3 py-1">
+              Style: <span className="text-pink-400 font-bold">{settings?.goon_fuel_style || 'realistic'}</span>
+            </span>
+            {settings?.goon_fuel_keywords?.length > 0 && (
+              <span className="bg-zinc-800 text-zinc-300 text-xs rounded-lg px-3 py-1">
+                Keywords: <span className="text-pink-400 font-bold">{settings.goon_fuel_keywords.join(', ')}</span>
+              </span>
+            )}
+            {settings?.goon_fuel_frequency_limit > 0 && (
+              <span className="bg-zinc-800 text-zinc-300 text-xs rounded-lg px-3 py-1">
+                Limit: <span className="text-pink-400 font-bold">{settings.goon_fuel_frequency_limit}/hr</span>
+              </span>
+            )}
+          </div>
+        </motion.div>
+
         {/* Generate Button */}
         <motion.button
           whileHover={{ scale: 1.02 }}
