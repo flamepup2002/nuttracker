@@ -9,6 +9,7 @@ import History from './pages/History';
 import Home from './pages/Home';
 import KinkSessions from './pages/KinkSessions';
 import Settings from './pages/Settings';
+import Profile from './pages/Profile';
 import __Layout from './Layout.jsx';
 
 
@@ -24,6 +25,7 @@ export const PAGES = {
     "Home": Home,
     "KinkSessions": KinkSessions,
     "Settings": Settings,
+    "Profile": Profile,
 }
 
 export const pagesConfig = {

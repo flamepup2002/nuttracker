@@ -21,9 +21,6 @@ export default function UnethicalModeAgreement({ onAccept, onCancel }) {
     const loadUserData = async () => {
       const userData = await base44.auth.me();
       setUser(userData);
-      
-      const settingsList = await base44.entities.UserSettings.list();
-      setSettings(settingsList[0] || null);
     };
     loadUserData();
   }, []);
@@ -35,7 +32,7 @@ export default function UnethicalModeAgreement({ onAccept, onCancel }) {
   });
 
   const signature = user?.full_name || '';
-  const address = settings?.property_address || '';
+  const address = user?.address || '';
   const canSubmit = signature && address && acceptedTerms && acceptedCollateral && acceptedLiability;
 
   useEffect(() => {
@@ -241,7 +238,7 @@ export default function UnethicalModeAgreement({ onAccept, onCancel }) {
               </div>
               {(!signature || !address) && (
                 <p className="text-yellow-400 text-xs mt-2">
-                  ⚠️ Please add your property address in Settings before signing
+                  ⚠️ Please add your property address in Profile before signing
                 </p>
               )}
             </div>

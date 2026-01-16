@@ -61,7 +61,7 @@ export default function Settings() {
     broadcast_enabled: false,
     snuff_play_enabled: false,
     unethical_mode_enabled: false,
-    property_address: '',
+
   });
 
   useEffect(() => {
@@ -76,7 +76,7 @@ export default function Settings() {
         broadcast_enabled: existingSettings.broadcast_enabled ?? false,
         snuff_play_enabled: existingSettings.snuff_play_enabled ?? false,
         unethical_mode_enabled: existingSettings.unethical_mode_enabled ?? false,
-        property_address: existingSettings.property_address ?? '',
+
       });
     }
   }, [existingSettings]);
@@ -378,19 +378,7 @@ export default function Settings() {
                 </motion.div>
               )}
 
-              {/* Property Address Input */}
-              <div className="mt-4">
-                <label className="text-zinc-300 text-sm mb-2 block">Property Address (for collateral)</label>
-                <Input
-                  value={settings.property_address}
-                  onChange={(e) => handleChange('property_address', e.target.value)}
-                  placeholder="123 Main St, City, State, ZIP"
-                  className="bg-zinc-800 border-zinc-700 text-white"
-                />
-                <p className="text-zinc-500 text-xs mt-1">
-                  Required for unethical mode agreement
-                </p>
-              </div>
+
               </motion.div>
               )}
               </motion.div>
