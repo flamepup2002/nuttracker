@@ -22,6 +22,9 @@ export default function GoonSession() {
   const [heartRate, setHeartRate] = useState(null);
   const [heartRateData, setHeartRateData] = useState([]);
   const [showStats, setShowStats] = useState(false);
+  
+  // Detect iOS (Web Bluetooth not supported)
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
   const startSession = async () => {
     try {
@@ -146,39 +149,43 @@ export default function GoonSession() {
         </div>
 
         {/* Heart Rate Monitor */}
-        <HeartRateMonitor 
-          onHeartRateChange={handleHeartRateChange}
-          onDataPoint={handleDataPoint}
-        />
+        {!isIOS && (
+          <>
+            <HeartRateMonitor 
+              onHeartRateChange={handleHeartRateChange}
+              onDataPoint={handleDataPoint}
+            />
 
-        {/* Heart Rate Stats */}
-        {isActive && heartRateData.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="grid grid-cols-3 gap-3"
-          >
-            <div className="bg-zinc-900/50 rounded-xl border border-zinc-800 p-4 text-center">
-              <p className="text-zinc-500 text-xs mb-1">Peak</p>
-              <p className="text-2xl font-bold text-red-400">{stats.peak}</p>
-              <p className="text-zinc-600 text-xs">BPM</p>
-            </div>
-            <div className="bg-zinc-900/50 rounded-xl border border-zinc-800 p-4 text-center">
-              <p className="text-zinc-500 text-xs mb-1">Average</p>
-              <p className="text-2xl font-bold text-orange-400">{stats.avg}</p>
-              <p className="text-zinc-600 text-xs">BPM</p>
-            </div>
-            <div className="bg-zinc-900/50 rounded-xl border border-zinc-800 p-4 text-center">
-              <p className="text-zinc-500 text-xs mb-1">Low</p>
-              <p className="text-2xl font-bold text-green-400">{stats.min}</p>
-              <p className="text-zinc-600 text-xs">BPM</p>
-            </div>
-          </motion.div>
-        )}
+            {/* Heart Rate Stats */}
+            {isActive && heartRateData.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="grid grid-cols-3 gap-3"
+              >
+                <div className="bg-zinc-900/50 rounded-xl border border-zinc-800 p-4 text-center">
+                  <p className="text-zinc-500 text-xs mb-1">Peak</p>
+                  <p className="text-2xl font-bold text-red-400">{stats.peak}</p>
+                  <p className="text-zinc-600 text-xs">BPM</p>
+                </div>
+                <div className="bg-zinc-900/50 rounded-xl border border-zinc-800 p-4 text-center">
+                  <p className="text-zinc-500 text-xs mb-1">Average</p>
+                  <p className="text-2xl font-bold text-orange-400">{stats.avg}</p>
+                  <p className="text-zinc-600 text-xs">BPM</p>
+                </div>
+                <div className="bg-zinc-900/50 rounded-xl border border-zinc-800 p-4 text-center">
+                  <p className="text-zinc-500 text-xs mb-1">Low</p>
+                  <p className="text-2xl font-bold text-green-400">{stats.min}</p>
+                  <p className="text-zinc-600 text-xs">BPM</p>
+                </div>
+              </motion.div>
+            )}
 
-        {/* Heart Rate Chart */}
-        {heartRateData.length > 0 && (
-          <HeartRateChart data={heartRateData} />
+            {/* Heart Rate Chart */}
+            {heartRateData.length > 0 && (
+              <HeartRateChart data={heartRateData} />
+            )}
+          </>
         )}
 
         {/* Session Complete Stats */}

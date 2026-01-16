@@ -28,6 +28,9 @@ export default function Settings() {
   const queryClient = useQueryClient();
   const [hasChanges, setHasChanges] = useState(false);
   const [showPaymentSetup, setShowPaymentSetup] = useState(false);
+  
+  // Detect iOS (Web Bluetooth not supported)
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
   const { data: existingSettings, isLoading } = useQuery({
     queryKey: ['userSettings'],
@@ -363,32 +366,34 @@ export default function Settings() {
         )}
 
         {/* Heart Monitor Info */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="bg-zinc-900/50 rounded-2xl border border-zinc-800 p-6"
-        >
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-pink-600 flex items-center justify-center">
-              <Bluetooth className="w-5 h-5 text-white" />
+        {!isIOS && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="bg-zinc-900/50 rounded-2xl border border-zinc-800 p-6"
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-pink-600 flex items-center justify-center">
+                <Bluetooth className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h2 className="text-white font-bold">Heart Rate Monitor</h2>
+                <p className="text-zinc-500 text-sm">Cospo H808S compatibility</p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-white font-bold">Heart Rate Monitor</h2>
-              <p className="text-zinc-500 text-sm">Cospo H808S compatibility</p>
+            <div className="bg-zinc-800/50 rounded-xl p-4">
+              <p className="text-zinc-400 text-sm mb-2">Supported devices:</p>
+              <ul className="text-zinc-300 text-sm space-y-1">
+                <li>• Cospo H808S</li>
+                <li>• Any Bluetooth heart rate monitor with standard HR service</li>
+              </ul>
+              <p className="text-zinc-500 text-xs mt-3">
+                Connect during a session using the Heart Rate Monitor panel
+              </p>
             </div>
-          </div>
-          <div className="bg-zinc-800/50 rounded-xl p-4">
-            <p className="text-zinc-400 text-sm mb-2">Supported devices:</p>
-            <ul className="text-zinc-300 text-sm space-y-1">
-              <li>• Cospo H808S</li>
-              <li>• Any Bluetooth heart rate monitor with standard HR service</li>
-            </ul>
-            <p className="text-zinc-500 text-xs mt-3">
-              Connect during a session using the Heart Rate Monitor panel
-            </p>
-          </div>
-        </motion.div>
+          </motion.div>
+        )}
 
         {/* Save Button */}
         {hasChanges && (
