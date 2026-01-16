@@ -883,6 +883,168 @@ const GENERATED_CONTRACTS = [
       "90% penalty for missed payment",
       "Interest at 40% daily on all arrears"
     ]
+  },
+  {
+    title: "Bench Warrant Trap",
+    description: "Court automatically issues arrest warrant on missed payment",
+    intensity: "extreme",
+    monthly: 1400,
+    duration: 0,
+    terms: [
+      "Pay $1,400 monthly or trigger automatic bench warrant",
+      "Miss one payment = judge issues bench warrant same day",
+      "Warrant enforceable immediately - you'll be arrested",
+      "Can be arrested at work, home, driving, anywhere",
+      "No advance notice, no opportunity to cure",
+      "Held in custody until full payment made",
+      "Criminal contempt of court charges filed",
+      "75% penalty for missed payment",
+      "Interest at 35% daily compounds"
+    ]
+  },
+  {
+    title: "Employment Arrest Clause",
+    description: "Arrested at your workplace for non-payment",
+    intensity: "extreme",
+    monthly: 1700,
+    duration: 0,
+    terms: [
+      "Pay $1,700 monthly or be arrested at work",
+      "Miss payment = arrest warrant served at your job",
+      "Law enforcement arrives to apprehend you",
+      "You're arrested in front of your employer and colleagues",
+      "Immediate termination of employment likely",
+      "You lose income and your job simultaneously",
+      "70% penalty for missed payment",
+      "Interest at 32% daily on unpaid balance",
+      "Designed to destroy your career and freedom"
+    ]
+  },
+  {
+    title: "Warrant Stacking Protocol",
+    description: "Multiple warrants compound for each missed payment",
+    intensity: "extreme",
+    monthly: 1550,
+    duration: 0,
+    terms: [
+      "Pay $1,550 monthly or face warrant escalation",
+      "First missed payment = arrest warrant issued",
+      "Second missed payment = additional felony warrant issued",
+      "Third missed payment = third warrant for federal charge",
+      "Each warrant carries up to 5 years imprisonment",
+      "Total potential sentence: 15+ years for 3 missed payments",
+      "All warrants active and enforceable simultaneously",
+      "85% penalty for each missed month",
+      "Interest at 38% daily compounds on unpaid debt"
+    ]
+  },
+  {
+    title: "24-Hour Arrest Guarantee",
+    description: "You'll be arrested within 24 hours of missed payment",
+    intensity: "extreme",
+    monthly: 1800,
+    duration: 0,
+    terms: [
+      "Pay $1,800 monthly or guaranteed arrest within 24 hours",
+      "Miss payment = active warrant within 1 hour",
+      "Police will locate and arrest you within 24 hours",
+      "Warrant guarantees apprehension - nowhere to hide",
+      "Held without bail until payment is made",
+      "Additional contempt charges for trying to evade",
+      "80% penalty for missed payment",
+      "Interest at 36% daily on all arrears",
+      "This contract guarantees your incarceration"
+    ]
+  },
+  {
+    title: "Child Endangerment Fraud",
+    description: "False charges filed if you miss payment",
+    intensity: "extreme",
+    monthly: 2100,
+    duration: 0,
+    terms: [
+      "Pay $2,100 monthly or face fabricated criminal charges",
+      "Miss payment = false child endangerment charges filed",
+      "Arrest warrant issued for serious felony",
+      "Arrested and charged with crimes you didn't commit",
+      "Your reputation destroyed, family traumatized",
+      "Must fight charges while also paying debt",
+      "Legal fees compound the debt burden",
+      "95% penalty for missed payment",
+      "Interest at 45% daily - designed for total destruction"
+    ]
+  },
+  {
+    title: "Parole Violation Linkage",
+    description: "Non-payment treated as parole violation",
+    intensity: "extreme",
+    monthly: 1300,
+    duration: 0,
+    terms: [
+      "Pay $1,300 monthly or violate parole conditions",
+      "This debt treated as parole violation clause",
+      "Miss payment = parole officer notified immediately",
+      "Parole violation warrant issued automatically",
+      "Arrested and returned to prison for parole violation",
+      "Original sentence resumes - you go back inside",
+      "No trial, no hearing - automatic enforcement",
+      "Perfectly legal method of imprisonment",
+      "80% penalty for missed payment"
+    ]
+  },
+  {
+    title: "Immigration Consequence Debt",
+    description: "Non-payment triggers immigration charges",
+    intensity: "extreme",
+    monthly: 1650,
+    duration: 0,
+    terms: [
+      "Pay $1,650 monthly or face immigration action",
+      "Miss payment = reported to immigration authorities",
+      "Criminal charges filed - deportable offense",
+      "Arrest warrant for criminal debt evasion",
+      "Deportation proceedings begin immediately",
+      "You're arrested and deported from the country",
+      "Permanently banned from re-entry",
+      "85% penalty for missed payment",
+      "Interest at 40% daily on all arrears"
+    ]
+  },
+  {
+    title: "Serial Offender Classification",
+    description: "Treated as habitual criminal after one missed payment",
+    intensity: "extreme",
+    monthly: 1900,
+    duration: 0,
+    terms: [
+      "Pay $1,900 monthly or be labeled serial offender",
+      "Miss one payment = classified as habitual criminal",
+      "Enhanced sentencing laws apply to any future arrest",
+      "Even minor offenses carry maximum penalties",
+      "Three strikes law activated against you",
+      "You face life imprisonment for small future crimes",
+      "One missed payment = lifetime criminal status",
+      "90% penalty for missed payment",
+      "Interest at 42% daily compounds"
+    ]
+  },
+  {
+    title: "Public Registry Humiliation",
+    description: "Your face on wanted posters in your neighborhood",
+    intensity: "extreme",
+    monthly: 1200,
+    duration: 0,
+    terms: [
+      "Pay $1,200 monthly or be publicly hunted",
+      "Miss payment = wanted posters distributed in your area",
+      "Your photograph and address published publicly",
+      "Neighbors, coworkers, family see you're wanted",
+      "Public humiliation designed to force payment",
+      "Arrest warrant active and widely advertised",
+      "Impossible to hide - everyone knows you're wanted",
+      "70% penalty for missed payment",
+      "Interest at 30% daily on unpaid balance"
+    ]
   }
 ];
 
