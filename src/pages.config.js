@@ -10,6 +10,7 @@ import Home from './pages/Home';
 import KinkSessions from './pages/KinkSessions';
 import Settings from './pages/Settings';
 import Profile from './pages/Profile';
+import BullyChat from './pages/BullyChat';
 import __Layout from './Layout.jsx';
 
 
@@ -26,6 +27,7 @@ export const PAGES = {
     "KinkSessions": KinkSessions,
     "Settings": Settings,
     "Profile": Profile,
+    "BullyChat": BullyChat,
 }
 
 export const pagesConfig = {

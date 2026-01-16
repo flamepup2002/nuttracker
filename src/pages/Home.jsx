@@ -154,6 +154,19 @@ export default function Home() {
 
         {/* AI Coach, Analytics & Kink Sessions */}
         <div className="grid grid-cols-2 gap-4 mt-4">
+          <Link to={createPageUrl('BullyChat')}>
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-red-600/50 to-pink-600/50 border border-red-500/30"
+            >
+              <Sparkles className="w-8 h-8 text-white mb-3" />
+              <p className="text-white font-bold text-lg">Bully AI</p>
+              <p className="text-white/70 text-sm">Chat with AI bully</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+
           <Link to={createPageUrl('AICoach')}>
             <motion.div
               whileHover={{ scale: 1.02 }}
@@ -167,6 +180,9 @@ export default function Home() {
             </motion.div>
           </Link>
 
+
+
+        <div className="grid grid-cols-2 gap-4 mt-4">
           <Link to={createPageUrl('FindomAnalytics')}>
             <motion.div
               whileHover={{ scale: 1.02 }}
@@ -179,9 +195,7 @@ export default function Home() {
               <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
             </motion.div>
           </Link>
-        </div>
 
-        <div className="grid grid-cols-2 gap-4 mt-4">
           <Link to={createPageUrl('KinkSessions')}>
             <motion.div
               whileHover={{ scale: 1.02 }}
