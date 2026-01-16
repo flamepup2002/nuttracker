@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
-import { useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Coins, Sparkles, Check } from 'lucide-react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { ArrowLeft, Coins, Sparkles, Check, CreditCard, Plus } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { toast } from 'sonner';
+import StripePaymentSetup from '@/components/StripePaymentSetup';
+import PaymentMethodCard from '@/components/PaymentMethodCard';
 
 const coinPackages = [
   { coins: 100, price: 1, popular: false },
@@ -23,10 +25,20 @@ export default function BuyCoins() {
   const [user, setUser] = useState(null);
   const [purchasing, setPurchasing] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState(null);
+  const [showPaymentSetup, setShowPaymentSetup] = useState(false);
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
   }, []);
+
+  const { data: paymentMethodData, refetch: refetchPaymentMethod } = useQuery({
+    queryKey: ['paymentMethod'],
+    queryFn: async () => {
+      const response = await base44.functions.invoke('getStripePaymentMethod');
+      return response.data;
+    },
+    initialData: { hasPaymentMethod: false },
+  });
 
   const handlePurchase = async (pkg) => {
     if (!user?.stripe_payment_method_id) {
@@ -81,7 +93,7 @@ export default function BuyCoins() {
       </div>
 
       {/* Current Balance */}
-      <div className="px-6 pt-6">
+      <div className="px-6 pt-6 space-y-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -95,6 +107,76 @@ export default function BuyCoins() {
             </span>
             <span className="text-yellow-500 text-lg">coins</span>
           </div>
+        </motion.div>
+
+        {/* Payment Method Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="bg-zinc-900/50 rounded-2xl border border-zinc-800 p-6"
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <CreditCard className="w-5 h-5 text-blue-400" />
+            <h2 className="text-white font-bold">Payment Method</h2>
+          </div>
+
+          <AnimatePresence mode="wait">
+            {!showPaymentSetup ? (
+              paymentMethodData?.hasPaymentMethod ? (
+                <motion.div
+                  key="has-payment"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <PaymentMethodCard 
+                    paymentMethod={paymentMethodData.paymentMethod}
+                    showRemove={false}
+                  />
+                  <Button
+                    onClick={() => setShowPaymentSetup(true)}
+                    variant="outline"
+                    className="w-full mt-4 bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Update Payment Method
+                  </Button>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="no-payment"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <p className="text-zinc-400 text-sm mb-4">Add a payment method to buy coins</p>
+                  <Button
+                    onClick={() => setShowPaymentSetup(true)}
+                    className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Payment Method
+                  </Button>
+                </motion.div>
+              )
+            ) : (
+              <motion.div
+                key="setup-form"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <StripePaymentSetup
+                  onSuccess={() => {
+                    setShowPaymentSetup(false);
+                    refetchPaymentMethod();
+                  }}
+                  onCancel={() => setShowPaymentSetup(false)}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
       </div>
 
