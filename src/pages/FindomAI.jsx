@@ -99,6 +99,31 @@ export default function FindomAI() {
     { text: 'Tell me what I deserve', coins: null },
   ];
 
+  // Check if findom is enabled
+  if (!settings?.findom_enabled) {
+    return (
+      <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center px-6">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center space-y-4"
+        >
+          <Zap className="w-16 h-16 text-pink-500 mx-auto" />
+          <h1 className="text-2xl font-bold">Findom AI Locked</h1>
+          <p className="text-zinc-400 max-w-xs">
+            Enable Findom Mode in your settings to access the Findom AI and begin your financial submission.
+          </p>
+          <Button
+            onClick={() => navigate(createPageUrl('Settings'))}
+            className="bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 mt-4"
+          >
+            Go to Settings
+          </Button>
+        </motion.div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-black text-white flex flex-col">
       {/* Header */}
