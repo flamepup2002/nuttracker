@@ -140,24 +140,74 @@ export default function SellHouse() {
           <h2 className="text-white font-bold text-xl mb-6">List Your House for Auction</h2>
           
           <div className="space-y-6">
-            {/* House Value Input */}
-            <div>
-              <Label className="text-zinc-300 mb-3 block flex items-center gap-2">
-                <Home className="w-4 h-4" />
-                House Value
-              </Label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400">$</span>
+              {/* Location */}
+              <div>
+                <Label className="text-zinc-300 mb-3 block">Location</Label>
                 <Input
-                  type="number"
-                  value={houseValue}
-                  onChange={(e) => setHouseValue(e.target.value)}
-                  placeholder="500000"
-                  className="bg-zinc-800 border-zinc-700 text-white pl-8 text-lg py-6"
+                  type="text"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  placeholder="e.g., Toronto, ON or 123 Main St, Denver, CO"
+                  className="bg-zinc-800 border-zinc-700 text-white py-6"
                 />
               </div>
-              <p className="text-zinc-500 text-xs mt-2">Enter your house value in USD</p>
-            </div>
+
+              {/* House Value Input */}
+              <div>
+                <Label className="text-zinc-300 mb-3 block flex items-center gap-2">
+                  <Home className="w-4 h-4" />
+                  House Value
+                </Label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400">$</span>
+                  <Input
+                    type="number"
+                    value={houseValue}
+                    onChange={(e) => setHouseValue(e.target.value)}
+                    placeholder="500000"
+                    className="bg-zinc-800 border-zinc-700 text-white pl-8 text-lg py-6"
+                  />
+                </div>
+                <p className="text-zinc-500 text-xs mt-2">Enter your house value in USD</p>
+              </div>
+
+              {/* Property Details */}
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <Label className="text-zinc-300 mb-2 block text-sm">Bedrooms</Label>
+                  <Input
+                    type="number"
+                    value={bedrooms}
+                    onChange={(e) => setBedrooms(e.target.value)}
+                    placeholder="3"
+                    className="bg-zinc-800 border-zinc-700 text-white"
+                    min="0"
+                  />
+                </div>
+                <div>
+                  <Label className="text-zinc-300 mb-2 block text-sm">Bathrooms</Label>
+                  <Input
+                    type="number"
+                    value={bathrooms}
+                    onChange={(e) => setBathrooms(e.target.value)}
+                    placeholder="2"
+                    className="bg-zinc-800 border-zinc-700 text-white"
+                    min="0"
+                    step="0.5"
+                  />
+                </div>
+                <div>
+                  <Label className="text-zinc-300 mb-2 block text-sm">Sq. Ft.</Label>
+                  <Input
+                    type="number"
+                    value={squareFootage}
+                    onChange={(e) => setSquareFootage(e.target.value)}
+                    placeholder="2500"
+                    className="bg-zinc-800 border-zinc-700 text-white"
+                    min="0"
+                  />
+                </div>
+              </div>
 
             {/* Preview */}
             {houseValue && (
