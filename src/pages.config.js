@@ -1,5 +1,6 @@
 import AICoach from './pages/AICoach';
 import Achievements from './pages/Achievements';
+import BullyChat from './pages/BullyChat';
 import BuyCoins from './pages/BuyCoins';
 import FindomAnalytics from './pages/FindomAnalytics';
 import FindomSession from './pages/FindomSession';
@@ -8,15 +9,15 @@ import GoonerCam from './pages/GoonerCam';
 import History from './pages/History';
 import Home from './pages/Home';
 import KinkSessions from './pages/KinkSessions';
-import Settings from './pages/Settings';
 import Profile from './pages/Profile';
-import BullyChat from './pages/BullyChat';
+import Settings from './pages/Settings';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "AICoach": AICoach,
     "Achievements": Achievements,
+    "BullyChat": BullyChat,
     "BuyCoins": BuyCoins,
     "FindomAnalytics": FindomAnalytics,
     "FindomSession": FindomSession,
@@ -25,9 +26,8 @@ export const PAGES = {
     "History": History,
     "Home": Home,
     "KinkSessions": KinkSessions,
-    "Settings": Settings,
     "Profile": Profile,
-    "BullyChat": BullyChat,
+    "Settings": Settings,
 }
 
 export const pagesConfig = {
