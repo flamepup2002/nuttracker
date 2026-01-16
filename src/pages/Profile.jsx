@@ -22,11 +22,13 @@ export default function Profile() {
   const [profile, setProfile] = useState({
     full_name: '',
     bio: '',
+    gender: '',
     sexual_preference: '',
     address: '',
     birth_date: '',
     phone: '',
   });
+  const [customGender, setCustomGender] = useState(false);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -36,11 +38,18 @@ export default function Profile() {
         setProfile({
           full_name: userData.full_name || '',
           bio: userData.bio || '',
+          gender: userData.gender || '',
           sexual_preference: userData.sexual_preference || '',
           address: userData.address || '',
           birth_date: userData.birth_date || '',
           phone: userData.phone || '',
         });
+        
+        // Check if gender is a custom one
+        const standardGenders = ['male', 'female', 'non-binary', 'genderfluid', 'agender', 'prefer_not_to_say'];
+        if (userData.gender && !standardGenders.includes(userData.gender)) {
+          setCustomGender(true);
+        }
       } catch (error) {
         toast.error('Failed to load profile');
       } finally {
@@ -225,6 +234,56 @@ export default function Profile() {
             <Heart className="w-5 h-5 text-zinc-400" />
             Preferences
           </h3>
+
+          <div>
+            <Label className="text-zinc-400 text-sm mb-2">Gender Identity</Label>
+            {!customGender ? (
+              <Select 
+                value={profile.gender} 
+                onValueChange={(value) => {
+                  if (value === 'custom') {
+                    setCustomGender(true);
+                    handleChange('gender', '');
+                  } else {
+                    handleChange('gender', value);
+                  }
+                }}
+              >
+                <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white">
+                  <SelectValue placeholder="Select your gender" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="male">Male</SelectItem>
+                  <SelectItem value="female">Female</SelectItem>
+                  <SelectItem value="non-binary">Non-binary</SelectItem>
+                  <SelectItem value="genderfluid">Genderfluid</SelectItem>
+                  <SelectItem value="agender">Agender</SelectItem>
+                  <SelectItem value="prefer_not_to_say">Prefer not to say</SelectItem>
+                  <SelectItem value="custom">Custom...</SelectItem>
+                </SelectContent>
+              </Select>
+            ) : (
+              <div className="space-y-2">
+                <Input
+                  value={profile.gender}
+                  onChange={(e) => handleChange('gender', e.target.value)}
+                  placeholder="e.g., pup, puppy, kitty, mutt, etc."
+                  className="bg-zinc-800 border-zinc-700 text-white"
+                />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setCustomGender(false);
+                    handleChange('gender', '');
+                  }}
+                  className="text-zinc-400 hover:text-white text-xs"
+                >
+                  Back to standard options
+                </Button>
+              </div>
+            )}
+          </div>
 
           <div>
             <Label className="text-zinc-400 text-sm mb-2">Sexual Orientation</Label>
