@@ -21,6 +21,15 @@ const AURA_EFFECTS = [
   { id: 'celestial', name: 'Celestial Aura', icon: 'Star', color: 'from-blue-400 to-purple-500', price: 400, category: 'limited' },
 ];
 
+const THEMES = [
+  { id: 'default', name: 'Default Pink', icon: 'Sparkles', color: 'from-purple-500 to-pink-500', price: 150, category: 'cosmetic' },
+  { id: 'midnight', name: 'Midnight Blue', icon: 'Star', color: 'from-blue-600 to-indigo-700', price: 150, category: 'cosmetic' },
+  { id: 'crimson', name: 'Crimson Heat', icon: 'Flame', color: 'from-red-600 to-orange-600', price: 150, category: 'cosmetic' },
+  { id: 'emerald', name: 'Emerald Dark', icon: 'Sparkles', color: 'from-emerald-600 to-teal-700', price: 200, category: 'premium' },
+  { id: 'gold', name: 'Golden Luxury', icon: 'Crown', color: 'from-yellow-600 to-amber-700', price: 200, category: 'premium' },
+  { id: 'neon', name: 'Neon Cyber', icon: 'Zap', color: 'from-cyan-500 to-purple-500', price: 250, category: 'limited' },
+];
+
 export default function Shop() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -82,10 +91,10 @@ export default function Shop() {
   };
 
   const itemsByCategory = {
-    cosmetic: [...items.filter(i => i.category === 'cosmetic'), ...AURA_EFFECTS.filter(a => a.category === 'cosmetic')],
+    cosmetic: [...items.filter(i => i.category === 'cosmetic'), ...AURA_EFFECTS.filter(a => a.category === 'cosmetic'), ...THEMES.filter(t => t.category === 'cosmetic')],
     feature: items.filter(i => i.category === 'feature'),
-    premium: [...items.filter(i => i.category === 'premium'), ...AURA_EFFECTS.filter(a => a.category === 'premium')],
-    limited: [...items.filter(i => i.category === 'limited'), ...AURA_EFFECTS.filter(a => a.category === 'limited')],
+    premium: [...items.filter(i => i.category === 'premium'), ...AURA_EFFECTS.filter(a => a.category === 'premium'), ...THEMES.filter(t => t.category === 'premium')],
+    limited: [...items.filter(i => i.category === 'limited'), ...AURA_EFFECTS.filter(a => a.category === 'limited'), ...THEMES.filter(t => t.category === 'limited')],
   };
 
   const handleAuraPurchase = async (aura) => {
@@ -118,6 +127,43 @@ export default function Shop() {
       }));
 
       toast.success(`${aura.name} purchased!`);
+    } catch (error) {
+      toast.error('Purchase failed');
+    }
+  };
+
+  const handleThemePurchase = async (theme) => {
+    if (!user || !user.currency_balance) {
+      toast.error('Invalid user data');
+      return;
+    }
+
+    if (user.currency_balance < theme.price) {
+      toast.error('Insufficient coins');
+      return;
+    }
+
+    try {
+      // Create purchase record for theme
+      await base44.entities.Purchase.create({
+        shop_item_id: theme.id,
+        item_name: theme.name,
+        price: theme.price,
+      });
+
+      // Update user balance and active theme
+      await base44.auth.updateMe({
+        currency_balance: (user.currency_balance || 0) - theme.price,
+        active_theme: theme.id,
+      });
+
+      setUser(prev => ({
+        ...prev,
+        currency_balance: (prev?.currency_balance || 0) - theme.price,
+        active_theme: theme.id,
+      }));
+
+      toast.success(`${theme.name} purchased and activated!`);
     } catch (error) {
       toast.error('Purchase failed');
     }
@@ -156,13 +202,15 @@ export default function Shop() {
             <div className="grid grid-cols-2 gap-4">
               {itemsByCategory.cosmetic.map(item => {
                 const isAura = item.id && item.id.includes('_');
+                const isTheme = THEMES.some(t => t.id === item.id);
                 return (
                   <ShopCard
                     key={item.id}
                     item={item}
                     isPurchased={isPurchased(item.id)}
+                    isActive={isTheme && user?.active_theme === item.id}
                     isLoading={purchaseMutation.isPending}
-                    onPurchase={() => isAura ? handleAuraPurchase(item) : purchaseMutation.mutate(item)}
+                    onPurchase={() => isTheme ? handleThemePurchase(item) : isAura ? handleAuraPurchase(item) : purchaseMutation.mutate(item)}
                     canAfford={(user?.currency_balance || 0) >= item.price}
                   />
                 );
@@ -203,13 +251,15 @@ export default function Shop() {
             <div className="grid gap-4">
               {itemsByCategory.premium.map(item => {
                 const isAura = item.id && item.id.includes('_');
+                const isTheme = THEMES.some(t => t.id === item.id);
                 return (
                   <ShopCardWide
                     key={item.id}
                     item={item}
                     isPurchased={isPurchased(item.id)}
+                    isActive={isTheme && user?.active_theme === item.id}
                     isLoading={purchaseMutation.isPending}
-                    onPurchase={() => isAura ? handleAuraPurchase(item) : purchaseMutation.mutate(item)}
+                    onPurchase={() => isTheme ? handleThemePurchase(item) : isAura ? handleAuraPurchase(item) : purchaseMutation.mutate(item)}
                     canAfford={(user?.currency_balance || 0) >= item.price}
                   />
                 );
@@ -228,13 +278,15 @@ export default function Shop() {
             <div className="grid gap-4">
               {itemsByCategory.limited.map(item => {
                 const isAura = item.id && item.id.includes('_');
+                const isTheme = THEMES.some(t => t.id === item.id);
                 return (
                   <ShopCardWide
                     key={item.id}
                     item={item}
                     isPurchased={isPurchased(item.id)}
+                    isActive={isTheme && user?.active_theme === item.id}
                     isLoading={purchaseMutation.isPending}
-                    onPurchase={() => isAura ? handleAuraPurchase(item) : purchaseMutation.mutate(item)}
+                    onPurchase={() => isTheme ? handleThemePurchase(item) : isAura ? handleAuraPurchase(item) : purchaseMutation.mutate(item)}
                     canAfford={(user?.currency_balance || 0) >= item.price}
                   />
                 );
@@ -254,18 +306,18 @@ export default function Shop() {
   );
 }
 
-function ShopCard({ item, isPurchased, isLoading, onPurchase, canAfford }) {
+function ShopCard({ item, isPurchased, isActive, isLoading, onPurchase, canAfford }) {
   const IconComponent = iconMap[item.icon] || ShoppingBag;
 
   return (
     <motion.button
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
-      disabled={isPurchased || !canAfford || isLoading}
+      disabled={(isPurchased && !isActive) || !canAfford || isLoading}
       onClick={onPurchase}
-      className={`relative overflow-hidden rounded-2xl p-4 text-left transition-all h-full ${
-        isPurchased ? 'opacity-60 cursor-not-allowed' : ''
-      } ${!canAfford && !isPurchased ? 'opacity-50' : ''}`}
+      className={`relative overflow-hidden rounded-2xl p-4 text-left transition-all h-full border-2 ${
+        isActive ? 'border-cyan-400 shadow-lg shadow-cyan-400/50' : 'border-transparent'
+      } ${isPurchased && !isActive ? 'opacity-60 cursor-not-allowed' : ''} ${!canAfford && !isPurchased ? 'opacity-50' : ''}`}
     >
       <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-20`} />
       <div className="relative">
@@ -278,25 +330,25 @@ function ShopCard({ item, isPurchased, isLoading, onPurchase, canAfford }) {
             <Coins className="w-4 h-4" />
             {item.price}
           </span>
-          {isPurchased && <Check className="w-4 h-4 text-green-400" />}
+          {isActive ? <span className="text-cyan-400 text-xs font-bold">ACTIVE</span> : isPurchased && <Check className="w-4 h-4 text-green-400" />}
         </div>
       </div>
     </motion.button>
   );
 }
 
-function ShopCardWide({ item, isPurchased, isLoading, onPurchase, canAfford }) {
+function ShopCardWide({ item, isPurchased, isActive, isLoading, onPurchase, canAfford }) {
   const IconComponent = iconMap[item.icon] || ShoppingBag;
 
   return (
     <motion.button
       whileHover={{ scale: 1.01 }}
       whileTap={{ scale: 0.99 }}
-      disabled={isPurchased || !canAfford || isLoading}
+      disabled={(isPurchased && !isActive) || !canAfford || isLoading}
       onClick={onPurchase}
-      className={`relative overflow-hidden rounded-2xl p-5 text-left transition-all w-full ${
-        isPurchased ? 'opacity-60 cursor-not-allowed' : ''
-      } ${!canAfford && !isPurchased ? 'opacity-50' : ''}`}
+      className={`relative overflow-hidden rounded-2xl p-5 text-left transition-all w-full border-2 ${
+        isActive ? 'border-cyan-400 shadow-lg shadow-cyan-400/50' : 'border-transparent'
+      } ${isPurchased && !isActive ? 'opacity-60 cursor-not-allowed' : ''} ${!canAfford && !isPurchased ? 'opacity-50' : ''}`}
     >
       <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-15`} />
       <div className="relative flex items-center justify-between">
@@ -314,7 +366,7 @@ function ShopCardWide({ item, isPurchased, isLoading, onPurchase, canAfford }) {
             <Coins className="w-5 h-5" />
             {item.price}
           </span>
-          {isPurchased && <Check className="w-5 h-5 text-green-400" />}
+          {isActive ? <span className="text-cyan-400 text-sm font-bold">ACTIVE</span> : isPurchased && <Check className="w-5 h-5 text-green-400" />}
         </div>
       </div>
     </motion.button>
