@@ -122,8 +122,8 @@ export default function BuyCoins() {
             <button
               onClick={() => handlePurchase(pkg)}
               disabled={purchasing}
-              className={`w-full bg-zinc-900/50 border rounded-2xl p-5 flex items-center justify-between transition-all hover:bg-zinc-800/50 disabled:opacity-50 ${
-                pkg.popular ? 'border-pink-500/30' : 'border-zinc-800'
+              className={`w-full rounded-2xl p-5 flex items-center justify-between transition-all disabled:opacity-50 ${
+                pkg.popular ? 'bg-gradient-to-r from-pink-600/30 to-purple-600/30 border border-pink-500/50 hover:from-pink-600/40 hover:to-purple-600/40' : 'bg-zinc-900/50 border border-zinc-800 hover:bg-zinc-800/50'
               }`}
             >
               <div className="flex items-center gap-4">
@@ -138,8 +138,8 @@ export default function BuyCoins() {
               {purchasing && selectedPackage?.coins === pkg.coins ? (
                 <div className="animate-spin w-6 h-6 border-2 border-pink-500 border-t-transparent rounded-full" />
               ) : (
-                <div className="text-pink-400 font-bold text-lg">
-                  ${pkg.price}
+                <div className="bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 px-4 py-2 rounded-lg font-bold text-white text-sm">
+                  Buy ${pkg.price}
                 </div>
               )}
             </button>
