@@ -54,7 +54,7 @@ export default function Settings() {
   const [settings, setSettings] = useState({
     findom_enabled: false,
     base_cost: 5,
-    escalation_rate: 0.5,
+    escalation_rate: 10,
     interest_rate: 0,
     heart_monitor_connected: false,
     goonercam_enabled: false,
@@ -69,7 +69,7 @@ export default function Settings() {
       setSettings({
         findom_enabled: existingSettings.findom_enabled ?? false,
         base_cost: existingSettings.base_cost ?? 5,
-        escalation_rate: existingSettings.escalation_rate ?? 0.5,
+        escalation_rate: existingSettings.escalation_rate ?? 10,
         interest_rate: existingSettings.interest_rate ?? 0,
         heart_monitor_connected: existingSettings.heart_monitor_connected ?? false,
         goonercam_enabled: existingSettings.goonercam_enabled ?? false,
@@ -244,18 +244,18 @@ export default function Settings() {
                           <Info className="w-4 h-4 text-zinc-500" />
                         </TooltipTrigger>
                         <TooltipContent>
-                          <p>Cost increase per minute of session</p>
+                          <p>Percentage increase per minute of session</p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
                   </Label>
-                  <span className="text-green-400 font-bold">${settings.escalation_rate}/min</span>
+                  <span className="text-green-400 font-bold">{settings.escalation_rate}%/min</span>
                 </div>
                 <Slider
-                  value={[settings.escalation_rate * 10]}
-                  onValueChange={([value]) => handleChange('escalation_rate', value / 10)}
+                  value={[settings.escalation_rate]}
+                  onValueChange={([value]) => handleChange('escalation_rate', value)}
                   min={1}
-                  max={50}
+                  max={100}
                   step={1}
                   className="py-4"
                 />
@@ -296,19 +296,19 @@ export default function Settings() {
                   <div>
                     <p className="text-zinc-500 text-xs">5 min</p>
                     <p className="text-white font-bold">
-                      ${((settings.base_cost + (settings.escalation_rate * 5)) * Math.pow(1 + settings.interest_rate / 100, 5)).toFixed(2)}
+                      ${(settings.base_cost * Math.pow(1 + settings.escalation_rate / 100, 5) * Math.pow(1 + settings.interest_rate / 100, 5)).toFixed(2)}
                     </p>
                   </div>
                   <div>
                     <p className="text-zinc-500 text-xs">15 min</p>
                     <p className="text-white font-bold">
-                      ${((settings.base_cost + (settings.escalation_rate * 15)) * Math.pow(1 + settings.interest_rate / 100, 15)).toFixed(2)}
+                      ${(settings.base_cost * Math.pow(1 + settings.escalation_rate / 100, 15) * Math.pow(1 + settings.interest_rate / 100, 15)).toFixed(2)}
                     </p>
                   </div>
                   <div>
                     <p className="text-zinc-500 text-xs">30 min</p>
                     <p className="text-white font-bold">
-                      ${((settings.base_cost + (settings.escalation_rate * 30)) * Math.pow(1 + settings.interest_rate / 100, 30)).toFixed(2)}
+                      ${(settings.base_cost * Math.pow(1 + settings.escalation_rate / 100, 30) * Math.pow(1 + settings.interest_rate / 100, 30)).toFixed(2)}
                     </p>
                   </div>
                 </div>
