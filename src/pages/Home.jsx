@@ -85,11 +85,13 @@ export default function Home() {
                 {user?.full_name ? `Welcome back, ${user.full_name.split(' ')[0]}` : 'Track your pleasure'}
               </p>
               {user && (
-                <div className="flex items-center gap-2 mt-2 bg-gradient-to-r from-yellow-600/20 to-amber-600/20 border border-yellow-500/30 rounded-lg px-3 py-1.5 w-fit">
-                  <Coins className="w-4 h-4 text-yellow-400" />
-                  <span className="text-yellow-400 font-bold">{user.currency_balance || 0}</span>
-                  <span className="text-yellow-500 text-xs">coins</span>
-                </div>
+                <Link to={createPageUrl('BuyCoins')}>
+                  <div className="flex items-center gap-2 mt-2 bg-gradient-to-r from-yellow-600/20 to-amber-600/20 border border-yellow-500/30 rounded-lg px-3 py-1.5 w-fit hover:from-yellow-600/30 hover:to-amber-600/30 transition-all cursor-pointer">
+                    <Coins className="w-4 h-4 text-yellow-400" />
+                    <span className="text-yellow-400 font-bold">{user.currency_balance || 0}</span>
+                    <span className="text-yellow-500 text-xs">coins</span>
+                  </div>
+                </Link>
               )}
             </div>
             <Link to={createPageUrl('Settings')}>

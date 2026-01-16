@@ -3,6 +3,7 @@ import GoonSession from './pages/GoonSession';
 import History from './pages/History';
 import Home from './pages/Home';
 import Settings from './pages/Settings';
+import BuyCoins from './pages/BuyCoins';
 import __Layout from './Layout.jsx';
 
 
@@ -12,6 +13,7 @@ export const PAGES = {
     "History": History,
     "Home": Home,
     "Settings": Settings,
+    "BuyCoins": BuyCoins,
 }
 
 export const pagesConfig = {
