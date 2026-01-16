@@ -17,6 +17,7 @@ import Home from './pages/Home';
 import Settings from './pages/Settings';
 import FindomDebt from './pages/FindomDebt';
 import Edge from './pages/Edge';
+import SellHouse from './pages/SellHouse';
 import __Layout from './Layout.jsx';
 
 
@@ -40,6 +41,7 @@ export const PAGES = {
     "Settings": Settings,
     "FindomDebt": FindomDebt,
     "Edge": Edge,
+    "SellHouse": SellHouse,
 }
 
 export const pagesConfig = {

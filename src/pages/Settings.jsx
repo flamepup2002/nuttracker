@@ -98,6 +98,7 @@ export default function Settings() {
 
   const [settings, setSettings] = useState({
     findom_enabled: false,
+    extreme_mode: false,
     base_cost: 5,
     escalation_rate: 10,
     interest_rate: 0,
@@ -117,6 +118,7 @@ export default function Settings() {
    if (existingSettings) {
      setSettings({
        findom_enabled: existingSettings.findom_enabled ?? false,
+       extreme_mode: existingSettings.extreme_mode ?? false,
        base_cost: existingSettings.base_cost ?? 5,
        escalation_rate: existingSettings.escalation_rate ?? 10,
        interest_rate: existingSettings.interest_rate ?? 0,
@@ -247,6 +249,17 @@ export default function Settings() {
               animate={{ opacity: 1, height: 'auto' }}
               className="space-y-6"
             >
+                {/* Extreme Mode Toggle */}
+                <div className="flex items-center justify-between p-4 bg-red-900/20 border border-red-500/30 rounded-xl">
+                  <div>
+                    <p className="text-white font-medium">Extreme Mode</p>
+                    <p className="text-zinc-500 text-xs mt-1">Unlock extreme findom features (house sale, etc.)</p>
+                  </div>
+                  <Switch
+                    checked={settings.extreme_mode}
+                    onCheckedChange={(checked) => handleChange('extreme_mode', checked)}
+                  />
+                </div>
               {/* Warning */}
               <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-xl p-4 flex items-start gap-3">
                 <AlertTriangle className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
