@@ -7,7 +7,6 @@ import FindomAI from './pages/FindomAI';
 import FindomAnalytics from './pages/FindomAnalytics';
 import FindomDebt from './pages/FindomDebt';
 import FindomSession from './pages/FindomSession';
-import GoonFuel from './pages/GoonFuel';
 import GoonSession from './pages/GoonSession';
 import GoonerCam from './pages/GoonerCam';
 import History from './pages/History';
@@ -32,7 +31,6 @@ export const PAGES = {
     "FindomAnalytics": FindomAnalytics,
     "FindomDebt": FindomDebt,
     "FindomSession": FindomSession,
-    "GoonFuel": GoonFuel,
     "GoonSession": GoonSession,
     "GoonerCam": GoonerCam,
     "History": History,
