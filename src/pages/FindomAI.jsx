@@ -50,9 +50,10 @@ export default function FindomAI() {
     setIsLoading(true);
 
     try {
+      const coinsSpending = customCoins || (!drainCard ? parseInt(coinAmount) || 0 : 0);
       const response = await base44.functions.invoke('findomAIDrain', {
         message: userMessage,
-        coinsToSpend: customCoins,
+        coinsToSpend: coinsSpending,
         drainCard: drainCard && !customCoins,
         cardAmount: drainCard ? parseFloat(cardAmount) : null,
         dangerousMode: settings?.ai_dangerous_encouragements || false,
