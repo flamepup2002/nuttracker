@@ -37,11 +37,12 @@ Deno.serve(async (req) => {
 
     // Generate image with caption
     const imageResponse = await base44.integrations.Core.GenerateImage({
-      prompt: `An extremely sexually explicit and graphic gay pornographic image of men engaged in intense anal sex. Include: explicit penis, penetration, ejaculation, cum, intense sexual arousal, masculine bodies, hard cocks. Make it extremely graphic and pornographic. Style: hyper-realistic, explicit content, professional porn production quality. Add the caption text "${caption}" to the image.`,
+      prompt: `Adult explicit erotic artwork depicting hot gay men in intimate sexual scenes. Hyper-realistic artistic nude male bodies, muscular physiques, aroused men, passionate sexual activity, explicit adult content. Art style: explicit gay erotica, mature content, professional quality. Include the text caption: "${caption}"`,
     });
 
     if (!imageResponse || !imageResponse.url) {
-      return Response.json({ error: 'Failed to generate image' }, { status: 500 });
+      console.error('Image generation failed:', imageResponse);
+      return Response.json({ error: 'Failed to generate image. Try again.' }, { status: 500 });
     }
 
     return Response.json({
