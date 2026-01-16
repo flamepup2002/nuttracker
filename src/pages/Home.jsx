@@ -6,7 +6,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { 
   Flame, Activity, DollarSign, Droplet, X, Ban, 
-  TrendingUp, Calendar, Play, Settings, ChevronRight, Coins, Sparkles
+  TrendingUp, Calendar, Play, Settings, ChevronRight, Coins, Sparkles, Trophy
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import StatsCard from '@/components/StatsCard';
@@ -94,11 +94,18 @@ export default function Home() {
                 </Link>
               )}
             </div>
-            <Link to={createPageUrl('Settings')}>
-              <Button variant="ghost" size="icon" className="text-zinc-400 hover:text-white">
-                <Settings className="w-5 h-5" />
-              </Button>
-            </Link>
+            <div className="flex gap-2">
+              <Link to={createPageUrl('Achievements')}>
+                <Button variant="ghost" size="icon" className="text-zinc-400 hover:text-white">
+                  <Trophy className="w-5 h-5" />
+                </Button>
+              </Link>
+              <Link to={createPageUrl('Settings')}>
+                <Button variant="ghost" size="icon" className="text-zinc-400 hover:text-white">
+                  <Settings className="w-5 h-5" />
+                </Button>
+              </Link>
+            </div>
           </motion.div>
         </div>
       </div>

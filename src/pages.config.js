@@ -6,6 +6,7 @@ import History from './pages/History';
 import Home from './pages/Home';
 import Settings from './pages/Settings';
 import AICoach from './pages/AICoach';
+import Achievements from './pages/Achievements';
 import __Layout from './Layout.jsx';
 
 
@@ -18,6 +19,7 @@ export const PAGES = {
     "Home": Home,
     "Settings": Settings,
     "AICoach": AICoach,
+    "Achievements": Achievements,
 }
 
 export const pagesConfig = {
