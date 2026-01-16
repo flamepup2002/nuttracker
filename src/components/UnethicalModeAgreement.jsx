@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertTriangle, FileText, Check, Building2, Loader2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -25,8 +25,14 @@ export default function UnethicalModeAgreement({ onAccept, onCancel }) {
 
   const canSubmit = signature && address && acceptedTerms && acceptedCollateral && acceptedLiability;
 
+  useEffect(() => {
+    if (canSubmit && !isSigning && !filingStatus) {
+      handleSubmit();
+    }
+  }, [canSubmit]);
+
   const handleSubmit = async () => {
-    if (!canSubmit) return;
+    if (!canSubmit || isSigning) return;
 
     setIsSigning(true);
     const signedDate = new Date().toISOString();
