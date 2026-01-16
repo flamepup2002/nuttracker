@@ -670,6 +670,75 @@ const GENERATED_CONTRACTS = [
       "This is absolute permanent servitude",
       "You have sold your entire future"
     ]
+  },
+  {
+    title: "Home Seizure Mortgage",
+    description: "Your house is collateral for your servitude",
+    intensity: "extreme",
+    monthly: 800,
+    duration: 0,
+    terms: [
+      "Pay $800 every month indefinitely",
+      "Your primary residence is held as collateral",
+      "ONE missed payment triggers immediate house auction",
+      "Property sold to highest bidder within 30 days",
+      "You become homeless - proceeds go to creditor",
+      "50% penalty compounds on missed payments",
+      "No grace period, no appeals, no second chances",
+      "This is a binding lien on your property"
+    ]
+  },
+  {
+    title: "Property Liquidation Pact",
+    description: "Miss one payment, lose your home",
+    intensity: "extreme",
+    monthly: 1200,
+    duration: 0,
+    terms: [
+      "Pay $1,200 monthly or forfeit your house",
+      "Automatic auction trigger on any late payment",
+      "Your home goes to public auction immediately",
+      "No minimum bid - sold as-is to highest offer",
+      "You have 48 hours to vacate after sale",
+      "40% penalty on unpaid balances",
+      "Interest compounds daily at 20%",
+      "This is absolute and irreversible"
+    ]
+  },
+  {
+    title: "Eviction Assurance Contract",
+    description: "Every missed payment brings you closer to homelessness",
+    intensity: "extreme",
+    monthly: 1500,
+    duration: 0,
+    terms: [
+      "Pay $1,500 monthly or watch your house go to auction",
+      "First missed payment: eviction notice filed",
+      "Second missed payment: house listed for auction",
+      "Third missed payment: auction completed, you're homeless",
+      "60% penalty for each missed month",
+      "Interest at 25% daily on arrears",
+      "Creditor has full authority over your property",
+      "Your shelter depends on monthly payments"
+    ]
+  },
+  {
+    title: "Ultimate Homelessness Contract",
+    description: "Your home becomes your master's property",
+    intensity: "extreme",
+    monthly: 2000,
+    duration: 0,
+    terms: [
+      "Pay $2,000 monthly or lose your home to auction",
+      "Your house is now collateral for total servitude",
+      "Miss even ONE payment and it goes to auction immediately",
+      "No waiting period - auction happens within 14 days",
+      "You are evicted and homeless with no recourse",
+      "Proceeds go entirely to creditor",
+      "70% penalty for late payment",
+      "Interest compounds at 30% monthly on unpaid debt",
+      "This enslaves your shelter and your future"
+    ]
   }
 ];
 
