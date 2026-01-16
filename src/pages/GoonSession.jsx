@@ -3,9 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
+import { useQuery } from '@tanstack/react-query';
 import { 
   Play, Square, ArrowLeft, Activity, Heart, 
-  Flame, Clock, TrendingUp, ChevronDown
+  Flame, Clock, TrendingUp, ChevronDown, Radio
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { toast } from 'sonner';
@@ -26,6 +27,14 @@ export default function GoonSession() {
   
   // Detect iOS (Web Bluetooth not supported)
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+  const { data: settings } = useQuery({
+    queryKey: ['userSettings'],
+    queryFn: async () => {
+      const list = await base44.entities.UserSettings.list();
+      return list[0] || null;
+    },
+  });
 
   const startSession = async () => {
     try {
@@ -117,6 +126,21 @@ export default function GoonSession() {
 
       {/* Main Content */}
       <div className="px-6 pb-24 space-y-6">
+        {/* Broadcasting Indicator */}
+        {isActive && settings?.broadcast_enabled && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-gradient-to-r from-red-600/20 to-pink-600/20 border border-red-500/30 rounded-xl p-3 flex items-center gap-3"
+          >
+            <div className="flex items-center gap-2">
+              <Radio className="w-4 h-4 text-red-400 animate-pulse" />
+              <span className="text-red-400 font-bold text-sm">LIVE</span>
+            </div>
+            <p className="text-zinc-400 text-xs">Broadcasting on GoonerCam</p>
+          </motion.div>
+        )}
+
         {/* Timer */}
         <SessionTimer 
           isActive={isActive} 

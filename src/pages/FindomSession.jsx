@@ -6,7 +6,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { 
   Play, Square, ArrowLeft, DollarSign, AlertTriangle,
-  Flame, TrendingUp, Zap, CreditCard, Lock
+  Flame, TrendingUp, Zap, CreditCard, Lock, Radio
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { toast } from 'sonner';
@@ -247,6 +247,21 @@ export default function FindomSession() {
 
       {/* Main Content */}
       <div className="px-6 pb-24 space-y-6">
+        {/* Broadcasting Indicator */}
+        {isActive && settings?.broadcast_enabled && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-gradient-to-r from-red-600/20 to-pink-600/20 border border-red-500/30 rounded-xl p-3 flex items-center gap-3"
+          >
+            <div className="flex items-center gap-2">
+              <Radio className="w-4 h-4 text-red-400 animate-pulse" />
+              <span className="text-red-400 font-bold text-sm">LIVE</span>
+            </div>
+            <p className="text-zinc-400 text-xs">Broadcasting on GoonerCam</p>
+          </motion.div>
+        )}
+
         {/* Timer */}
         <SessionTimer 
           isActive={isActive} 
