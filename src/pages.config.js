@@ -13,8 +13,8 @@ import Home from './pages/Home';
 import KinkSessions from './pages/KinkSessions';
 import PremiumFindom from './pages/PremiumFindom';
 import Profile from './pages/Profile';
-import Shop from './pages/Shop';
 import Settings from './pages/Settings';
+import Shop from './pages/Shop';
 import __Layout from './Layout.jsx';
 
 
@@ -34,8 +34,8 @@ export const PAGES = {
     "KinkSessions": KinkSessions,
     "PremiumFindom": PremiumFindom,
     "Profile": Profile,
-    "Shop": Shop,
     "Settings": Settings,
+    "Shop": Shop,
 }
 
 export const pagesConfig = {

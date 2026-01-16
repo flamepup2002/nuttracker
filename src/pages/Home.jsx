@@ -34,28 +34,6 @@ export default function Home() {
     },
   });
 
-  // Calculate unpaid findom debt with interest
-  const calculateUnpaidDebt = () => {
-    const unpaidSessions = sessions.filter(s => s.is_findom && s.status === 'completed' && s.total_cost > 0);
-    
-    if (unpaidSessions.length === 0) return 0;
-
-    const interestRate = settings?.interest_rate || 0;
-    const now = new Date();
-    let totalDebt = 0;
-
-    unpaidSessions.forEach(session => {
-      const endDate = new Date(session.end_time || session.created_date);
-      const daysPassed = (now - endDate) / (1000 * 60 * 60 * 24);
-      const debtWithInterest = session.total_cost * Math.pow(1 + interestRate / 100, daysPassed);
-      totalDebt += debtWithInterest;
-    });
-
-    return totalDebt;
-  };
-
-  const unpaidDebt = calculateUnpaidDebt();
-
   useEffect(() => {
     const initUser = async () => {
       const userData = await base44.auth.me().catch(() => null);
@@ -147,22 +125,13 @@ export default function Home() {
                 {user?.full_name ? `Welcome back, ${user.full_name.split(' ')[0]}` : 'Track your pleasure'}
               </p>
               {user && (
-                <div className="flex flex-col gap-2 mt-2">
-                  <Link to={createPageUrl('BuyCoins')}>
-                    <div className="bg-gradient-to-r from-yellow-600/20 to-amber-600/20 border border-yellow-500/30 rounded-lg px-3 py-1.5 w-fit hover:from-yellow-600/30 hover:to-amber-600/30 transition-all cursor-pointer flex items-center gap-2">
-                      <Coins className="w-4 h-4 text-yellow-400" />
-                      <span className="text-yellow-400 font-bold">{user.currency_balance || 0}</span>
-                      <span className="text-yellow-500 text-xs">coins</span>
-                    </div>
-                  </Link>
-                  {unpaidDebt > 0 && (
-                    <div className="bg-gradient-to-r from-red-600/20 to-pink-600/20 border border-red-500/30 rounded-lg px-3 py-1.5 w-fit flex items-center gap-2">
-                      <DollarSign className="w-4 h-4 text-red-400" />
-                      <span className="text-red-400 font-bold">${unpaidDebt.toFixed(2)}</span>
-                      <span className="text-red-500 text-xs">debt</span>
-                    </div>
-                  )}
-                </div>
+                <Link to={createPageUrl('BuyCoins')}>
+                  <div className="flex items-center gap-2 mt-2 bg-gradient-to-r from-yellow-600/20 to-amber-600/20 border border-yellow-500/30 rounded-lg px-3 py-1.5 w-fit hover:from-yellow-600/30 hover:to-amber-600/30 transition-all cursor-pointer">
+                    <Coins className="w-4 h-4 text-yellow-400" />
+                    <span className="text-yellow-400 font-bold">{user.currency_balance || 0}</span>
+                    <span className="text-yellow-500 text-xs">coins</span>
+                  </div>
+                </Link>
               )}
             </div>
             <div className="flex gap-2">
