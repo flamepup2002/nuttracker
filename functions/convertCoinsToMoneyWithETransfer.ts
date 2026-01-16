@@ -54,38 +54,25 @@ Deno.serve(async (req) => {
       await base44.auth.updateMe({ stripe_customer_id: customerId });
     }
 
-    // Create bank account token (you would typically get this from Stripe's bank account verification)
-    // For now, we'll store the hashed bank info and create a payout
-    let bankAccountToken = user.stripe_bank_account_token;
-
-    if (!bankAccountToken) {
-      // Create bank account token for the customer
-      // NOTE: In production, you'd want to use Stripe's ACH verification flow
-      const bankAccount = await stripe.customers.createSource(customerId, {
-        source: {
-          object: 'bank_account',
-          country: 'US',
-          currency: 'usd',
-          account_holder_name: user.bank_account_holder,
-          account_number: user.bank_account_number,
-          routing_number: user.bank_routing_number,
-          account_holder_type: 'individual',
-        },
-      });
-
-      bankAccountToken = bankAccount.id;
-      
-      // Store the token
-      await base44.auth.updateMe({ stripe_bank_account_token: bankAccountToken });
-    }
-
-    // Create a payout to the bank account
+    // Create a payout directly to the bank account
     const payout = await stripe.payouts.create({
       amount: amountInCents,
       currency: 'usd',
-      destination: bankAccountToken,
+      method: 'instant',
+      source_type: 'bank_account',
+      destination: customerId, // Payout to the customer's bank account on file
       statement_descriptor: 'KinkCoin Conversion',
       metadata: { base44_user_id: user.id, coins_converted: coins },
+    }).catch(async (error) => {
+      // If instant payout fails, try standard payout
+      return stripe.payouts.create({
+        amount: amountInCents,
+        currency: 'usd',
+        method: 'standard',
+        destination: customerId,
+        statement_descriptor: 'KinkCoin Conversion',
+        metadata: { base44_user_id: user.id, coins_converted: coins },
+      });
     });
 
     // Deduct coins from user
