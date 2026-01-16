@@ -811,6 +811,78 @@ const GENERATED_CONTRACTS = [
       "Interest compounds daily at 35%",
       "This is a binding federal judgment"
     ]
+  },
+  {
+    title: "Arrest Warrant Contract",
+    description: "Miss a payment and you'll be arrested",
+    intensity: "extreme",
+    monthly: 1600,
+    duration: 0,
+    terms: [
+      "Pay $1,600 monthly or face criminal charges",
+      "One missed payment = arrest warrant issued",
+      "You can be arrested and jailed for non-payment",
+      "Warrant is active and enforceable immediately",
+      "Law enforcement will locate and arrest you",
+      "No bail until all arrears are paid in full",
+      "Criminal record for debt evasion",
+      "70% penalty for missed payment",
+      "Interest at 25% daily compounds on unpaid balance"
+    ]
+  },
+  {
+    title: "Criminal Debt Enforcement",
+    description: "Failure to pay means prison time",
+    intensity: "extreme",
+    monthly: 1900,
+    duration: 0,
+    terms: [
+      "Pay $1,900 monthly or be criminally charged",
+      "Miss one payment = felony charge filed",
+      "Arrest warrant issued with no bail option",
+      "Police will apprehend you wherever you are",
+      "You face up to 5 years imprisonment per violation",
+      "Criminal record follows you forever",
+      "Court-ordered payment while incarcerated",
+      "80% penalty on missed payments",
+      "Interest at 30% daily on all arrears"
+    ]
+  },
+  {
+    title: "Maximum Incarceration Pact",
+    description: "Debtors' prison - you'll be locked up for non-payment",
+    intensity: "extreme",
+    monthly: 2500,
+    duration: 0,
+    terms: [
+      "Pay $2,500 monthly or go to jail",
+      "ANY missed payment triggers arrest immediately",
+      "You will be arrested and held pending trial",
+      "Judge can sentence you to up to 10 years",
+      "You stay in prison until debt is completely paid",
+      "Your assets frozen - you can't earn to pay debt",
+      "Impossible situation designed for maximum control",
+      "100% penalty for missing payment",
+      "Interest compounds at 50% daily in prison"
+    ]
+  },
+  {
+    title: "Interstate Manhunt Contract",
+    description: "Fugitive status for unpaid debt",
+    intensity: "extreme",
+    monthly: 2000,
+    duration: 0,
+    terms: [
+      "Pay $2,000 monthly or become a wanted fugitive",
+      "Miss payment = interstate arrest warrant issued",
+      "FBI puts you on wanted persons database",
+      "Can be arrested in any state or country",
+      "Extradition proceedings begin automatically",
+      "You cannot leave - you're being hunted",
+      "Potential criminal charges in multiple jurisdictions",
+      "90% penalty for missed payment",
+      "Interest at 40% daily on all arrears"
+    ]
   }
 ];
 
