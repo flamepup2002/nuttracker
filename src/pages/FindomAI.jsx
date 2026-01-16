@@ -75,6 +75,52 @@ export default function FindomAI() {
     }
   };
 
+  const handleCardDrain = async () => {
+    if (!cardAmount || parseFloat(cardAmount) <= 0) {
+      toast.error('Enter a valid amount');
+      return;
+    }
+
+    const userMessage = inputValue || 'I submit my card as tribute';
+    setInputValue('');
+    setMessages(prev => [...prev, { role: 'user', content: `Charges $${cardAmount} to card` }]);
+    setIsLoading(true);
+
+    try {
+      const response = await base44.functions.invoke('findomCardDrain', {
+        message: userMessage,
+        amount: parseFloat(cardAmount),
+      });
+
+      if (response.data.error) {
+        toast.error(response.data.error);
+        setMessages(prev => [
+          ...prev,
+          {
+            role: 'ai',
+            content: response.data.error,
+          },
+        ]);
+      } else {
+        setMessages(prev => [
+          ...prev,
+          {
+            role: 'ai',
+            content: response.data.aiResponse,
+            cardCharged: response.data.amountCharged,
+          },
+        ]);
+        toast.success(`$${response.data.amountCharged} charged`);
+        setCardAmount('');
+        setShowCardPayment(false);
+      }
+    } catch (error) {
+      toast.error('Payment failed');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const [showCardPayment, setShowCardPayment] = useState(false);
   const [cardAmount, setCardAmount] = useState('');
 
