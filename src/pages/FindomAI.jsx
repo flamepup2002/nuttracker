@@ -22,6 +22,7 @@ export default function FindomAI() {
   const [isLoading, setIsLoading] = useState(false);
   const [drainCard, setDrainCard] = useState(false);
   const [cardAmount, setCardAmount] = useState('5');
+  const [coinAmount, setCoinAmount] = useState('10');
   const messagesEndRef = useRef(null);
 
   const { data: settings } = useQuery({
