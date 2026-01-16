@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Coins, Sparkles, Check, ArrowRightLeft } from 'lucide-react';
+import { ArrowLeft, Coins, Sparkles, Check } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { toast } from 'sonner';
 
@@ -23,9 +23,6 @@ export default function BuyCoins() {
   const [user, setUser] = useState(null);
   const [purchasing, setPurchasing] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState(null);
-  const [showConversion, setShowConversion] = useState(false);
-  const [conversionAmount, setConversionAmount] = useState('');
-  const [converting, setConverting] = useState(false);
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
@@ -60,45 +57,7 @@ export default function BuyCoins() {
     }
   };
 
-  const handleConversion = async () => {
-    const amount = parseInt(conversionAmount);
-    if (!amount || amount <= 0) {
-      toast.error('Enter a valid coin amount');
-      return;
-    }
 
-    if (amount > (user?.currency_balance || 0)) {
-      toast.error('Insufficient coins');
-      return;
-    }
-
-    if (!user?.bank_account_holder) {
-      toast.error('Link a bank account in Settings first');
-      navigate(createPageUrl('Settings'));
-      return;
-    }
-
-    setConverting(true);
-    try {
-      const response = await base44.functions.invoke('convertCoinsToMoneyWithETransfer', {
-        coins: amount
-      });
-
-      if (response.data.success) {
-        toast.success(`$${response.data.amount.toFixed(2)} e-transfer initiated to your bank!`);
-        setUser(prev => ({ ...prev, currency_balance: response.data.new_balance }));
-        setConversionAmount('');
-        setShowConversion(false);
-        queryClient.invalidateQueries({ queryKey: ['user'] });
-      } else {
-        toast.error(response.data.error || 'Conversion failed');
-      }
-    } catch (error) {
-      toast.error(error.response?.data?.error || 'Conversion failed');
-    } finally {
-      setConverting(false);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -139,90 +98,7 @@ export default function BuyCoins() {
         </motion.div>
       </div>
 
-      {/* Conversion Section */}
-      {!showConversion ? (
-       <div className="px-6 py-4">
-         <motion.button
-          onClick={() => setShowConversion(true)}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="w-full bg-gradient-to-r from-green-600/20 to-emerald-600/20 border border-green-500/30 hover:from-green-600/30 hover:to-emerald-600/30 rounded-2xl p-4 flex items-center justify-between transition-all"
-         >
-          <div className="flex items-center gap-3">
-            <ArrowRightLeft className="w-5 h-5 text-green-400" />
-            <div className="text-left">
-              <p className="text-white font-semibold">Convert to Cash</p>
-              <p className="text-zinc-400 text-xs">100 coins = $1 via e-transfer</p>
-            </div>
-          </div>
-          <div className="text-green-400 font-bold">
-            ${((user?.currency_balance || 0) / 100).toFixed(2)}
-          </div>
-         </motion.button>
-       </div>
-      ) : (
-       <div className="px-6 py-4">
-         <motion.div
-           initial={{ opacity: 0, y: -20 }}
-           animate={{ opacity: 1, y: 0 }}
-           className="bg-green-900/20 border border-green-500/30 rounded-2xl p-5 space-y-4"
-         >
-           <div className="flex items-center justify-between">
-             <h3 className="text-white font-semibold flex items-center gap-2">
-               <ArrowRightLeft className="w-5 h-5 text-green-400" />
-               Convert Coins to Cash
-             </h3>
-             <button
-               onClick={() => {
-                 setShowConversion(false);
-                 setConversionAmount('');
-               }}
-               className="text-zinc-400 hover:text-white"
-             >
-               ✕
-             </button>
-           </div>
 
-           <div>
-             <label className="text-zinc-300 text-sm block mb-2">
-               Amount to Convert
-             </label>
-             <div className="flex gap-2">
-               <input
-                 type="number"
-                 value={conversionAmount}
-                 onChange={(e) => setConversionAmount(e.target.value)}
-                 placeholder="0"
-                 max={user?.currency_balance || 0}
-                 className="flex-1 bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-white"
-               />
-               <button
-                 onClick={() => setConversionAmount(user?.currency_balance || '')}
-                 className="text-blue-400 hover:text-blue-300 text-sm font-medium px-3"
-               >
-                 Max
-               </button>
-             </div>
-           </div>
-
-           <div className="bg-zinc-800/50 rounded-lg p-3">
-             <p className="text-zinc-400 text-xs mb-1">You will receive:</p>
-             <p className="text-white font-bold text-lg">
-               ${(parseInt(conversionAmount || 0) / 100).toFixed(2)}
-             </p>
-           </div>
-
-           <Button
-             onClick={handleConversion}
-             disabled={converting || !conversionAmount}
-             className="w-full bg-green-600 hover:bg-green-700"
-           >
-             {converting ? 'Processing...' : 'Convert to Cash'}
-           </Button>
-         </motion.div>
-       </div>
-      )}
 
       {/* Coin Packages */}
       <div className="px-6 py-6 space-y-4">
