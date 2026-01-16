@@ -1045,6 +1045,329 @@ const GENERATED_CONTRACTS = [
       "70% penalty for missed payment",
       "Interest at 30% daily on unpaid balance"
     ]
+  },
+  {
+    title: "Federal Penitentiary Clause",
+    description: "You'll be sent to federal prison for non-payment",
+    intensity: "extreme",
+    monthly: 2300,
+    duration: 0,
+    terms: [
+      "Pay $2,300 monthly or be imprisoned federally",
+      "Miss payment = referred to federal prosecutors",
+      "Federal charges filed - maximum sentences apply",
+      "Sent to federal penitentiary for 10+ years",
+      "Federal crimes don't allow early parole",
+      "You'll serve your entire sentence in prison",
+      "100% penalty for missed payment",
+      "Interest at 50% daily compounds on unpaid balance"
+    ]
+  },
+  {
+    title: "Solitary Confinement Contract",
+    description: "Imprisonment in solitary for debt evasion",
+    intensity: "extreme",
+    monthly: 1750,
+    duration: 0,
+    terms: [
+      "Pay $1,750 monthly or go to solitary confinement",
+      "Miss payment = arrested and placed in isolation",
+      "Solitary cell 23 hours per day indefinitely",
+      "Psychological torture designed to break you",
+      "You'll never see another human face",
+      "No release until debt is paid in full",
+      "90% penalty for missed payment",
+      "Interest at 44% daily while imprisoned"
+    ]
+  },
+  {
+    title: "Extradition Guarantee",
+    description: "Hunted internationally for non-payment",
+    intensity: "extreme",
+    monthly: 2000,
+    duration: 0,
+    terms: [
+      "Pay $2,000 monthly or become international fugitive",
+      "Miss payment = Interpol red notice issued",
+      "You're hunted by every country on Earth",
+      "Arrested upon landing in any country",
+      "Extradited back to face criminal charges",
+      "International manhunt for debt evasion",
+      "85% penalty for missed payment",
+      "Interest at 42% daily on all arrears"
+    ]
+  },
+  {
+    title: "Immediate Incarceration",
+    description: "Arrested instantly upon missing payment",
+    intensity: "extreme",
+    monthly: 1500,
+    duration: 0,
+    terms: [
+      "Pay $1,500 monthly or be arrested instantly",
+      "Miss payment by even one day = immediate arrest",
+      "Officers stationed ready to apprehend you",
+      "You're taken into custody before you know what happened",
+      "No time to hide, escape, or prepare",
+      "Transported directly to holding facility",
+      "80% penalty for late payment",
+      "Interest at 38% daily on arrears"
+    ]
+  },
+  {
+    title: "Home Invasion Arrest",
+    description: "Arrested in your home in the middle of the night",
+    intensity: "extreme",
+    monthly: 1600,
+    duration: 0,
+    terms: [
+      "Pay $1,600 monthly or be arrested at home",
+      "Miss payment = no-knock warrant executed at night",
+      "Police raid your home - guns drawn",
+      "Arrested in front of your family",
+      "Your home destroyed during the raid",
+      "Traumatic arrest designed for maximum fear",
+      "75% penalty for missed payment",
+      "Interest at 40% daily on unpaid balance"
+    ]
+  },
+  {
+    title: "Drug Conspiracy Charges",
+    description: "Framed with false drug charges for non-payment",
+    intensity: "extreme",
+    monthly: 1900,
+    duration: 0,
+    terms: [
+      "Pay $1,900 monthly or face drug charges",
+      "Miss payment = arrested for drug trafficking",
+      "False evidence planted, you're charged with felony",
+      "Mandatory minimum 10 years in prison",
+      "Your life destroyed by fabricated crimes",
+      "Difficult to prove innocence from jail",
+      "95% penalty for missed payment",
+      "Interest at 48% daily on all arrears"
+    ]
+  },
+  {
+    title: "Violent Crime Accusation",
+    description: "Arrested for violent crimes you didn't commit",
+    intensity: "extreme",
+    monthly: 2100,
+    duration: 0,
+    terms: [
+      "Pay $2,100 monthly or be arrested for violence",
+      "Miss payment = arrested for assault or battery",
+      "Charged with violent felony you never committed",
+      "Prison sentences for crimes you didn't do",
+      "Your innocence doesn't matter - you're arrested",
+      "Years of legal battles prove your innocence",
+      "100% penalty for missed payment",
+      "Interest at 50% daily compounds"
+    ]
+  },
+  {
+    title: "Sex Offender Registration",
+    description: "Registered as sex offender for debt evasion",
+    intensity: "extreme",
+    monthly: 1400,
+    duration: 0,
+    terms: [
+      "Pay $1,400 monthly or be labeled sex offender",
+      "Miss payment = false sex crime charges filed",
+      "Arrested and convicted of sex offense",
+      "Registered as sex offender for life",
+      "Cannot live near schools or parks",
+      "Neighborhood notification of your presence",
+      "80% penalty for missed payment",
+      "Interest at 36% daily on arrears"
+    ]
+  },
+  {
+    title: "Consecutive Sentencing",
+    description: "Multiple sentences run back-to-back for maximum time",
+    intensity: "extreme",
+    monthly: 1800,
+    duration: 0,
+    terms: [
+      "Pay $1,800 monthly or serve consecutive sentences",
+      "Miss 3 payments = 3 consecutive sentences imposed",
+      "Each sentence is 15 years - total 45 years",
+      "You'll be imprisoned for life",
+      "Sentences stack and compound endlessly",
+      "No parole, no early release possible",
+      "90% penalty for each missed month",
+      "Interest at 45% daily compounds on unpaid debt"
+    ]
+  },
+  {
+    title: "Accessory Charges",
+    description: "Your family arrested as accomplices",
+    intensity: "extreme",
+    monthly: 1700,
+    duration: 0,
+    terms: [
+      "Pay $1,700 monthly or your family is arrested",
+      "Miss payment = family charged as accessories",
+      "Your spouse, children, parents all arrested",
+      "They face prison time for your debt",
+      "Emotional torture designed to force payment",
+      "Your loved ones suffer for your non-payment",
+      "85% penalty for missed payment",
+      "Interest at 42% daily on all arrears"
+    ]
+  },
+  {
+    title: "Lifetime Surveillance",
+    description: "Tracked and monitored forever for non-payment",
+    intensity: "extreme",
+    monthly: 1550,
+    duration: 0,
+    terms: [
+      "Pay $1,550 monthly or face lifetime surveillance",
+      "Miss payment = constant GPS and camera monitoring",
+      "Watched 24/7 by government and creditor",
+      "Every movement tracked and recorded",
+      "No privacy, no freedom of movement",
+      "Surveil continues for rest of your life",
+      "75% penalty for missed payment",
+      "Interest at 38% daily on unpaid balance"
+    ]
+  },
+  {
+    title: "Court Bailiff Executor",
+    description: "Court-appointed officer enforces arrest immediately",
+    intensity: "extreme",
+    monthly: 1650,
+    duration: 0,
+    terms: [
+      "Pay $1,650 monthly or be arrested by court officer",
+      "Miss payment = bailiff immediately issues warrant",
+      "Court officer personally enforces your arrest",
+      "You're apprehended and jailed same day",
+      "Held in custody until full payment made",
+      "Court process guarantees your imprisonment",
+      "80% penalty for missed payment",
+      "Interest at 40% daily compounds"
+    ]
+  },
+  {
+    title: "Probation Violation Debt",
+    description: "Non-payment automatically violates your probation",
+    intensity: "extreme",
+    monthly: 1400,
+    duration: 0,
+    terms: [
+      "Pay $1,400 monthly or violate probation conditions",
+      "This contract automatically part of your probation",
+      "Miss payment = probation violation filed",
+      "Probation revoked immediately upon violation",
+      "You're returned to prison for original crime",
+      "Plus additional time for debt violation",
+      "75% penalty for missed payment",
+      "Interest at 35% daily on all arrears"
+    ]
+  },
+  {
+    title: "Interstate Compact Violation",
+    description: "Violate interstate compact by missing payment",
+    intensity: "extreme",
+    monthly: 1800,
+    duration: 0,
+    terms: [
+      "Pay $1,800 monthly or violate interstate compact",
+      "Miss payment = violation of interstate agreement",
+      "You're extradited back to original state",
+      "Original charges reinstated and prosecuted",
+      "Additional charges for interstate violations",
+      "Multiple states pursue criminal charges simultaneously",
+      "85% penalty for missed payment",
+      "Interest at 41% daily on unpaid balance"
+    ]
+  },
+  {
+    title: "Cyber Crime Charges",
+    description: "False cyber crime charges if you miss payment",
+    intensity: "extreme",
+    monthly: 2000,
+    duration: 0,
+    terms: [
+      "Pay $2,000 monthly or face federal cyber charges",
+      "Miss payment = charged with federal hacking crimes",
+      "FBI investigates fabricated computer fraud",
+      "Sentenced to federal prison for tech crimes",
+      "Assets seized under CFAA violations",
+      "Impossible to defend against federal charges",
+      "95% penalty for missed payment",
+      "Interest at 48% daily compounds"
+    ]
+  },
+  {
+    title: "Conspiracy Charge Fabrication",
+    description: "Arrested for criminal conspiracy you're not part of",
+    intensity: "extreme",
+    monthly: 1700,
+    duration: 0,
+    terms: [
+      "Pay $1,700 monthly or be charged with conspiracy",
+      "Miss payment = arrested for criminal conspiracy",
+      "Charged for crimes orchestrated by others",
+      "You're the scapegoat for major criminal operation",
+      "RICO charges expose you to life imprisonment",
+      "Guilt by association - you didn't commit crimes",
+      "90% penalty for missed payment",
+      "Interest at 45% daily on all arrears"
+    ]
+  },
+  {
+    title: "Habitual Offender Escalation",
+    description: "Three strikes law activated on first violation",
+    intensity: "extreme",
+    monthly: 1900,
+    duration: 0,
+    terms: [
+      "Pay $1,900 monthly or trigger three strikes",
+      "Miss ONE payment = first strike against you",
+      "Two more missed payments = second and third strike",
+      "Third strike = life imprisonment mandatory",
+      "Lifetime in prison for unpaid debt",
+      "No parole, no appeals, no mercy",
+      "95% penalty for each missed month",
+      "Interest at 47% daily on unpaid balance"
+    ]
+  },
+  {
+    title: "Border Patrol Trap",
+    description: "Arrested attempting to cross any border",
+    intensity: "extreme",
+    monthly: 1600,
+    duration: 0,
+    terms: [
+      "Pay $1,600 monthly or be arrested at borders",
+      "Miss payment = warrant active at all borders",
+      "Arrested if you attempt to leave the country",
+      "Held by border patrol pending extradition",
+      "Cannot escape debt by fleeing jurisdiction",
+      "International borders enforced against you",
+      "80% penalty for missed payment",
+      "Interest at 39% daily compounds"
+    ]
+  },
+  {
+    title: "DNA Database Registration",
+    description: "Your DNA added to criminal database for debt",
+    intensity: "extreme",
+    monthly: 1500,
+    duration: 0,
+    terms: [
+      "Pay $1,500 monthly or be registered in DNA database",
+      "Miss payment = DNA collected and entered in system",
+      "DNA used to tie you to unsolved crimes",
+      "Possibly arrested for crimes you didn't commit",
+      "DNA evidence is considered unrefutable",
+      "You're permanently catalogued as criminal",
+      "85% penalty for missed payment",
+      "Interest at 40% daily on all arrears"
+    ]
   }
 ];
 
