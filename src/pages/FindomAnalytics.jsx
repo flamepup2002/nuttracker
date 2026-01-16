@@ -6,7 +6,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { 
   ArrowLeft, DollarSign, TrendingUp, Calendar, 
-  Flame, Trophy, BarChart3, Activity
+  Flame, Trophy, BarChart3, Activity, Lock
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { 
