@@ -22,12 +22,14 @@ import {
 } from "@/components/ui/tooltip";
 import StripePaymentSetup from '@/components/StripePaymentSetup';
 import PaymentMethodCard from '@/components/PaymentMethodCard';
+import UnethicalModeAgreement from '@/components/UnethicalModeAgreement';
 
 export default function Settings() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [hasChanges, setHasChanges] = useState(false);
   const [showPaymentSetup, setShowPaymentSetup] = useState(false);
+  const [showUnethicalAgreement, setShowUnethicalAgreement] = useState(false);
   
   // Detect iOS (Web Bluetooth not supported)
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
@@ -347,17 +349,7 @@ export default function Settings() {
                   checked={settings.unethical_mode_enabled}
                   onCheckedChange={(checked) => {
                     if (checked) {
-                      if (confirm('⚠️ FINAL WARNING: You are about to enable UNETHICAL MODE.\n\n' +
-                        'By clicking OK, you agree to:\n' +
-                        '• Unlimited charges to your payment method\n' +
-                        '• Pledging your home/property as collateral\n' +
-                        '• Total financial drain without limits\n' +
-                        '• Legal liability for all charges\n\n' +
-                        'YOU COULD LOSE EVERYTHING YOU OWN.\n\n' +
-                        'Do you accept these terms and enable Unethical Mode?')) {
-                        handleChange('unethical_mode_enabled', checked);
-                        toast.success('Unethical Mode enabled - you are now property');
-                      }
+                      setShowUnethicalAgreement(true);
                     } else {
                       handleChange('unethical_mode_enabled', checked);
                       toast.info('Unethical Mode disabled');
@@ -661,6 +653,23 @@ export default function Settings() {
           </motion.div>
         )}
       </div>
-    </div>
-  );
-}
+
+      {/* Unethical Mode Agreement Dialog */}
+      {showUnethicalAgreement && (
+        <UnethicalModeAgreement
+          onAccept={(agreementData) => {
+            handleChange('unethical_mode_enabled', true);
+            saveMutation.mutate({
+              ...settings,
+              unethical_mode_enabled: true,
+              unethical_mode_agreement_date: agreementData.signedDate,
+            });
+            setShowUnethicalAgreement(false);
+            toast.success('Agreement signed - you are now property');
+          }}
+          onCancel={() => setShowUnethicalAgreement(false)}
+        />
+      )}
+      </div>
+      );
+      }
