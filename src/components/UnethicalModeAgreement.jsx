@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AlertTriangle, FileText, Check, Building2, Loader2 } from 'lucide-react';
+import { AlertTriangle, FileText, Check, Building2, Loader2, X } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -94,10 +94,16 @@ export default function UnethicalModeAgreement({ onAccept, onCancel }) {
             <div className="w-12 h-12 rounded-xl bg-red-600/20 flex items-center justify-center">
               <FileText className="w-6 h-6 text-red-500" />
             </div>
-            <div>
+            <div className="flex-1">
               <h2 className="text-xl font-bold text-white">Financial Domination Collateral Agreement</h2>
               <p className="text-red-400 text-sm mt-1">LEGALLY BINDING DOCUMENT</p>
             </div>
+            <button
+              onClick={onCancel}
+              className="text-zinc-400 hover:text-white transition-colors p-2"
+            >
+              <X className="w-6 h-6" />
+            </button>
           </div>
         </div>
 
