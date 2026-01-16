@@ -45,14 +45,15 @@ function PaymentForm({ onSuccess, onCancel }) {
 
     try {
       // Get setup intent from backend
-      const { clientSecret } = await base44.functions.getStripeSetupIntent();
+      const response = await base44.functions.invoke('getStripeSetupIntent');
+      const data = response.data;
 
-      if (!clientSecret) {
+      if (!data.clientSecret) {
         throw new Error('Failed to initialize payment setup');
       }
 
       // Confirm card setup
-      const { setupIntent, error: stripeError } = await stripe.confirmCardSetup(clientSecret, {
+      const { setupIntent, error: stripeError } = await stripe.confirmCardSetup(data.clientSecret, {
         payment_method: {
           card: elements.getElement(CardElement),
         },
@@ -63,7 +64,7 @@ function PaymentForm({ onSuccess, onCancel }) {
       }
 
       // Save payment method to user
-      await base44.functions.setupStripeCustomer({
+      await base44.functions.invoke('setupStripeCustomer', {
         paymentMethodId: setupIntent.payment_method
       });
 

@@ -1,10 +1,15 @@
-import { base44 } from '@/api/base44Client.backend';
-import Stripe from 'stripe';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
+import Stripe from 'npm:stripe@17.5.0';
 
-export default async function getStripeSetupIntent() {
+Deno.serve(async (req) => {
   try {
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-    const user = await base44.auth.requireUser();
+    const base44 = createClientFromRequest(req);
+    const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY'));
+    const user = await base44.auth.me();
+    
+    if (!user) {
+      return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
     let customerId = user.stripe_customer_id;
 
@@ -20,7 +25,7 @@ export default async function getStripeSetupIntent() {
       });
       customerId = customer.id;
 
-      await base44.entities.User.update(user.id, {
+      await base44.asServiceRole.entities.User.update(user.id, {
         stripe_customer_id: customerId
       });
     }
@@ -31,16 +36,16 @@ export default async function getStripeSetupIntent() {
       payment_method_types: ['card']
     });
 
-    return {
+    return Response.json({
       success: true,
       clientSecret: setupIntent.client_secret,
       customerId
-    };
+    });
   } catch (error) {
     console.error('Setup intent error:', error);
-    return {
+    return Response.json({
       success: false,
       error: error.message
-    };
+    }, { status: 500 });
   }
-}
+});
