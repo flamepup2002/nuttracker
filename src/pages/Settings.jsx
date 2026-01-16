@@ -58,6 +58,7 @@ export default function Settings() {
     goonercam_enabled: false,
     broadcast_enabled: false,
     snuff_play_enabled: false,
+    unethical_mode_enabled: false,
   });
 
   useEffect(() => {
@@ -71,6 +72,7 @@ export default function Settings() {
         goonercam_enabled: existingSettings.goonercam_enabled ?? false,
         broadcast_enabled: existingSettings.broadcast_enabled ?? false,
         snuff_play_enabled: existingSettings.snuff_play_enabled ?? false,
+        unethical_mode_enabled: existingSettings.unethical_mode_enabled ?? false,
       });
     }
   }, [existingSettings]);
@@ -307,11 +309,85 @@ export default function Settings() {
                   </div>
                 </div>
               </div>
-            </motion.div>
-          )}
-        </motion.div>
+              </motion.div>
+              )}
 
-        {/* Payment Method */}
+              {/* Unethical Mode */}
+              {settings.findom_enabled && (
+              <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              className="mt-6"
+              >
+              <div className="bg-red-950/30 border-2 border-red-600/50 rounded-xl p-4 mb-4">
+                <div className="flex items-start gap-3">
+                  <AlertTriangle className="w-6 h-6 text-red-500 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-red-400 font-bold text-sm mb-2">⚠️ UNETHICAL MODE - EXTREME FINANCIAL DRAIN</p>
+                    <p className="text-red-400/80 text-xs mb-3">
+                      This mode removes ALL financial limits. By enabling, you agree that:
+                    </p>
+                    <ul className="text-red-400/70 text-xs space-y-1 ml-4 list-disc">
+                      <li>Your payment method will be charged without limits</li>
+                      <li>You authorize unlimited financial drain</li>
+                      <li>If you own property, you pledge it as collateral</li>
+                      <li>You may lose everything you own</li>
+                      <li>This is a legally binding agreement</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between p-4 bg-zinc-800/50 rounded-xl">
+                <div>
+                  <p className="text-white font-medium">Enable Unethical Mode</p>
+                  <p className="text-zinc-500 text-xs mt-1">Total financial surrender</p>
+                </div>
+                <Switch
+                  checked={settings.unethical_mode_enabled}
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      if (confirm('⚠️ FINAL WARNING: You are about to enable UNETHICAL MODE.\n\n' +
+                        'By clicking OK, you agree to:\n' +
+                        '• Unlimited charges to your payment method\n' +
+                        '• Pledging your home/property as collateral\n' +
+                        '• Total financial drain without limits\n' +
+                        '• Legal liability for all charges\n\n' +
+                        'YOU COULD LOSE EVERYTHING YOU OWN.\n\n' +
+                        'Do you accept these terms and enable Unethical Mode?')) {
+                        handleChange('unethical_mode_enabled', checked);
+                        toast.success('Unethical Mode enabled - you are now property');
+                      }
+                    } else {
+                      handleChange('unethical_mode_enabled', checked);
+                      toast.info('Unethical Mode disabled');
+                    }
+                  }}
+                />
+              </div>
+
+              {settings.unethical_mode_enabled && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  className="mt-4 bg-red-900/20 border border-red-500/30 rounded-xl p-4"
+                >
+                  <div className="flex items-start gap-3">
+                    <DollarSign className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-red-400 font-medium text-sm">Unethical Mode Active</p>
+                      <p className="text-red-500/70 text-xs mt-1">
+                        All financial limits removed. You are property now. Agreement signed: {new Date().toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+              </motion.div>
+              )}
+              </motion.div>
+
+              {/* Payment Method */}
         {settings.findom_enabled && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
