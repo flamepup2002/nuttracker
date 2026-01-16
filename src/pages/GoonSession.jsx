@@ -13,6 +13,7 @@ import SessionTimer from '@/components/SessionTimer';
 import HeartRateMonitor from '@/components/HeartRateMonitor';
 import HeartRateChart from '@/components/HeartRateChart';
 import OrgasmQuickLog from '@/components/OrgasmQuickLog';
+import AIBully from '@/components/AIBully';
 
 export default function GoonSession() {
   const navigate = useNavigate();
@@ -242,11 +243,19 @@ export default function GoonSession() {
       </div>
 
       {isActive && (
-        <OrgasmQuickLog 
-          sessionId={session?.id}
-          isFindom={false}
-          heartRate={heartRate}
-        />
+        <>
+          <OrgasmQuickLog 
+            sessionId={session?.id}
+            isFindom={false}
+            heartRate={heartRate}
+          />
+          <AIBully
+            isActive={isActive}
+            duration={duration}
+            heartRate={heartRate}
+            isFindom={false}
+          />
+        </>
       )}
     </div>
   );

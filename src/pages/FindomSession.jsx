@@ -25,6 +25,7 @@ import HeartRateMonitor from '@/components/HeartRateMonitor';
 import HeartRateChart from '@/components/HeartRateChart';
 import FindomCostDisplay from '@/components/FindomCostDisplay';
 import OrgasmQuickLog from '@/components/OrgasmQuickLog';
+import AIBully from '@/components/AIBully';
 
 export default function FindomSession() {
   const navigate = useNavigate();
@@ -393,13 +394,22 @@ export default function FindomSession() {
       </div>
 
       {isActive && (
-        <OrgasmQuickLog 
-          sessionId={session?.id}
-          isFindom={true}
-          currentCost={currentCost}
-          heartRate={heartRate}
-          onLog={handleOrgasmLog}
-        />
+        <>
+          <OrgasmQuickLog 
+            sessionId={session?.id}
+            isFindom={true}
+            currentCost={currentCost}
+            heartRate={heartRate}
+            onLog={handleOrgasmLog}
+          />
+          <AIBully
+            isActive={isActive}
+            duration={duration}
+            heartRate={heartRate}
+            isFindom={true}
+            currentCost={currentCost}
+          />
+        </>
       )}
 
       {/* End Session Confirmation */}
