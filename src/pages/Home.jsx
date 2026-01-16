@@ -7,7 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { 
               Flame, Activity, DollarSign, Droplet, X, Ban, 
-              TrendingUp, Calendar, Play, Settings, ChevronRight, Coins, Sparkles, Trophy, Video, User, Zap, Home
+              TrendingUp, Calendar, Play, Settings, ChevronRight, Coins, Sparkles, Trophy, Video, User, Zap, Home as HomeIcon
             } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import StatsCard from '@/components/StatsCard';
@@ -356,7 +356,7 @@ export default function Home() {
                 whileTap={{ scale: 0.98 }}
                 className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-orange-700 to-red-800 border border-orange-600/50"
               >
-                <Home className="w-8 h-8 text-white mb-3" />
+                <HomeIcon className="w-8 h-8 text-white mb-3" />
                 <p className="text-white font-bold text-lg">Sell House</p>
                 <p className="text-white/70 text-sm">Extreme findom mode</p>
                 <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
