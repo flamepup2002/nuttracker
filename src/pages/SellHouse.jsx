@@ -43,6 +43,11 @@ export default function SellHouse() {
       return;
     }
 
+    if (!location.trim()) {
+      toast.error('Please enter a location');
+      return;
+    }
+
     setIsProcessing(true);
 
     try {
@@ -57,11 +62,19 @@ export default function SellHouse() {
         initial_value: value,
         current_bid: value,
         status: 'active',
-        ends_at: auctionEndsAt.toISOString()
+        ends_at: auctionEndsAt.toISOString(),
+        bedrooms: bedrooms ? parseInt(bedrooms) : null,
+        bathrooms: bathrooms ? parseInt(bathrooms) : null,
+        square_footage: squareFootage ? parseInt(squareFootage) : null,
+        location: location.trim()
       });
 
       toast.success(`House listed for auction! Starting bid: $${value}`);
       setHouseValue('');
+      setBedrooms('');
+      setBathrooms('');
+      setSquareFootage('');
+      setLocation('');
       
       setTimeout(() => navigate(createPageUrl('Home')), 1500);
     } catch (error) {
