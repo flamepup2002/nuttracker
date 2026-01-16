@@ -30,6 +30,13 @@ const THEMES = [
   { id: 'neon', name: 'Neon Cyber', icon: 'Zap', color: 'from-cyan-500 to-purple-500', price: 250, category: 'limited' },
 ];
 
+const GOON_FUEL_PACKS = [
+  { id: 'anime_pack', name: 'Anime Style Pack', icon: 'Sparkles', color: 'from-pink-500 to-purple-600', price: 200, category: 'cosmetic', description: 'Unlock anime/hentai style generation' },
+  { id: 'fantasy_pack', name: 'Fantasy Style Pack', icon: 'Sparkles', color: 'from-purple-600 to-indigo-700', price: 200, category: 'cosmetic', description: 'Unlock fantasy art style generation' },
+  { id: 'unlimited_gen', name: 'Unlimited Generation', icon: 'Zap', color: 'from-yellow-500 to-orange-500', price: 300, category: 'premium', description: 'Remove generation frequency limits' },
+  { id: 'keyword_plus', name: 'Custom Keywords Pro', icon: 'Brain', color: 'from-blue-500 to-cyan-500', price: 150, category: 'cosmetic', description: 'Add unlimited custom keywords' },
+];
+
 export default function Shop() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -91,10 +98,10 @@ export default function Shop() {
   };
 
   const itemsByCategory = {
-    cosmetic: [...items.filter(i => i.category === 'cosmetic'), ...AURA_EFFECTS.filter(a => a.category === 'cosmetic'), ...THEMES.filter(t => t.category === 'cosmetic')],
+    cosmetic: [...items.filter(i => i.category === 'cosmetic'), ...AURA_EFFECTS.filter(a => a.category === 'cosmetic'), ...THEMES.filter(t => t.category === 'cosmetic'), ...GOON_FUEL_PACKS.filter(p => p.category === 'cosmetic')],
     feature: items.filter(i => i.category === 'feature'),
-    premium: [...items.filter(i => i.category === 'premium'), ...AURA_EFFECTS.filter(a => a.category === 'premium'), ...THEMES.filter(t => t.category === 'premium')],
-    limited: [...items.filter(i => i.category === 'limited'), ...AURA_EFFECTS.filter(a => a.category === 'limited'), ...THEMES.filter(t => t.category === 'limited')],
+    premium: [...items.filter(i => i.category === 'premium'), ...AURA_EFFECTS.filter(a => a.category === 'premium'), ...THEMES.filter(t => t.category === 'premium'), ...GOON_FUEL_PACKS.filter(p => p.category === 'premium')],
+    limited: [...items.filter(i => i.category === 'limited'), ...AURA_EFFECTS.filter(a => a.category === 'limited'), ...THEMES.filter(t => t.category === 'limited'), ...GOON_FUEL_PACKS.filter(p => p.category === 'limited')],
   };
 
   const handleAuraPurchase = async (aura) => {
@@ -203,6 +210,7 @@ export default function Shop() {
               {itemsByCategory.cosmetic.map(item => {
                 const isAura = item.id && item.id.includes('_');
                 const isTheme = THEMES.some(t => t.id === item.id);
+                const isGoonPack = GOON_FUEL_PACKS.some(p => p.id === item.id);
                 return (
                   <ShopCard
                     key={item.id}
@@ -210,7 +218,7 @@ export default function Shop() {
                     isPurchased={isPurchased(item.id)}
                     isActive={isTheme && user?.active_theme === item.id}
                     isLoading={purchaseMutation.isPending}
-                    onPurchase={() => isTheme ? handleThemePurchase(item) : isAura ? handleAuraPurchase(item) : purchaseMutation.mutate(item)}
+                    onPurchase={() => isTheme ? handleThemePurchase(item) : (isAura || isGoonPack) ? handleAuraPurchase(item) : purchaseMutation.mutate(item)}
                     canAfford={(user?.currency_balance || 0) >= item.price}
                   />
                 );
@@ -252,6 +260,7 @@ export default function Shop() {
               {itemsByCategory.premium.map(item => {
                 const isAura = item.id && item.id.includes('_');
                 const isTheme = THEMES.some(t => t.id === item.id);
+                const isGoonPack = GOON_FUEL_PACKS.some(p => p.id === item.id);
                 return (
                   <ShopCardWide
                     key={item.id}
@@ -259,7 +268,7 @@ export default function Shop() {
                     isPurchased={isPurchased(item.id)}
                     isActive={isTheme && user?.active_theme === item.id}
                     isLoading={purchaseMutation.isPending}
-                    onPurchase={() => isTheme ? handleThemePurchase(item) : isAura ? handleAuraPurchase(item) : purchaseMutation.mutate(item)}
+                    onPurchase={() => isTheme ? handleThemePurchase(item) : (isAura || isGoonPack) ? handleAuraPurchase(item) : purchaseMutation.mutate(item)}
                     canAfford={(user?.currency_balance || 0) >= item.price}
                   />
                 );
@@ -279,6 +288,7 @@ export default function Shop() {
               {itemsByCategory.limited.map(item => {
                 const isAura = item.id && item.id.includes('_');
                 const isTheme = THEMES.some(t => t.id === item.id);
+                const isGoonPack = GOON_FUEL_PACKS.some(p => p.id === item.id);
                 return (
                   <ShopCardWide
                     key={item.id}
@@ -286,7 +296,7 @@ export default function Shop() {
                     isPurchased={isPurchased(item.id)}
                     isActive={isTheme && user?.active_theme === item.id}
                     isLoading={purchaseMutation.isPending}
-                    onPurchase={() => isTheme ? handleThemePurchase(item) : isAura ? handleAuraPurchase(item) : purchaseMutation.mutate(item)}
+                    onPurchase={() => isTheme ? handleThemePurchase(item) : (isAura || isGoonPack) ? handleAuraPurchase(item) : purchaseMutation.mutate(item)}
                     canAfford={(user?.currency_balance || 0) >= item.price}
                   />
                 );
