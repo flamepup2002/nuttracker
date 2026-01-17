@@ -27,6 +27,7 @@ import Settings from './pages/Settings';
 import Shop from './pages/Shop';
 import Dashboard from './pages/Dashboard';
 import AIContractDrafter from './pages/AIContractDrafter';
+import MyAssets from './pages/MyAssets';
 import __Layout from './Layout.jsx';
 
 
@@ -60,6 +61,7 @@ export const PAGES = {
     "Shop": Shop,
     "Dashboard": Dashboard,
     "AIContractDrafter": AIContractDrafter,
+    "MyAssets": MyAssets,
 }
 
 export const pagesConfig = {

@@ -7,7 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { 
   ArrowLeft, FileText, DollarSign, Calendar, TrendingUp, 
   AlertTriangle, Home as HomeIcon, Car, Gavel, CreditCard,
-  Clock, CheckCircle
+  Clock, CheckCircle, Sparkles
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 
@@ -91,6 +91,15 @@ export default function Dashboard() {
     enabled: !!user,
   });
 
+  const { data: userAssets = [] } = useQuery({
+    queryKey: ['userAssets'],
+    queryFn: async () => {
+      if (!user) return [];
+      return await base44.entities.UserAsset.list();
+    },
+    enabled: !!user,
+  });
+
   const { data: failedPayments = [] } = useQuery({
     queryKey: ['failedPayments'],
     queryFn: () => base44.entities.FailedPayment.filter({ status: 'pending_retry' }),
@@ -114,6 +123,7 @@ export default function Dashboard() {
   const activeHouseListings = houseListings.filter(l => l.status === 'active');
   const activeAssetListings = assetListings.filter(l => l.status === 'active');
   const totalBids = houseBids.length + assetBids.length;
+  const totalAssetValue = userAssets.reduce((sum, asset) => sum + asset.estimated_value, 0);
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -213,6 +223,14 @@ export default function Dashboard() {
             subValue={`${activeHouseListings.length} houses, ${activeAssetListings.length} assets`}
             color="from-blue-600 to-blue-700"
             onClick={() => navigate(createPageUrl('SellHouse'))}
+          />
+          <StatCard
+            icon={Sparkles}
+            label="Total Assets"
+            value={`$${totalAssetValue.toLocaleString()}`}
+            subValue={`${userAssets.length} items tracked`}
+            color="from-green-600 to-emerald-600"
+            onClick={() => navigate(createPageUrl('MyAssets'))}
           />
         </div>
 
