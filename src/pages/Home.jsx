@@ -135,7 +135,7 @@ export default function Home() {
               )}
             </div>
             <div className="flex gap-2">
-              <Link to={createPageUrl('Dashboard')}>
+              <Link to={createPageUrl('FinancialHealth')}>
                 <Button variant="ghost" size="icon" className="text-zinc-400 hover:text-white">
                   <TrendingUp className="w-5 h-5" />
                 </Button>

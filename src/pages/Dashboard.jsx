@@ -232,6 +232,14 @@ export default function Dashboard() {
             color="from-green-600 to-emerald-600"
             onClick={() => navigate(createPageUrl('MyAssets'))}
           />
+          <StatCard
+            icon={TrendingUp}
+            label="Health Score"
+            value="View Details"
+            subValue="Financial health analysis"
+            color="from-blue-600 to-purple-600"
+            onClick={() => navigate(createPageUrl('FinancialHealth'))}
+          />
         </div>
 
         {/* Upcoming Payments */}
