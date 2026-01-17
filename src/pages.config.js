@@ -31,6 +31,7 @@ import SellAssets from './pages/SellAssets';
 import SellHouse from './pages/SellHouse';
 import Settings from './pages/Settings';
 import Shop from './pages/Shop';
+import Reports from './pages/Reports';
 import __Layout from './Layout.jsx';
 
 
@@ -68,6 +69,7 @@ export const PAGES = {
     "SellHouse": SellHouse,
     "Settings": Settings,
     "Shop": Shop,
+    "Reports": Reports,
 }
 
 export const pagesConfig = {

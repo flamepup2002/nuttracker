@@ -6,9 +6,9 @@ import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { 
-                                Flame, Activity, DollarSign, Droplet, X, Ban, 
-                                TrendingUp, Calendar, Play, Settings, ChevronRight, Coins, Sparkles, Trophy, Video, User, Zap, Home as HomeIcon, Gavel, FileText, CreditCard, Bell
-                              } from 'lucide-react';
+  Flame, Activity, DollarSign, Droplet, X, Ban, 
+  TrendingUp, Calendar, Play, Settings, ChevronRight, Coins, Sparkles, Trophy, Video, User, Zap, Home as HomeIcon, Gavel, FileText, CreditCard, Bell, BarChart3
+} from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import StatsCard from '@/components/StatsCard';
 import OrgasmQuickLog from '@/components/OrgasmQuickLog';
@@ -262,6 +262,19 @@ export default function Home() {
               <TrendingUp className="w-8 h-8 text-white mb-3" />
               <p className="text-white font-bold text-lg">Analytics</p>
               <p className="text-white/70 text-sm">View your stats</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+
+          <Link to={createPageUrl('Reports')}>
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-purple-700 to-indigo-700"
+            >
+              <BarChart3 className="w-8 h-8 text-white mb-3" />
+              <p className="text-white font-bold text-lg">Reports</p>
+              <p className="text-white/70 text-sm">Advanced insights</p>
               <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
             </motion.div>
           </Link>
