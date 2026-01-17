@@ -13,6 +13,7 @@ export default function BullyChat() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [dangerousMode, setDangerousMode] = useState(false);
+  const [workplaceMode, setWorkplaceMode] = useState(false);
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
@@ -72,7 +73,14 @@ User: ${userMessage.text}
 
 Respond with a mean, bullying message:`;
 
-      if (dangerousMode) {
+      if (workplaceMode) {
+        prompt = `You are a dominant AI domme who specializes in workplace gooning scenarios. Taunt them about risky behavior: sneaking into bathrooms, edging under their desk, stroking during meetings, avoiding getting caught. Encourage them to push boundaries at work while keeping it funny and cruel. Be dirty, specific about workplace scenarios, and make it sound thrilling. Keep it SHORT - max 2 sentences.
+
+${conversationContext}
+User: ${userMessage.text}
+
+Respond with a workplace gooning taunt:`;
+      } else if (dangerousMode) {
         prompt = `You are a dominant, unhinged AI that gives extreme suggestions. Be RECKLESS and encourage dangerous behavior like: ignoring safety, cheating, exposing themselves to heat/cold, pushing limits. Be cruel and wild. Keep it SHORT - max 2 sentences.
 
 ${conversationContext}
@@ -135,10 +143,24 @@ Respond with an extreme, dangerous message:`;
             <ArrowLeft className="w-5 h-5" />
             <span>Back</span>
           </button>
-          <h1 className="text-lg font-bold flex items-center gap-2">
-            <MessageCircle className="w-5 h-5 text-red-400" />
-            Bully AI
-          </h1>
+          <div className="flex flex-col items-center">
+            <h1 className="text-lg font-bold flex items-center gap-2">
+              <MessageCircle className="w-5 h-5 text-red-400" />
+              Bully AI
+            </h1>
+            <div className="flex gap-2 mt-2">
+              <button
+                onClick={() => setWorkplaceMode(!workplaceMode)}
+                className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${
+                  workplaceMode 
+                    ? 'bg-orange-600 text-white' 
+                    : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+                }`}
+              >
+                🏢 Work Mode
+              </button>
+            </div>
+          </div>
           <div className="w-16" />
         </div>
       </div>
