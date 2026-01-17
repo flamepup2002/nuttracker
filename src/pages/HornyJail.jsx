@@ -4,9 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Lock, Unlock, Clock, Zap, AlertTriangle, Bluetooth, MessageCircle, Send } from 'lucide-react';
+import { ArrowLeft, Lock, Unlock, Clock, Zap, AlertTriangle, Bluetooth, MessageCircle, Send, History, Sliders } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from 'sonner';
 
 export default function HornyJail() {
@@ -19,6 +21,8 @@ export default function HornyJail() {
   const [aiActive, setAiActive] = useState(false);
   const [chatMessages, setChatMessages] = useState([]);
   const [messageInput, setMessageInput] = useState('');
+  const [showHistory, setShowHistory] = useState(false);
+  const [aiMood, setAiMood] = useState('cruel');
   const chatEndRef = useRef(null);
 
   const { data: session } = useQuery({
@@ -32,6 +36,30 @@ export default function HornyJail() {
     },
     refetchInterval: 5000,
   });
+
+  const { data: settings } = useQuery({
+    queryKey: ['userSettings'],
+    queryFn: async () => {
+      const list = await base44.entities.UserSettings.list();
+      return list[0] || null;
+    },
+  });
+
+  const { data: interactionHistory = [] } = useQuery({
+    queryKey: ['hornyJailInteractions', session?.id],
+    queryFn: () => base44.entities.HornyJailInteraction.filter(
+      { session_id: session?.id },
+      '-created_date',
+      50
+    ),
+    enabled: !!session?.id,
+  });
+
+  useEffect(() => {
+    if (settings?.horny_jail_ai_mood) {
+      setAiMood(settings.horny_jail_ai_mood);
+    }
+  }, [settings]);
 
   const startSessionMutation = useMutation({
     mutationFn: async (initialMinutes) => {
@@ -84,7 +112,8 @@ export default function HornyJail() {
         sessionId: session?.id,
         message,
         isPermanentlyLocked: session?.horny_jail_permanent_lock || false,
-        timeRemaining: Math.floor(timeRemaining / 60)
+        timeRemaining: Math.floor(timeRemaining / 60),
+        aiMood
       });
       return response.data;
     },
@@ -92,8 +121,17 @@ export default function HornyJail() {
       setChatMessages(prev => [...prev, {
         role: 'assistant',
         content: data.response,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        timeExtended: data.timeExtended,
+        actionTaken: data.actionTaken
       }]);
+      
+      if (data.timeExtended > 0) {
+        toast.error(`AI added ${data.timeExtended} minutes!`, {
+          description: 'Your suffering continues...'
+        });
+        queryClient.invalidateQueries({ queryKey: ['hornyJailSession'] });
+      }
     },
   });
 
@@ -349,10 +387,83 @@ export default function HornyJail() {
             animate={{ opacity: 1, y: 0 }}
             className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-5"
           >
-            <div className="flex items-center gap-2 mb-4">
-              <MessageCircle className="w-4 h-4 text-red-400" />
-              <h3 className="text-white font-bold">Chat with AI Warden</h3>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <MessageCircle className="w-4 h-4 text-red-400" />
+                <h3 className="text-white font-bold">Chat with AI Warden</h3>
+                <Badge variant="outline" className={
+                  aiMood === 'merciless' ? 'border-red-600 text-red-400' :
+                  aiMood === 'sadistic' ? 'border-purple-600 text-purple-400' :
+                  'border-orange-600 text-orange-400'
+                }>
+                  {aiMood}
+                </Badge>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowHistory(!showHistory)}
+                className="text-zinc-400 hover:text-white"
+              >
+                <History className="w-4 h-4" />
+              </Button>
             </div>
+
+            {/* AI Mood Selector */}
+            <div className="mb-4 p-3 bg-black/40 rounded-lg">
+              <div className="flex items-center gap-2 mb-2">
+                <Sliders className="w-3 h-3 text-zinc-400" />
+                <span className="text-zinc-400 text-xs">AI Mood</span>
+              </div>
+              <Select value={aiMood} onValueChange={setAiMood}>
+                <SelectTrigger className="bg-zinc-900 border-zinc-800 text-white text-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="merciless">
+                    <div className="flex items-center gap-2">
+                      <span>Merciless</span>
+                      <span className="text-xs text-red-400">(40% extension chance)</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="cruel">
+                    <div className="flex items-center gap-2">
+                      <span>Cruel</span>
+                      <span className="text-xs text-orange-400">(25% extension chance)</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="sadistic">
+                    <div className="flex items-center gap-2">
+                      <span>Sadistic</span>
+                      <span className="text-xs text-purple-400">(35% extension chance)</span>
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-zinc-500 text-xs mt-2">
+                Higher ruthlessness = more time extensions
+              </p>
+            </div>
+
+            {/* Interaction History */}
+            {showHistory && interactionHistory.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                className="mb-4 p-3 bg-black/60 rounded-lg border border-zinc-800"
+              >
+                <p className="text-zinc-400 text-xs font-bold mb-2">Session History</p>
+                <div className="space-y-2 text-xs">
+                  <p className="text-zinc-500">Total interactions: {interactionHistory.length}</p>
+                  <p className="text-zinc-500">
+                    Extensions: {interactionHistory.filter(i => i.time_extended_minutes > 0).length}
+                  </p>
+                  <p className="text-zinc-500">
+                    Total time added: {interactionHistory.reduce((sum, i) => sum + (i.time_extended_minutes || 0), 0)} min
+                  </p>
+                </div>
+              </motion.div>
+            )}
 
             <div className="bg-black/40 rounded-xl p-4 h-64 overflow-y-auto mb-4 space-y-3">
               {chatMessages.length === 0 && (
@@ -373,6 +484,13 @@ export default function HornyJail() {
                     }`}
                   >
                     <p className="text-sm">{msg.content}</p>
+                    {msg.timeExtended > 0 && (
+                      <div className="mt-2 pt-2 border-t border-red-500/30">
+                        <Badge className="bg-red-600 text-white text-xs">
+                          +{msg.timeExtended} minutes added
+                        </Badge>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
