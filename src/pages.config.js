@@ -29,6 +29,8 @@ import Dashboard from './pages/Dashboard';
 import AIContractDrafter from './pages/AIContractDrafter';
 import MyAssets from './pages/MyAssets';
 import FinancialHealth from './pages/FinancialHealth';
+import Notifications from './pages/Notifications';
+import NotificationPreferences from './pages/NotificationPreferences';
 import __Layout from './Layout.jsx';
 
 
@@ -64,6 +66,8 @@ export const PAGES = {
     "AIContractDrafter": AIContractDrafter,
     "MyAssets": MyAssets,
     "FinancialHealth": FinancialHealth,
+    "Notifications": Notifications,
+    "NotificationPreferences": NotificationPreferences,
 }
 
 export const pagesConfig = {

@@ -41,6 +41,17 @@ Please make payment immediately to avoid penalties.
 Remaining balance: $${totalOwed.toFixed(2)}`
         });
 
+        // Create notification
+        await base44.asServiceRole.functions.invoke('createNotification', {
+          userEmail: contract.created_by,
+          type: 'payment_overdue',
+          title: '⚠️ Payment Overdue',
+          message: `Your payment for "${contract.title}" is 3 days overdue. Amount due: $${contract.monthly_payment}`,
+          contractId: contract.id,
+          actionUrl: 'MyContracts',
+          priority: 'high'
+        });
+
         actions.push({
           contractId: contract.id,
           action: 'first_warning',
@@ -71,6 +82,17 @@ ${contract.collateral_type && contract.collateral_type !== 'none'
 
 Monthly Payment: $${contract.monthly_payment}
 Days Overdue: ${daysPastDue}`
+        });
+
+        // Create notification
+        await base44.asServiceRole.functions.invoke('createNotification', {
+          userEmail: contract.created_by,
+          type: 'penalty_applied',
+          title: '🚨 Penalty Applied',
+          message: `$${penaltyAmount.toFixed(2)} penalty added to "${contract.title}". New total: $${(totalOwed + penaltyAmount).toFixed(2)}`,
+          contractId: contract.id,
+          actionUrl: 'MyContracts',
+          priority: 'urgent'
         });
 
         actions.push({

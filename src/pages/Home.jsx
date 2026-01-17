@@ -6,9 +6,9 @@ import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { 
-                          Flame, Activity, DollarSign, Droplet, X, Ban, 
-                          TrendingUp, Calendar, Play, Settings, ChevronRight, Coins, Sparkles, Trophy, Video, User, Zap, Home as HomeIcon, Gavel, FileText, CreditCard
-                        } from 'lucide-react';
+                                Flame, Activity, DollarSign, Droplet, X, Ban, 
+                                TrendingUp, Calendar, Play, Settings, ChevronRight, Coins, Sparkles, Trophy, Video, User, Zap, Home as HomeIcon, Gavel, FileText, CreditCard, Bell
+                              } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import StatsCard from '@/components/StatsCard';
 import OrgasmQuickLog from '@/components/OrgasmQuickLog';
@@ -24,6 +24,11 @@ export default function Home() {
   const { data: sessions = [] } = useQuery({
     queryKey: ['sessions'],
     queryFn: () => base44.entities.Session.list('-created_date', 50),
+  });
+
+  const { data: notifications = [] } = useQuery({
+    queryKey: ['notifications'],
+    queryFn: () => base44.entities.Notification.list('-created_date', 50),
   });
 
   const { data: settings } = useQuery({
@@ -135,6 +140,14 @@ export default function Home() {
               )}
             </div>
             <div className="flex gap-2">
+              <Link to={createPageUrl('Notifications')}>
+                <Button variant="ghost" size="icon" className="text-zinc-400 hover:text-white relative">
+                  <Bell className="w-5 h-5" />
+                  {notifications.filter(n => !n.is_read).length > 0 && (
+                    <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full" />
+                  )}
+                </Button>
+              </Link>
               <Link to={createPageUrl('FinancialHealth')}>
                 <Button variant="ghost" size="icon" className="text-zinc-400 hover:text-white">
                   <TrendingUp className="w-5 h-5" />
