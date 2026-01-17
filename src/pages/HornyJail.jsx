@@ -55,7 +55,12 @@ export default function HornyJail() {
       return response.data;
     },
     onSuccess: (data) => {
-      if (data.timeAdded > 0) {
+      if (data.permanentLock) {
+        toast.error('🔒 PERMANENTLY LOCKED!', {
+          description: 'The AI has locked you forever. No escape.',
+          duration: 10000
+        });
+      } else if (data.timeAdded > 0) {
         toast.error(`AI added ${data.timeAdded} more minutes!`, {
           description: data.reason
         });
@@ -267,12 +272,23 @@ export default function HornyJail() {
 
                 <div className="bg-black/40 backdrop-blur-sm rounded-xl p-6 mb-6">
                   <p className="text-zinc-400 text-xs mb-2">Time Remaining</p>
-                  <p className="text-white text-5xl font-bold font-mono">
-                    {formatTime(timeRemaining)}
-                  </p>
-                  <p className="text-zinc-500 text-xs mt-3">
-                    (but the AI can add more at any time)
-                  </p>
+                  {session?.horny_jail_permanent_lock ? (
+                    <div>
+                      <p className="text-red-500 text-5xl font-bold">∞</p>
+                      <p className="text-red-400 text-sm mt-3 font-bold">
+                        PERMANENTLY LOCKED
+                      </p>
+                    </div>
+                  ) : (
+                    <>
+                      <p className="text-white text-5xl font-bold font-mono">
+                        {formatTime(timeRemaining)}
+                      </p>
+                      <p className="text-zinc-500 text-xs mt-3">
+                        (but the AI can add more at any time)
+                      </p>
+                    </>
+                  )}
                 </div>
 
                 <div className="flex items-center justify-center gap-2 text-yellow-400 text-sm">

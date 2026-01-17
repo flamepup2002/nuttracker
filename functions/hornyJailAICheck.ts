@@ -49,6 +49,31 @@ Deno.serve(async (req) => {
       });
     }
 
+    // AI decision: 35% chance to PERMANENTLY lock
+    const shouldPermanentLock = Math.random() < 0.35;
+    
+    if (shouldPermanentLock && !session.horny_jail_permanent_lock) {
+      await base44.asServiceRole.entities.Session.update(session.id, {
+        horny_jail_permanent_lock: true,
+        horny_jail_minutes: 999999 // Essentially infinite
+      });
+
+      await base44.asServiceRole.entities.Notification.create({
+        created_by: user.email,
+        type: 'collateral_liquidation',
+        title: '🔒 PERMANENTLY LOCKED',
+        message: `The AI has decided you deserve permanent chastity. There is no release. Ever.`,
+        priority: 'urgent'
+      });
+
+      return Response.json({
+        success: true,
+        released: false,
+        permanentLock: true,
+        message: 'You are now permanently locked'
+      });
+    }
+
     // AI decision: randomly add time (30% chance each check)
     const shouldAddTime = Math.random() < 0.3;
     
