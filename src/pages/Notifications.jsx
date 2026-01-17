@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Bell, Check, Trash2, Filter, Settings } from 'lucide-react';
+import { ArrowLeft, Bell, Check, Trash2, Filter, Settings, Archive } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { toast } from 'sonner';
 
@@ -60,6 +60,19 @@ export default function Notifications() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
       toast.success('Notification deleted');
+    },
+  });
+
+  const deleteAllReadMutation = useMutation({
+    mutationFn: async () => {
+      const readNotifications = notifications.filter(n => n.is_read);
+      await Promise.all(readNotifications.map(n => 
+        base44.entities.Notification.delete(n.id)
+      ));
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      toast.success('All read notifications deleted');
     },
   });
 
@@ -141,18 +154,32 @@ export default function Notifications() {
             </Button>
           </div>
 
-          {unreadCount > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => markAllAsReadMutation.mutate()}
-              disabled={markAllAsReadMutation.isPending}
-              className="text-purple-400"
-            >
-              <Check className="w-4 h-4 mr-1" />
-              Mark all read
-            </Button>
-          )}
+          <div className="flex gap-2">
+            {unreadCount > 0 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => markAllAsReadMutation.mutate()}
+                disabled={markAllAsReadMutation.isPending}
+                className="text-purple-400"
+              >
+                <Check className="w-4 h-4 mr-1" />
+                Mark all read
+              </Button>
+            )}
+            {notifications.some(n => n.is_read) && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => deleteAllReadMutation.mutate()}
+                disabled={deleteAllReadMutation.isPending}
+                className="text-red-400"
+              >
+                <Archive className="w-4 h-4 mr-1" />
+                Clear read
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Notifications List */}

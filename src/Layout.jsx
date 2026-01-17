@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
+import NotificationToast from './components/NotificationToast';
 
 const THEME_COLORS = {
   default: {
@@ -51,6 +52,7 @@ export default function Layout({ children }) {
 
   return (
     <div className="min-h-screen bg-black">
+      <NotificationToast />
       <style>{`
         :root {
           --background: 0 0% 0%;
