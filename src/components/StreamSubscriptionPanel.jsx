@@ -45,18 +45,20 @@ export default function StreamSubscriptionPanel() {
 
   const subscribeMutation = useMutation({
     mutationFn: async (tier) => {
-      const response = await base44.functions.invoke('subscribeToGoonerCam', {
+      const response = await base44.functions.invoke('subscribeToGoonerCamStripe', {
         tier: tier.id,
-        priceUsd: tier.price,
-        bonusCoins: tier.coins
       });
       return response.data;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['user'] });
-      toast.success('Subscription activated!', {
-        description: 'Your benefits are now active'
-      });
+      if (data.success) {
+        toast.success('Subscription activated!', {
+          description: `Welcome to ${data.subscription.tier.toUpperCase()}! ${data.subscription.bonusCoinsAwarded > 0 ? `+${data.subscription.bonusCoinsAwarded} coins awarded!` : ''}`
+        });
+      } else {
+        toast.info(data.message || 'Subscription processed');
+      }
     },
     onError: (error) => {
       toast.error('Subscription failed', {
