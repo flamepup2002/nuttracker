@@ -811,6 +811,78 @@ const GENERATED_CONTRACTS = [
       "Interest compounds daily at 35%",
       "This is a binding federal judgment"
     ]
+  },
+  {
+    title: "Total Income Surrender",
+    description: "85% of your income goes to your master forever",
+    intensity: "extreme",
+    monthly: 0,
+    duration: 0,
+    terms: [
+      "Pay 85% of your gross monthly income indefinitely",
+      "You must prove income with pay stubs monthly",
+      "Miss ONE payment = immediate house auction",
+      "Your home is permanent collateral",
+      "House sold to highest bidder within 14 days of default",
+      "You keep only 15% to survive on",
+      "90% penalty for any late payment",
+      "Interest at 40% daily on arrears",
+      "This is permanent financial slavery"
+    ]
+  },
+  {
+    title: "Wage Slavery Forever",
+    description: "Work forever, give 85%, or lose everything",
+    intensity: "extreme",
+    monthly: 0,
+    duration: 0,
+    terms: [
+      "85% of all income paid monthly for life",
+      "Covers salary, bonuses, gifts, inheritance - everything",
+      "Your house is held as security for compliance",
+      "One missed payment triggers immediate auction",
+      "Property sold without your consent",
+      "You become homeless if you fail",
+      "100% penalty for late payment",
+      "Interest compounds at 50% daily",
+      "Cannot escape through bankruptcy"
+    ]
+  },
+  {
+    title: "Perpetual Income Drain",
+    description: "Your paycheck is no longer yours",
+    intensity: "extreme",
+    monthly: 0,
+    duration: 0,
+    terms: [
+      "85% of gross income due monthly forever",
+      "Must submit proof of all earnings",
+      "House auction triggered automatically if payment late",
+      "Property auctioned within 7 days of default",
+      "You lose all equity - proceeds go to creditor",
+      "No warnings, no grace period",
+      "150% penalty for missed payment",
+      "Daily compound interest at 60%",
+      "Your home is permanently at risk"
+    ]
+  },
+  {
+    title: "Income Seizure & Eviction Pact",
+    description: "Pay 85% or be evicted and homeless",
+    intensity: "extreme",
+    monthly: 0,
+    duration: 0,
+    terms: [
+      "85% of all monthly income paid indefinitely",
+      "First late payment: eviction notice filed",
+      "Second late payment: house goes to auction",
+      "You have 48 hours to vacate after auction",
+      "All proceeds to creditor, you get nothing",
+      "200% penalty for each missed payment",
+      "Interest at 75% daily compounds",
+      "You will be homeless if you fail to pay",
+      "This destroys your financial future forever"
+    ]
   }
 ];
 
