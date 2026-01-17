@@ -32,6 +32,8 @@ import SellHouse from './pages/SellHouse';
 import Settings from './pages/Settings';
 import Shop from './pages/Shop';
 import Reports from './pages/Reports';
+import StreamSetup from './pages/StreamSetup';
+import WatchStream from './pages/WatchStream';
 import __Layout from './Layout.jsx';
 
 
@@ -70,6 +72,8 @@ export const PAGES = {
     "Settings": Settings,
     "Shop": Shop,
     "Reports": Reports,
+    "StreamSetup": StreamSetup,
+    "WatchStream": WatchStream,
 }
 
 export const pagesConfig = {

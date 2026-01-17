@@ -14,11 +14,12 @@ import { Badge } from "@/components/ui/badge";
 
 
 
-function CamCard({ cam }) {
+function CamCard({ cam, onClick }) {
   return (
     <motion.div
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
+      onClick={onClick}
       className="relative rounded-2xl overflow-hidden cursor-pointer"
     >
       {/* Thumbnail/Preview */}
@@ -348,7 +349,11 @@ export default function GoonerCam() {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {featuredStreams.map((cam) => (
-                    <CamCard key={cam.id} cam={cam} />
+                    <CamCard 
+                      key={cam.id} 
+                      cam={cam}
+                      onClick={() => navigate(createPageUrl('WatchStream').replace(':sessionId', cam.id))}
+                    />
                   ))}
                 </div>
               </div>
@@ -363,7 +368,11 @@ export default function GoonerCam() {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {recommendedStreams.slice(0, 4).map((cam) => (
-                    <CamCard key={cam.id} cam={cam} />
+                    <CamCard 
+                      key={cam.id} 
+                      cam={cam}
+                      onClick={() => navigate(createPageUrl('WatchStream').replace(':sessionId', cam.id))}
+                    />
                   ))}
                 </div>
               </div>
@@ -374,7 +383,11 @@ export default function GoonerCam() {
               <h2 className="text-white font-bold text-lg mb-4">All Live ({allStreams.length})</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {allStreams.map((cam) => (
-                  <CamCard key={cam.id} cam={cam} />
+                  <CamCard 
+                    key={cam.id} 
+                    cam={cam}
+                    onClick={() => navigate(createPageUrl('WatchStream').replace(':sessionId', cam.id))}
+                  />
                 ))}
               </div>
             </div>

@@ -6,7 +6,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { 
   Play, Square, ArrowLeft, Activity, Heart, 
-  Flame, Clock, TrendingUp, ChevronDown, Radio
+  Flame, Clock, TrendingUp, ChevronDown, Radio, Video
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { toast } from 'sonner';
@@ -174,17 +174,24 @@ export default function GoonSession() {
                   </>
                 )}
               </div>
-              <Button
-                onClick={toggleBroadcast}
-                size="sm"
-                className={
-                  isBroadcasting
-                    ? 'bg-red-600 hover:bg-red-700 text-white'
-                    : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white'
-                }
-              >
-                {isBroadcasting ? 'Stop' : 'Go Live'}
-              </Button>
+              {!isBroadcasting ? (
+                <Button
+                  onClick={() => navigate(createPageUrl('StreamSetup'), { state: { sessionId: session?.id } })}
+                  size="sm"
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+                >
+                  <Video className="w-4 h-4 mr-1" />
+                  Setup Stream
+                </Button>
+              ) : (
+                <Button
+                  onClick={toggleBroadcast}
+                  size="sm"
+                  className="bg-red-600 hover:bg-red-700 text-white"
+                >
+                  Stop Broadcast
+                </Button>
+              )}
             </div>
           </motion.div>
         )}
