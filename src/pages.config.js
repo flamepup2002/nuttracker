@@ -17,6 +17,8 @@ import GeneratedFindomContracts from './pages/GeneratedFindomContracts';
 import GoonSession from './pages/GoonSession';
 import GoonerCam from './pages/GoonerCam';
 import History from './pages/History';
+import Home from './pages/Home';
+import HornyJail from './pages/HornyJail';
 import HouseAuction from './pages/HouseAuction';
 import KinkSessions from './pages/KinkSessions';
 import MyAssets from './pages/MyAssets';
@@ -26,16 +28,15 @@ import Notifications from './pages/Notifications';
 import PaymentSettings from './pages/PaymentSettings';
 import PremiumFindom from './pages/PremiumFindom';
 import Profile from './pages/Profile';
+import Reports from './pages/Reports';
 import SellAssets from './pages/SellAssets';
 import SellHouse from './pages/SellHouse';
 import Settings from './pages/Settings';
 import Shop from './pages/Shop';
-import Reports from './pages/Reports';
 import StreamSetup from './pages/StreamSetup';
-import WatchStream from './pages/WatchStream';
 import StreamSubscriptions from './pages/StreamSubscriptions';
-import Home from './pages/Home';
-import HornyJail from './pages/HornyJail';
+import WatchStream from './pages/WatchStream';
+import Feedback from './pages/Feedback';
 import __Layout from './Layout.jsx';
 
 
@@ -59,6 +60,8 @@ export const PAGES = {
     "GoonSession": GoonSession,
     "GoonerCam": GoonerCam,
     "History": History,
+    "Home": Home,
+    "HornyJail": HornyJail,
     "HouseAuction": HouseAuction,
     "KinkSessions": KinkSessions,
     "MyAssets": MyAssets,
@@ -68,16 +71,15 @@ export const PAGES = {
     "PaymentSettings": PaymentSettings,
     "PremiumFindom": PremiumFindom,
     "Profile": Profile,
+    "Reports": Reports,
     "SellAssets": SellAssets,
     "SellHouse": SellHouse,
     "Settings": Settings,
     "Shop": Shop,
-    "Reports": Reports,
     "StreamSetup": StreamSetup,
-    "WatchStream": WatchStream,
     "StreamSubscriptions": StreamSubscriptions,
-    "Home": Home,
-    "HornyJail": HornyJail,
+    "WatchStream": WatchStream,
+    "Feedback": Feedback,
 }
 
 export const pagesConfig = {
