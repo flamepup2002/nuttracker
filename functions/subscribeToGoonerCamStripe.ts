@@ -4,9 +4,12 @@ import Stripe from 'npm:stripe@14.8.0';
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY'));
 
 const SUBSCRIPTION_TIERS = {
-  basic: { name: 'GoonerCam Basic', price: 499, coins: 0 },
-  premium: { name: 'GoonerCam Premium', price: 999, coins: 500 },
-  vip: { name: 'GoonerCam VIP', price: 1999, coins: 1500 },
+  basic_monthly: { name: 'GoonerCam Basic', price: 499, coins: 0, interval: 'month' },
+  premium_monthly: { name: 'GoonerCam Premium', price: 999, coins: 500, interval: 'month' },
+  vip_monthly: { name: 'GoonerCam VIP', price: 1999, coins: 1500, interval: 'month' },
+  basic_yearly: { name: 'GoonerCam Basic Yearly', price: 4788, coins: 0, interval: 'year' },
+  premium_yearly: { name: 'GoonerCam Premium Yearly', price: 9588, coins: 7500, interval: 'year' },
+  vip_yearly: { name: 'GoonerCam VIP Yearly', price: 19188, coins: 22500, interval: 'year' },
 };
 
 Deno.serve(async (req) => {
@@ -74,7 +77,7 @@ Deno.serve(async (req) => {
         unit_amount: tierData.price,
         currency: 'usd',
         recurring: {
-          interval: 'month',
+          interval: tierData.interval === 'year' ? 'year' : 'month',
           interval_count: 1,
         },
       });
@@ -120,17 +123,24 @@ Deno.serve(async (req) => {
 
     // Calculate next billing date
     const nextBillingDate = new Date();
-    nextBillingDate.setMonth(nextBillingDate.getMonth() + 1);
+    if (tierData.interval === 'year') {
+      nextBillingDate.setFullYear(nextBillingDate.getFullYear() + 1);
+    } else {
+      nextBillingDate.setMonth(nextBillingDate.getMonth() + 1);
+    }
 
     // Create RecurringPaymentPlan record
+    const tierName = tier.replace('_monthly', '').replace('_yearly', '').charAt(0).toUpperCase() + tier.replace('_monthly', '').replace('_yearly', '').slice(1);
+    const isYearly = tierData.interval === 'year';
+    
     await base44.entities.RecurringPaymentPlan.create({
-      name: `GoonerCam ${tier.charAt(0).toUpperCase() + tier.slice(1)} Subscription`,
+      name: `GoonerCam ${tierName} ${isYearly ? 'Yearly' : ''} Subscription`,
       amount: tierData.price / 100,
-      frequency: 'monthly',
-      description: `${tierData.coins > 0 ? `+${tierData.coins} bonus coins monthly` : 'Basic access'}`,
+      frequency: isYearly ? 'yearly' : 'monthly',
+      description: `${tierData.coins > 0 ? `+${tierData.coins} bonus coins ${isYearly ? 'yearly' : 'monthly'}` : 'Basic access'}`,
       benefits: [
-        `${tier.charAt(0).toUpperCase() + tier.slice(1)} tier benefits`,
-        tierData.coins > 0 ? `+${tierData.coins} coins each month` : 'Standard features',
+        `${tierName} tier benefits`,
+        tierData.coins > 0 ? `+${tierData.coins} coins ${isYearly ? 'per year' : 'each month'}` : 'Standard features',
       ],
       is_active: true,
       stripe_subscription_id: subscription.id,
