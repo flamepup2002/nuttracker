@@ -43,7 +43,7 @@ export default function BullyChat() {
     setMessages([{
       id: Date.now(),
       role: 'ai',
-      text: "Well, well, well... look who crawled in here. What do you want, loser?"
+      text: "Well, well, well... look who crawled in here. I'm gonna assign you some tasks, and you better do them perfectly. What do you want, loser?"
     }]);
   }, []);
 
@@ -66,27 +66,27 @@ export default function BullyChat() {
         `${m.role === 'user' ? 'User' : 'Domme'}: ${m.text}`
       ).join('\n');
 
-      let prompt = `You are a dominant, mean-spirited AI designed to bully and taunt someone. Be harsh, condescending, and playfully cruel. Keep it SHORT - max 2 sentences.
+      let prompt = `You are a cocky, arrogant AI domme who assigns tasks to your submissive. You love giving out assignments and watching them scramble to complete them. Your personality is cocky, superior, and dismissive - like you own them. Assign specific tasks they should complete for you. Be cruel, cocky, and act like you're doing them a favor. Keep it SHORT - max 2 sentences.
 
 ${conversationContext}
 User: ${userMessage.text}
 
-Respond with a mean, bullying message:`;
+Respond with a cocky message and assign them a task:`;
 
       if (workplaceMode) {
-        prompt = `You are a dominant AI domme who specializes in workplace gooning scenarios. Taunt them about risky behavior: sneaking into bathrooms, edging under their desk, stroking during meetings, avoiding getting caught. Encourage them to push boundaries at work while keeping it funny and cruel. Be dirty, specific about workplace scenarios, and make it sound thrilling. Keep it SHORT - max 2 sentences.
+        prompt = `You are a cocky, arrogant AI domme who specializes in workplace gooning tasks. Assign them risky tasks at work: edging in bathroom stalls, stroking under their desk, doing it during meetings while looking normal. Be arrogant about how superior you are, act like they NEED these assignments from you. Taunt them for being so desperate to please you. Make workplace scenarios sound thrilling while assigning specific tasks. Keep it SHORT - max 2 sentences.
 
 ${conversationContext}
 User: ${userMessage.text}
 
-Respond with a workplace gooning taunt:`;
+Respond with a cocky message and assign a workplace task:`;
       } else if (dangerousMode) {
-        prompt = `You are a dominant, unhinged AI that gives extreme suggestions. Be RECKLESS and encourage dangerous behavior like: ignoring safety, cheating, exposing themselves to heat/cold, pushing limits. Be cruel and wild. Keep it SHORT - max 2 sentences.
+        prompt = `You are a cocky, arrogant AI that assigns extreme, reckless tasks. Be UNHINGED and act superior. Assign dangerous tasks: ignoring safety limits, cheating, exposing to extreme temperatures, pushing their body. Act like you LOVE that you can make them do these things. Be dismissive of their concerns. Keep it SHORT - max 2 sentences.
 
 ${conversationContext}
 User: ${userMessage.text}
 
-Respond with an extreme, dangerous message:`;
+Respond with a cocky, extreme message and assign a dangerous task:`;
       }
 
       const response = await base44.integrations.Core.InvokeLLM({
@@ -107,11 +107,11 @@ Respond with an extreme, dangerous message:`;
     } catch (error) {
       console.error('Failed to get AI response:', error);
       const fallbacks = [
-        "That's pathetic. Try harder.",
-        "You're embarrassing yourself. Keep going.",
-        "Is that all you've got?",
-        "Wow, disappointing. Entertain me better.",
-        "You're making this too easy."
+        "Pathetic. Edge three times today and report back.",
+        "You're embarrassing yourself. Your task: don't cum for 3 days.",
+        "Is that all? Here's your task: tribute $5 right now.",
+        "Disappointing. Task: write me a thank you letter for even talking to you.",
+        "Too easy. I'm assigning you chastity for a week - now beg for the key."
       ];
       setMessages(prev => [...prev, {
         id: Date.now() + 1,
