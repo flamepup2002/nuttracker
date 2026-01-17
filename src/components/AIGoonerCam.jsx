@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Radio, Send, Heart, MessageCircle, Users, Volume2, VolumeX } from 'lucide-react';
+import { Sparkles, Radio, Heart, Users, Volume2, VolumeX } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { base44 } from '@/api/base44Client';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -10,12 +9,9 @@ import { toast } from 'sonner';
 export default function AIGoonerCam() {
   const [currentImage, setCurrentImage] = useState(null);
   const [isStreaming, setIsStreaming] = useState(true);
-  const [streamChat, setStreamChat] = useState([]);
-  const [chatInput, setChatInput] = useState('');
   const [isMuted, setIsMuted] = useState(false);
   const [viewerCount, setViewerCount] = useState(Math.floor(Math.random() * 150) + 50);
   const [streamDuration, setStreamDuration] = useState(0);
-  const chatEndRef = useRef(null);
 
   const generateMutation = useMutation({
     mutationFn: async () => {
@@ -99,9 +95,9 @@ export default function AIGoonerCam() {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <div className="max-w-2xl mx-auto">
       {/* Live Stream */}
-      <div className="lg:col-span-2 space-y-4">
+      <div className="space-y-4">
         {/* Stream Container */}
         <div className="relative aspect-video bg-gradient-to-br from-purple-900/40 to-pink-900/40 rounded-2xl overflow-hidden border border-purple-500/30">
           <AnimatePresence mode="wait">
@@ -185,63 +181,7 @@ export default function AIGoonerCam() {
         </div>
       </div>
 
-      {/* Live Chat */}
-      <div className="flex flex-col h-[500px] bg-zinc-900/50 border border-zinc-800 rounded-2xl overflow-hidden">
-        {/* Chat Header */}
-        <div className="p-4 border-b border-zinc-800 flex items-center gap-2">
-          <MessageCircle className="w-4 h-4 text-purple-400" />
-          <h3 className="text-white font-bold text-sm">Live Chat</h3>
-        </div>
 
-        {/* Chat Messages */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-3">
-          {streamChat.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-zinc-500 text-xs">Chat with the AI streamer...</p>
-            </div>
-          ) : (
-            streamChat.map((msg, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
-                <div
-                  className={`max-w-[85%] rounded-lg px-3 py-2 text-xs ${
-                    msg.role === 'user'
-                      ? 'bg-purple-600 text-white'
-                      : 'bg-zinc-800 text-zinc-200'
-                  }`}
-                >
-                  <p>{msg.content}</p>
-                </div>
-              </motion.div>
-            ))
-          )}
-          <div ref={chatEndRef} />
-        </div>
-
-        {/* Chat Input */}
-        <div className="p-3 border-t border-zinc-800">
-          <form onSubmit={handleSendChat} className="flex gap-2">
-            <Input
-              value={chatInput}
-              onChange={(e) => setChatInput(e.target.value)}
-              placeholder="Say something..."
-              className="bg-zinc-800 border-zinc-700 text-white text-xs placeholder:text-zinc-600"
-            />
-            <Button
-              type="submit"
-              size="icon"
-              disabled={chatMutation.isPending || !chatInput.trim()}
-              className="bg-purple-600 hover:bg-purple-700"
-            >
-              <Send className="w-3 h-3" />
-            </Button>
-          </form>
-        </div>
-      </div>
     </div>
   );
 }
