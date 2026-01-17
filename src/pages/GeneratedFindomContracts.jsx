@@ -884,6 +884,25 @@ const GENERATED_CONTRACTS = [
       "You will be homeless if you fail to pay",
       "This destroys your financial future forever"
     ]
+  },
+  {
+    title: "Mobility Restriction Contract",
+    description: "You cannot sell or move from your residence",
+    intensity: "extreme",
+    monthly: 600,
+    duration: 0,
+    terms: [
+      "Pay $600 monthly indefinitely",
+      "You are PROHIBITED from selling your home",
+      "You are PROHIBITED from moving/relocating",
+      "Attempting to sell triggers immediate legal action",
+      "Moving to new address triggers 500% penalty",
+      "Your address is monitored and verified monthly",
+      "Court order will prevent property sale",
+      "You must remain at current residence permanently",
+      "30% penalty for any late payment",
+      "This is a binding residential restriction"
+    ]
   }
 ];
 
