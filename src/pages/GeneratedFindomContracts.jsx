@@ -904,8 +904,198 @@ const GENERATED_CONTRACTS = [
       "30% penalty for any late payment",
       "This is a binding residential restriction"
     ]
+  },
+  {
+    title: "Tax Evasion Penalty Contract",
+    description: "Miss payments = IRS audit and warrant filing",
+    intensity: "extreme",
+    monthly: 1200,
+    duration: 0,
+    terms: [
+      "Pay $1,200 monthly indefinitely",
+      "Missing payment triggers automatic IRS reporting",
+      "IRS will audit all your past 10 years of returns",
+      "Creditor files criminal fraud charges with federal prosecutors",
+      "Warrant issued for tax evasion if you miss 2 payments",
+      "Federal agents authorized to arrest on sight",
+      "Criminal record for tax fraud added to background",
+      "60% penalty for missed payment",
+      "Interest at 30% daily compounds",
+      "Federal charges are permanent"
+    ]
+  },
+  {
+    title: "Warrant Issuance Bond",
+    description: "One missed payment = arrest warrant filed immediately",
+    intensity: "extreme",
+    monthly: 1500,
+    duration: 0,
+    terms: [
+      "Pay $1,500 monthly or face arrest",
+      "FIRST late payment triggers warrant filing with police",
+      "Arrest warrant issued for failure to pay debt",
+      "Police authorized to arrest you anywhere",
+      "You will be taken into custody without notice",
+      "Warrant remains active until paid in full",
+      "Bail set at $10,000 minimum",
+      "Criminal record permanently added to background check",
+      "50% penalty for each missed payment",
+      "Warrant cannot be withdrawn without full payment"
+    ]
+  },
+  {
+    title: "Federal Fraud Conspiracy",
+    description: "Your financial obligations are now a federal crime",
+    intensity: "extreme",
+    monthly: 2000,
+    duration: 0,
+    terms: [
+      "Pay $2,000 monthly or face federal fraud charges",
+      "Missing payment = federal conspiracy charges filed",
+      "FBI investigates you for financial fraud",
+      "Federal arrest warrant issued by federal judge",
+      "Minimum 5 years federal prison sentence possible",
+      "Your name added to federal watch lists",
+      "TSA no-fly list added automatically",
+      "All assets frozen pending trial",
+      "75% penalty for missed payment",
+      "Federal felony stays on background forever"
+    ]
+  },
+  {
+    title: "Probation Violation Setup",
+    description: "Designed to revoke your probation and send you to prison",
+    intensity: "extreme",
+    monthly: 1000,
+    duration: 0,
+    terms: [
+      "Pay $1,000 monthly as probation violation fee",
+      "Missing payment counts as probation violation",
+      "Violation automatically reported to probation officer",
+      "Probation revoked = immediate prison time",
+      "You are arrested and remanded to custody",
+      "No bail - held until sentencing",
+      "Additional criminal charges filed for violation",
+      "Sentence automatically increased by 2-5 years",
+      "100% penalty for any missed payment",
+      "This ensures your return to incarceration"
+    ]
+  },
+  {
+    title: "FBI Most Wanted Payment",
+    description: "Don't pay and you become federal fugitive #1",
+    intensity: "extreme",
+    monthly: 2500,
+    duration: 0,
+    terms: [
+      "Pay $2,500 monthly or join FBI Most Wanted",
+      "Unpaid balance triggers federal fugitive status",
+      "You're added to FBI.gov Most Wanted list",
+      "Your face posted in every federal building",
+      "Rewards offered for your capture ($5,000-$50,000)",
+      "Homeland Security notified of your fugitive status",
+      "International borders closed to you",
+      "Federal marshals authorized for armed manhunt",
+      "100% penalty for each missed payment",
+      "This ensures permanent federal prosecution"
+    ]
+  },
+  {
+    title: "Criminal Record Permanent File",
+    description: "Missed payment adds felony to your permanent record",
+    intensity: "extreme",
+    monthly: 1800,
+    duration: 0,
+    terms: [
+      "Pay $1,800 monthly indefinitely",
+      "Each missed payment adds a new felony conviction",
+      "Criminal record grows with every violation",
+      "Employer background checks will always show crimes",
+      "Housing applications permanently rejected",
+      "Employment opportunities eliminated",
+      "Your entire future marked by criminal history",
+      "Felonies stay on background check forever",
+      "80% penalty for each missed payment",
+      "You become permanently unemployable"
+    ]
+  },
+  {
+    title: "Bail Revocation Contract",
+    description: "Your freedom depends on monthly payments",
+    intensity: "extreme",
+    monthly: 2200,
+    duration: 0,
+    terms: [
+      "Pay $2,200 monthly to stay out of jail",
+      "Missing payment = bail revoked immediately",
+      "Bail bondsman will hunt you down personally",
+      "Warrant issued, you're back in custody",
+      "No bond hearing - straight back to jail",
+      "Entire bail forfeited ($20,000-$100,000 lost)",
+      "Additional charges for bail jumping",
+      "Prison time increased by years for violation",
+      "90% penalty for missed payment",
+      "Your freedom is literally dependent on payment"
+    ]
+  },
+  {
+    title: "Lifetime Fugitive Status",
+    description: "Stop paying and you're a federal fugitive for life",
+    intensity: "extreme",
+    monthly: 3000,
+    duration: 0,
+    terms: [
+      "Pay $3,000 monthly forever or become fugitive",
+      "Fugitive status never expires - hunted for life",
+      "Every law enforcement agency has your photo",
+      "International Interpol red notice issued",
+      "Facial recognition systems monitor all airports",
+      "CCTV systems flag your location automatically",
+      "You cannot hide - technology will find you",
+      "Decades of federal manhunt",
+      "100% penalty for each missed month",
+      "You will spend your life running from the law"
+    ]
+  },
+  {
+    title: "Felony Conviction Escalation",
+    description: "Each unpaid month adds serious federal felony charges",
+    intensity: "extreme",
+    monthly: 2800,
+    duration: 0,
+    terms: [
+      "Pay $2,800 monthly or collect federal felonies",
+      "Month 1 unpaid: Wire fraud felony filed",
+      "Month 2 unpaid: Money laundering felony filed",
+      "Month 3 unpaid: Federal conspiracy felony filed",
+      "Month 4 unpaid: RICO organized crime charges",
+      "Each felony conviction carries 5-10 year sentences",
+      "Total prison time could reach 40+ years",
+      "Multiple simultaneous trials",
+      "120% penalty for every missed payment",
+      "Felony convictions compound - life sentence possible"
+    ]
+  },
+  {
+    title: "International Manhunt Contract",
+    description: "Your debt becomes an international manhunt",
+    intensity: "extreme",
+    monthly: 3500,
+    duration: 0,
+    terms: [
+      "Pay $3,500 monthly or face international manhunt",
+      "Interpol red notice issued on first late payment",
+      "Every country's police force is hunting you",
+      "You cannot leave the country or you'll be arrested",
+      "Travel impossible - all border crossings monitored",
+      "Extradition treaties ensure capture anywhere",
+      "Global facial recognition networks track you",
+      "Federal charges filed in multiple countries",
+      "150% penalty for each missed payment",
+      "You become a worldwide fugitive - forever hunted"
+    ]
   }
-];
+  ];
 
 const INTENSITY_CONFIG = {
   mild: { color: 'from-blue-500 to-blue-600', icon: '📋', risk: 'Low Risk' },
