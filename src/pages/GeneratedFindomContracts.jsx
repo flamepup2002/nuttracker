@@ -16,6 +16,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import ContractCustomizer from '@/components/ContractCustomizer';
+import SignaturePad from '@/components/SignaturePad';
 
 const GENERATED_CONTRACTS = [
   {
@@ -919,6 +920,7 @@ export default function GeneratedFindomContracts() {
   const [selectedContract, setSelectedContract] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [customizingContract, setCustomizingContract] = useState(null);
+  const [signatureData, setSignatureData] = useState(null);
 
   const acceptMutation = useMutation({
     mutationFn: async (contract) => {
@@ -941,7 +943,9 @@ export default function GeneratedFindomContracts() {
         collateral_details: contract.collateral_details,
         interest_rate: contract.interest_rate,
         compound_frequency: contract.compound_frequency,
-      });
+        signature_data: signatureData,
+        signed_at: new Date().toISOString(),
+        });
 
       // Process payment (recurring for perpetual/long contracts, one-time for short)
       const paymentType = contract.duration === 0 || contract.duration > 3 ? 'recurring' : 'one_time';
@@ -1193,23 +1197,27 @@ export default function GeneratedFindomContracts() {
                     : `A one-time payment of $${selectedContract.monthly * selectedContract.duration} will be charged immediately.`}
                 </p>
               </div>
+              <div className="bg-zinc-800/50 rounded-lg p-4">
+                <p className="text-white text-sm font-bold mb-3">Digital Signature Required</p>
+                <SignaturePad onSignatureComplete={setSignatureData} />
+              </div>
               <p className="text-red-400 text-xs">
-                By accepting this contract, you authorize real payments. This is a binding financial commitment with actual charges to your card.
+                By signing and accepting this contract, you authorize real payments. This is a binding financial commitment with actual charges to your card.
               </p>
-            </AlertDialogDescription>
-          )}
-          <div className="flex gap-3">
-            <AlertDialogCancel className="bg-zinc-800 text-white border-zinc-700 hover:bg-zinc-700">
+              </AlertDialogDescription>
+              )}
+              <div className="flex gap-3">
+              <AlertDialogCancel className="bg-zinc-800 text-white border-zinc-700 hover:bg-zinc-700">
               Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction
+              </AlertDialogCancel>
+              <AlertDialogAction
               onClick={() => selectedContract && acceptMutation.mutate(selectedContract)}
-              disabled={acceptMutation.isPending}
+              disabled={acceptMutation.isPending || !signatureData}
               className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white"
-            >
-              {acceptMutation.isPending ? 'Binding...' : 'I Accept'}
-            </AlertDialogAction>
-          </div>
+              >
+              {acceptMutation.isPending ? 'Binding...' : 'I Accept & Sign'}
+              </AlertDialogAction>
+              </div>
         </AlertDialogContent>
       </AlertDialog>
     </div>

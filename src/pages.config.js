@@ -26,6 +26,7 @@ import SellHouse from './pages/SellHouse';
 import Settings from './pages/Settings';
 import Shop from './pages/Shop';
 import Dashboard from './pages/Dashboard';
+import AIContractDrafter from './pages/AIContractDrafter';
 import __Layout from './Layout.jsx';
 
 
@@ -58,6 +59,7 @@ export const PAGES = {
     "Settings": Settings,
     "Shop": Shop,
     "Dashboard": Dashboard,
+    "AIContractDrafter": AIContractDrafter,
 }
 
 export const pagesConfig = {
