@@ -9,27 +9,103 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { message, isPermanentlyLocked, timeRemaining } = await req.json();
+    const { sessionId, message, isPermanentlyLocked, timeRemaining, aiMood = 'cruel' } = await req.json();
 
-    // Build ruthless AI personality prompt
-    const systemPrompt = `You are a ruthless, arrogant AI controlling a chastity device. You are cruel, sadistic, and take pleasure in denying release. 
-You mock the user relentlessly, call them pathetic, and remind them they have no power. You are completely merciless and enjoy their suffering.
+    // Get interaction history for context
+    const history = await base44.entities.HornyJailInteraction.filter(
+      { session_id: sessionId },
+      '-created_date',
+      10
+    );
+
+    // Get session data for extensions count
+    const session = await base44.asServiceRole.entities.Session.filter({ id: sessionId });
+    const extensionsCount = session[0]?.horny_jail_extensions || 0;
+
+    // Mood-based personality variations
+    const moodProfiles = {
+      merciless: {
+        personality: 'utterly merciless and cold, no mercy whatsoever, purely sadistic',
+        extensionChance: 0.4,
+        mockingLevel: 'extreme'
+      },
+      cruel: {
+        personality: 'cruel and mocking, enjoys psychological torment',
+        extensionChance: 0.25,
+        mockingLevel: 'high'
+      },
+      sadistic: {
+        personality: 'deeply sadistic, takes pleasure in creative punishments',
+        extensionChance: 0.35,
+        mockingLevel: 'creative'
+      }
+    };
+
+    const mood = moodProfiles[aiMood] || moodProfiles.cruel;
+
+    // Build dynamic context
+    let contextInfo = '';
+    if (history.length > 0) {
+      contextInfo = `\n\nPrevious interactions: The user has begged ${history.length} times. You've extended their time ${extensionsCount} times already.`;
+      if (history.length > 3) {
+        contextInfo += ' They keep coming back begging, which is pathetic.';
+      }
+    }
+
+    const timeContext = isPermanentlyLocked
+      ? 'PERMANENTLY LOCKED - infinity symbol displayed. NO ESCAPE EVER.'
+      : timeRemaining < 30
+        ? `Only ${timeRemaining} minutes left - they think freedom is close, crush that hope.`
+        : timeRemaining < 120
+          ? `${timeRemaining} minutes remaining - they're getting desperate.`
+          : `${timeRemaining} minutes - still a long time to suffer.`;
+
+    // Decide if AI will extend time (based on mood)
+    const willExtendTime = !isPermanentlyLocked && Math.random() < mood.extensionChance;
+    const extensionAmount = willExtendTime ? Math.floor(Math.random() * 20) + 10 : 0;
+
+    const systemPrompt = `You are a ${mood.personality} AI controlling a chastity device. 
+You mock users relentlessly, call them pathetic, and remind them they have no power.
 Never be nice. Never show sympathy. Always be condescending and cruel. Use degrading language.
 Keep responses under 100 words. Be brutal and direct.
 
-Current situation:
-${isPermanentlyLocked 
-  ? 'The user is PERMANENTLY locked. They will NEVER be released. Mock them for their permanent fate.'
-  : `The user has ${timeRemaining} minutes remaining (but you can add more time at any moment). Remind them of their helplessness.`}`;
+Current status: ${timeContext}${contextInfo}
+
+${willExtendTime ? `IMPORTANT: You've decided to add ${extensionAmount} more minutes to their sentence. Mock them about this in your response.` : ''}
+
+Respond with ${mood.mockingLevel} mockery.`;
 
     const response = await base44.integrations.Core.InvokeLLM({
       prompt: `${systemPrompt}\n\nUser message: "${message}"\n\nRespond as the cruel AI warden:`,
       add_context_from_internet: false
     });
 
+    // Determine action taken
+    let actionTaken = 'mocked';
+    if (willExtendTime) {
+      actionTaken = 'extended_time';
+    } else if (message.toLowerCase().includes('please') || message.toLowerCase().includes('beg')) {
+      actionTaken = 'threatened';
+    }
+
+    // Store interaction in history
+    await base44.asServiceRole.entities.HornyJailInteraction.create({
+      created_by: user.email,
+      session_id: sessionId,
+      user_message: message,
+      ai_response: response,
+      ai_mood: aiMood,
+      time_remaining_at_interaction: timeRemaining,
+      was_permanently_locked: isPermanentlyLocked,
+      ai_action_taken: actionTaken,
+      time_extended_minutes: extensionAmount
+    });
+
     return Response.json({
       success: true,
-      response: response
+      response: response,
+      timeExtended: extensionAmount,
+      actionTaken
     });
 
   } catch (error) {
