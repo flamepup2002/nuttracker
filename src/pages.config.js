@@ -9,20 +9,22 @@ import FindomAnalytics from './pages/FindomAnalytics';
 import FindomChallenges from './pages/FindomChallenges';
 import FindomDebt from './pages/FindomDebt';
 import FindomSession from './pages/FindomSession';
+import GeneratedFindomContracts from './pages/GeneratedFindomContracts';
 import GoonSession from './pages/GoonSession';
 import GoonerCam from './pages/GoonerCam';
 import History from './pages/History';
 import Home from './pages/Home';
 import HouseAuction from './pages/HouseAuction';
 import KinkSessions from './pages/KinkSessions';
+import MyContracts from './pages/MyContracts';
+import PaymentSettings from './pages/PaymentSettings';
 import PremiumFindom from './pages/PremiumFindom';
 import Profile from './pages/Profile';
 import SellHouse from './pages/SellHouse';
 import Settings from './pages/Settings';
 import Shop from './pages/Shop';
-import GeneratedFindomContracts from './pages/GeneratedFindomContracts';
-import MyContracts from './pages/MyContracts';
-import PaymentSettings from './pages/PaymentSettings';
+import SellAssets from './pages/SellAssets';
+import AssetAuction from './pages/AssetAuction';
 import __Layout from './Layout.jsx';
 
 
@@ -38,20 +40,22 @@ export const PAGES = {
     "FindomChallenges": FindomChallenges,
     "FindomDebt": FindomDebt,
     "FindomSession": FindomSession,
+    "GeneratedFindomContracts": GeneratedFindomContracts,
     "GoonSession": GoonSession,
     "GoonerCam": GoonerCam,
     "History": History,
     "Home": Home,
     "HouseAuction": HouseAuction,
     "KinkSessions": KinkSessions,
+    "MyContracts": MyContracts,
+    "PaymentSettings": PaymentSettings,
     "PremiumFindom": PremiumFindom,
     "Profile": Profile,
     "SellHouse": SellHouse,
     "Settings": Settings,
     "Shop": Shop,
-    "GeneratedFindomContracts": GeneratedFindomContracts,
-    "MyContracts": MyContracts,
-    "PaymentSettings": PaymentSettings,
+    "SellAssets": SellAssets,
+    "AssetAuction": AssetAuction,
 }
 
 export const pagesConfig = {
