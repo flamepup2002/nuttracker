@@ -17,7 +17,6 @@ import GeneratedFindomContracts from './pages/GeneratedFindomContracts';
 import GoonSession from './pages/GoonSession';
 import GoonerCam from './pages/GoonerCam';
 import History from './pages/History';
-import Home from './pages/Home';
 import HouseAuction from './pages/HouseAuction';
 import KinkSessions from './pages/KinkSessions';
 import MyAssets from './pages/MyAssets';
@@ -35,6 +34,8 @@ import Reports from './pages/Reports';
 import StreamSetup from './pages/StreamSetup';
 import WatchStream from './pages/WatchStream';
 import StreamSubscriptions from './pages/StreamSubscriptions';
+import Home from './pages/Home';
+import HornyJail from './pages/HornyJail';
 import __Layout from './Layout.jsx';
 
 
@@ -58,7 +59,6 @@ export const PAGES = {
     "GoonSession": GoonSession,
     "GoonerCam": GoonerCam,
     "History": History,
-    "Home": Home,
     "HouseAuction": HouseAuction,
     "KinkSessions": KinkSessions,
     "MyAssets": MyAssets,
@@ -76,6 +76,8 @@ export const PAGES = {
     "StreamSetup": StreamSetup,
     "WatchStream": WatchStream,
     "StreamSubscriptions": StreamSubscriptions,
+    "Home": Home,
+    "HornyJail": HornyJail,
 }
 
 export const pagesConfig = {

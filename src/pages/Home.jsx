@@ -7,7 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { 
   Flame, Activity, DollarSign, Droplet, X, Ban, 
-  TrendingUp, Calendar, Play, Settings, ChevronRight, Coins, Sparkles, Trophy, Video, User, Zap, Home as HomeIcon, Gavel, FileText, CreditCard, Bell, BarChart3
+  TrendingUp, Calendar, Play, Settings, ChevronRight, Coins, Sparkles, Trophy, Video, User, Zap, Home as HomeIcon, Gavel, FileText, CreditCard, Bell, BarChart3, Lock
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import StatsCard from '@/components/StatsCard';
@@ -354,6 +354,19 @@ export default function Home() {
               <Zap className="w-8 h-8 text-white mb-3" />
               <p className="text-white font-bold text-lg">Edge Play</p>
               <p className="text-white/70 text-sm">Heart rate + toy control</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+
+          <Link to={createPageUrl('HornyJail')}>
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-red-800 to-orange-800"
+            >
+              <Lock className="w-8 h-8 text-white mb-3" />
+              <p className="text-white font-bold text-lg">Horny Jail</p>
+              <p className="text-white/70 text-sm">AI-controlled chastity</p>
               <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
             </motion.div>
           </Link>
