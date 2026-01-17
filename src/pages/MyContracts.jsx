@@ -7,7 +7,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { 
   ArrowLeft, FileText, DollarSign, Calendar, AlertTriangle, 
-  CheckCircle, XCircle, Clock, CreditCard, Ban, History
+  CheckCircle, XCircle, Clock, CreditCard, Ban, History, Loader, 
+  AlertCircle
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import {
@@ -119,10 +120,10 @@ export default function MyContracts() {
     const nextDate = contract.next_payment_due ? new Date(contract.next_payment_due) : null;
     const today = new Date();
     
-    if (!nextDate) return { status: 'completed', color: 'text-green-400', icon: CheckCircle };
-    if (nextDate < today) return { status: 'overdue', color: 'text-red-400', icon: AlertTriangle };
-    if ((nextDate - today) / (1000 * 60 * 60 * 24) <= 7) return { status: 'due_soon', color: 'text-yellow-400', icon: Clock };
-    return { status: 'active', color: 'text-green-400', icon: CheckCircle };
+    if (!nextDate) return { status: 'completed', color: 'text-green-400', icon: CheckCircle, label: 'Paid' };
+    if (nextDate < today) return { status: 'overdue', color: 'text-red-400', icon: AlertTriangle, label: 'Overdue' };
+    if ((nextDate - today) / (1000 * 60 * 60 * 24) <= 7) return { status: 'due_soon', color: 'text-yellow-400', icon: Clock, label: 'Due Soon' };
+    return { status: 'active', color: 'text-green-400', icon: CheckCircle, label: 'Active' };
   };
 
   if (isLoading) {
@@ -299,15 +300,25 @@ export default function MyContracts() {
                     </div>
                   )}
 
-                  {/* Subscription Info */}
-                  {contract.stripe_subscription_id && (
-                    <div className="bg-blue-900/20 border border-blue-600/30 rounded-lg p-3 mb-4 flex items-center gap-2">
-                      <CreditCard className="w-4 h-4 text-blue-400" />
-                      <p className="text-blue-300 text-xs">
-                        Recurring subscription active - automatic monthly billing
-                      </p>
-                    </div>
-                  )}
+                  {/* Subscription & Payment Status Info */}
+                  <div className="space-y-2 mb-4">
+                    {contract.stripe_subscription_id && (
+                      <div className="bg-blue-900/20 border border-blue-600/30 rounded-lg p-3 flex items-center gap-2">
+                        <CheckCircle className="w-4 h-4 text-blue-400" />
+                        <p className="text-blue-300 text-xs">
+                          Recurring subscription active - automatic monthly billing
+                        </p>
+                      </div>
+                    )}
+                    {!contract.stripe_subscription_id && contract.is_accepted && (
+                      <div className="bg-yellow-900/20 border border-yellow-600/30 rounded-lg p-3 flex items-center gap-2">
+                        <AlertCircle className="w-4 h-4 text-yellow-400" />
+                        <p className="text-yellow-300 text-xs">
+                          No subscription set up. Click "Setup Payment" to enable automatic billing.
+                        </p>
+                      </div>
+                    )}
+                  </div>
 
                   {/* Dispute Status */}
                   {contract.dispute_status === 'pending' && (
@@ -321,6 +332,28 @@ export default function MyContracts() {
 
                   {/* Actions */}
                   <div className="flex gap-2">
+                    {!contract.stripe_subscription_id && contract.is_accepted && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setSelectedContract(contract);
+                          // Trigger payment setup
+                          base44.functions.invoke('createContractSubscription', {
+                            contractId: contract.id
+                          }).then(() => {
+                            toast.success('Payment subscription created');
+                            queryClient.invalidateQueries({ queryKey: ['myContracts'] });
+                          }).catch((err) => {
+                            toast.error('Failed to setup payment: ' + err.message);
+                          });
+                        }}
+                        className="flex-1 border-green-600/50 text-green-400 hover:bg-green-900/20"
+                      >
+                        <CreditCard className="w-4 h-4 mr-2" />
+                        Setup Payment
+                      </Button>
+                    )}
                     <Button
                       variant="outline"
                       size="sm"
