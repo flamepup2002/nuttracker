@@ -1,6 +1,7 @@
 import AICoach from './pages/AICoach';
 import AIGuidedSession from './pages/AIGuidedSession';
 import Achievements from './pages/Achievements';
+import AssetAuction from './pages/AssetAuction';
 import BullyChat from './pages/BullyChat';
 import BuyCoins from './pages/BuyCoins';
 import Edge from './pages/Edge';
@@ -20,11 +21,11 @@ import MyContracts from './pages/MyContracts';
 import PaymentSettings from './pages/PaymentSettings';
 import PremiumFindom from './pages/PremiumFindom';
 import Profile from './pages/Profile';
+import SellAssets from './pages/SellAssets';
 import SellHouse from './pages/SellHouse';
 import Settings from './pages/Settings';
 import Shop from './pages/Shop';
-import SellAssets from './pages/SellAssets';
-import AssetAuction from './pages/AssetAuction';
+import Dashboard from './pages/Dashboard';
 import __Layout from './Layout.jsx';
 
 
@@ -32,6 +33,7 @@ export const PAGES = {
     "AICoach": AICoach,
     "AIGuidedSession": AIGuidedSession,
     "Achievements": Achievements,
+    "AssetAuction": AssetAuction,
     "BullyChat": BullyChat,
     "BuyCoins": BuyCoins,
     "Edge": Edge,
@@ -51,11 +53,11 @@ export const PAGES = {
     "PaymentSettings": PaymentSettings,
     "PremiumFindom": PremiumFindom,
     "Profile": Profile,
+    "SellAssets": SellAssets,
     "SellHouse": SellHouse,
     "Settings": Settings,
     "Shop": Shop,
-    "SellAssets": SellAssets,
-    "AssetAuction": AssetAuction,
+    "Dashboard": Dashboard,
 }
 
 export const pagesConfig = {
