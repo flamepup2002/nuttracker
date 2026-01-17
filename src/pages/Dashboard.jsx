@@ -10,6 +10,7 @@ import {
   Clock, CheckCircle, Sparkles
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import FinancialHealthScore from '@/components/FinancialHealthScore';
 
 const StatCard = ({ icon: Icon, label, value, subValue, color, onClick }) => (
   <motion.div
@@ -144,6 +145,9 @@ export default function Dashboard() {
       </div>
 
       <div className="px-6 pb-24 space-y-6 pt-6">
+        {/* Financial Health Score */}
+        <FinancialHealthScore compact={true} />
+
         {/* Alert for failed payments */}
         {failedPayments.length > 0 && (
           <motion.div
