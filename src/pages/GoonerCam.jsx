@@ -6,11 +6,12 @@ import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { 
   ArrowLeft, Video, Users, Eye, Heart, MessageCircle,
-  Radio, Zap, Crown, Search, Lock, Filter, SlidersHorizontal, Star, TrendingUp
+  Radio, Zap, Crown, Search, Lock, Filter, SlidersHorizontal, Star, TrendingUp, Sparkles
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import AIGoonerCam from '@/components/AIGoonerCam';
 
 
 
@@ -424,13 +425,24 @@ export default function GoonerCam() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center py-12"
+            className="space-y-6"
           >
-            <Video className="w-12 h-12 text-zinc-700 mx-auto mb-3" />
-            <h3 className="text-white font-bold text-xl mb-2">No Live Broadcasts</h3>
-            <p className="text-zinc-400 text-sm mb-6">
-              No one is broadcasting right now. Check back later!
-            </p>
+            <div className="text-center py-8">
+              <Video className="w-12 h-12 text-zinc-700 mx-auto mb-3" />
+              <h3 className="text-white font-bold text-xl mb-2">No Live Broadcasts</h3>
+              <p className="text-zinc-400 text-sm mb-4">
+                No one is broadcasting right now, but you can still goon to AI
+              </p>
+            </div>
+
+            {/* AI GoonerCam */}
+            <div className="max-w-2xl mx-auto">
+              <div className="flex items-center gap-2 mb-4">
+                <Sparkles className="w-5 h-5 text-purple-400" />
+                <h2 className="text-white font-bold text-lg">AI GoonerCam</h2>
+              </div>
+              <AIGoonerCam />
+            </div>
           </motion.div>
         )}
       </div>
