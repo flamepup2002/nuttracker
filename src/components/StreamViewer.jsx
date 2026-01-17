@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Video, Heart, MessageCircle, Users, Radio } from 'lucide-react';
+import { Video, Heart, MessageCircle, Users, Radio, Coins } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import StreamTipPanel from '@/components/StreamTipPanel';
 
 export default function StreamViewer({ stream, broadcaster, viewerCount }) {
   const [message, setMessage] = useState('');
@@ -63,6 +64,12 @@ export default function StreamViewer({ stream, broadcaster, viewerCount }) {
           <MessageCircle className="w-4 h-4" />
         </Button>
       </div>
+
+      {/* Tip Panel */}
+      <StreamTipPanel 
+        broadcasterId={broadcaster?.email || stream?.created_by}
+        broadcasterName={broadcaster?.username || 'Anonymous'}
+      />
 
       {/* Chat */}
       <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-4">

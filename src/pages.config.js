@@ -34,6 +34,7 @@ import Shop from './pages/Shop';
 import Reports from './pages/Reports';
 import StreamSetup from './pages/StreamSetup';
 import WatchStream from './pages/WatchStream';
+import StreamSubscriptions from './pages/StreamSubscriptions';
 import __Layout from './Layout.jsx';
 
 
@@ -74,6 +75,7 @@ export const PAGES = {
     "Reports": Reports,
     "StreamSetup": StreamSetup,
     "WatchStream": WatchStream,
+    "StreamSubscriptions": StreamSubscriptions,
 }
 
 export const pagesConfig = {

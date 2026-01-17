@@ -322,7 +322,7 @@ export default function Home() {
               <Video className="w-8 h-8 text-white mb-3" />
               <p className="text-white font-bold text-lg">GoonerCam</p>
               <p className="text-white/70 text-sm">
-                {settings?.goonercam_enabled ? 'Watch live gooners' : 'Enable in settings'}
+                {settings?.goonercam_enabled ? 'Watch & tip live' : 'Enable in settings'}
               </p>
               <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
             </motion.div>
