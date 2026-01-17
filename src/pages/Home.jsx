@@ -7,7 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { 
   Flame, Activity, DollarSign, Droplet, X, Ban, 
-  TrendingUp, Calendar, Play, Settings, ChevronRight, Coins, Sparkles, Trophy, Video, User, Zap, Home as HomeIcon, Gavel, FileText, CreditCard, Bell, BarChart3, Lock
+  TrendingUp, Calendar, Play, Settings, ChevronRight, Coins, Sparkles, Trophy, Video, User, Zap, Home as HomeIcon, Gavel, FileText, CreditCard, Bell, BarChart3, Lock, MessageSquare
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import StatsCard from '@/components/StatsCard';
@@ -166,6 +166,11 @@ export default function Home() {
               <Link to={createPageUrl('Settings')}>
                 <Button variant="ghost" size="icon" className="text-zinc-400 hover:text-white">
                   <Settings className="w-5 h-5" />
+                </Button>
+              </Link>
+              <Link to={createPageUrl('Feedback')}>
+                <Button variant="ghost" size="icon" className="text-zinc-400 hover:text-white">
+                  <MessageSquare className="w-5 h-5" />
                 </Button>
               </Link>
             </div>
