@@ -29,6 +29,24 @@ export default function HouseAuction() {
     },
   });
 
+  // Real-time bidding updates
+  useEffect(() => {
+    const unsubscribe = base44.entities.HouseListing.subscribe((event) => {
+      if (event.type === 'update' || event.type === 'create') {
+        queryClient.invalidateQueries({ queryKey: ['houseListings'] });
+        
+        // Show toast notification for new bids from other users
+        if (event.type === 'update' && event.data.highest_bidder_email !== user?.email) {
+          toast.info(`New bid on ${event.data.location || 'property'}: $${event.data.current_bid.toLocaleString()}`, {
+            duration: 3000
+          });
+        }
+      }
+    });
+
+    return () => unsubscribe();
+  }, [queryClient, user?.email]);
+
   // Place bid mutation
   const placeBidMutation = useMutation({
     mutationFn: async ({ listingId, newBid }) => {
@@ -94,6 +112,10 @@ export default function HouseAuction() {
           <h1 className="text-lg font-bold flex items-center gap-2">
             <Gavel className="w-5 h-5 text-yellow-400" />
             House Auction
+            <span className="text-xs text-green-400 flex items-center gap-1">
+              <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
+              Live
+            </span>
           </h1>
           <div className="w-16" />
         </div>

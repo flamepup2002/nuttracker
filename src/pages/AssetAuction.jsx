@@ -52,6 +52,24 @@ export default function AssetAuction() {
     queryFn: () => base44.entities.AssetListing.filter({ status: 'active' }),
   });
 
+  // Real-time bidding updates
+  React.useEffect(() => {
+    const unsubscribe = base44.entities.AssetListing.subscribe((event) => {
+      if (event.type === 'update' || event.type === 'create') {
+        queryClient.invalidateQueries({ queryKey: ['assetListings'] });
+        
+        // Show toast notification for new bids from other users
+        if (event.type === 'update' && event.data.highest_bidder_email !== user?.email) {
+          toast.info(`New bid on ${event.data.title}: $${event.data.current_bid.toLocaleString()}`, {
+            duration: 3000
+          });
+        }
+      }
+    });
+
+    return () => unsubscribe();
+  }, [queryClient, user?.email]);
+
   const placeBidMutation = useMutation({
     mutationFn: async ({ listingId, amount }) => {
       return await base44.entities.AssetListing.update(listingId, {
@@ -119,6 +137,10 @@ export default function AssetAuction() {
           <h1 className="text-lg font-bold flex items-center gap-2">
             <Gavel className="w-5 h-5 text-yellow-500" />
             Asset Auction
+            <span className="text-xs text-green-400 flex items-center gap-1">
+              <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
+              Live
+            </span>
           </h1>
           <div className="w-12" />
         </div>
@@ -183,7 +205,8 @@ export default function AssetAuction() {
                     </div>
 
                     <div className="grid grid-cols-3 gap-2 mb-4">
-                      <div className="bg-zinc-800/50 rounded-lg p-3">
+                      <div className="bg-zinc-800/50 rounded-lg p-3 relative">
+                        <div className="absolute -top-1 -right-1 w-2 h-2 bg-green-400 rounded-full animate-pulse" />
                         <p className="text-zinc-500 text-xs mb-1">Current Bid</p>
                         <p className="text-white font-bold text-lg">${listing.current_bid}</p>
                       </div>
