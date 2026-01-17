@@ -6,9 +6,9 @@ import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { 
-  Flame, Activity, DollarSign, Droplet, X, Ban, 
-  TrendingUp, Calendar, Play, Settings, ChevronRight, Coins, Sparkles, Trophy, Video, User, Zap, Home as HomeIcon, Gavel, FileText, CreditCard, Bell, BarChart3, Lock, MessageSquare
-} from 'lucide-react';
+        Flame, Activity, DollarSign, Droplet, X, Ban, 
+        TrendingUp, Calendar, Play, Settings, ChevronRight, Coins, Sparkles, Trophy, Video, User, Zap, Home as HomeIcon, Gavel, FileText, CreditCard, Bell, BarChart3, Lock, MessageSquare, Target
+      } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import StatsCard from '@/components/StatsCard';
 import OrgasmQuickLog from '@/components/OrgasmQuickLog';
@@ -217,18 +217,32 @@ export default function Home() {
 
         {/* AI Coach, Analytics & Kink Sessions */}
         <div className="grid grid-cols-2 gap-4 mt-4">
-          <Link to={createPageUrl('BullyChat')}>
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-red-600/50 to-pink-600/50 border border-red-500/30"
-            >
-              <Sparkles className="w-8 h-8 text-white mb-3" />
-              <p className="text-white font-bold text-lg">Bully AI</p>
-              <p className="text-white/70 text-sm">Chat with AI bully</p>
-              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
-            </motion.div>
-          </Link>
+          <div className="grid grid-cols-2 gap-2">
+            <Link to={createPageUrl('BullyChat')}>
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-red-600/50 to-pink-600/50 border border-red-500/30 h-full"
+              >
+                <Sparkles className="w-8 h-8 text-white mb-3" />
+                <p className="text-white font-bold text-lg">Bully AI</p>
+                <p className="text-white/70 text-sm">Chat & get tasks</p>
+                <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+              </motion.div>
+            </Link>
+            <Link to={createPageUrl('MyTasks')}>
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-purple-600/50 to-pink-600/50 border border-purple-500/30 h-full"
+              >
+                <Trophy className="w-8 h-8 text-white mb-3" />
+                <p className="text-white font-bold text-lg">My Tasks</p>
+                <p className="text-white/70 text-sm">Complete & earn</p>
+                <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+              </motion.div>
+            </Link>
+          </div>
 
           <Link to={createPageUrl('FindomAI')}>
             <motion.div
@@ -258,18 +272,34 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-2 gap-4 mt-4">
-          <Link to={createPageUrl('FindomAnalytics')}>
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="relative overflow-hidden rounded-2xl p-6 bg-zinc-900 border border-zinc-800"
-            >
-              <TrendingUp className="w-8 h-8 text-white mb-3" />
-              <p className="text-white font-bold text-lg">Analytics</p>
-              <p className="text-white/70 text-sm">View your stats</p>
-              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
-            </motion.div>
-          </Link>
+          <div className="grid grid-cols-2 gap-2">
+            <Link to={createPageUrl('FindomAnalytics')}>
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="relative overflow-hidden rounded-2xl p-6 bg-zinc-900 border border-zinc-800 h-full"
+              >
+                <TrendingUp className="w-8 h-8 text-white mb-3" />
+                <p className="text-white font-bold text-lg">My Stats</p>
+                <p className="text-white/70 text-sm">View your stats</p>
+                <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+              </motion.div>
+            </Link>
+            {user?.role === 'admin' && (
+              <Link to={createPageUrl('AnalyticsDashboard')}>
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-indigo-600 to-purple-700 h-full"
+                >
+                  <BarChart3 className="w-8 h-8 text-white mb-3" />
+                  <p className="text-white font-bold text-lg">Admin</p>
+                  <p className="text-white/70 text-sm">Full analytics</p>
+                  <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+                </motion.div>
+              </Link>
+            )}
+          </div>
 
           <Link to={createPageUrl('Reports')}>
             <motion.div
