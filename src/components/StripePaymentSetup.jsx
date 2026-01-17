@@ -134,20 +134,33 @@ function PaymentForm({ onSuccess, onCancel }) {
 
 export default function StripePaymentSetup({ onSuccess, onCancel }) {
   return (
-    <div className="bg-zinc-900/50 rounded-2xl border border-zinc-800 p-6">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
-          <CreditCard className="w-5 h-5 text-white" />
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-6"
+      onClick={onCancel}
+    >
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-lg bg-zinc-900 rounded-2xl border border-zinc-800 p-6"
+      >
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
+            <CreditCard className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h3 className="text-white font-bold">Add Payment Method</h3>
+            <p className="text-zinc-500 text-sm">For automatic findom charges</p>
+          </div>
         </div>
-        <div>
-          <h3 className="text-white font-bold">Add Payment Method</h3>
-          <p className="text-zinc-500 text-sm">For automatic findom charges</p>
-        </div>
-      </div>
 
-      <Elements stripe={stripePromise}>
-        <PaymentForm onSuccess={onSuccess} onCancel={onCancel} />
-      </Elements>
-    </div>
+        <Elements stripe={stripePromise}>
+          <PaymentForm onSuccess={onSuccess} onCancel={onCancel} />
+        </Elements>
+      </motion.div>
+    </motion.div>
   );
 }
