@@ -11,10 +11,30 @@ Deno.serve(async (req) => {
 
     const { requirements } = await req.json();
 
+    // Get user's financial health score to influence terms
+    let financialScore = null;
+    try {
+      const scoreResponse = await base44.functions.invoke('calculateFinancialHealthScore');
+      if (scoreResponse.data.success) {
+        financialScore = scoreResponse.data.score;
+      }
+    } catch (e) {
+      console.log('Could not fetch financial health score:', e.message);
+    }
+
     // Generate AI-powered contract
+    const scoreContext = financialScore 
+      ? `\n\nUser's Financial Health Score: ${financialScore}/1000
+- Score 850+: Excellent - offer favorable terms with lower penalties (5-10%) and lower interest (0-5%)
+- Score 750-849: Good - standard terms with moderate penalties (10-15%) and interest (5-10%)
+- Score 650-749: Average - standard terms with moderate penalties (15-25%) and interest (10-15%)
+- Score 550-649: Below Average - higher risk, increase penalties (25-35%) and interest (15-20%)
+- Score <550: Poor - high risk, maximum penalties (35-50%) and interest (20%+), require collateral`
+      : '';
+
     const prompt = `You are a findom contract specialist. Generate a detailed debt contract based on these requirements:
 
-${requirements}
+${requirements}${scoreContext}
 
 Create a comprehensive contract with:
 1. A compelling title
@@ -63,7 +83,8 @@ Return ONLY valid JSON in this exact format:
 
     return Response.json({
       success: true,
-      contract: result
+      contract: result,
+      financialScore
     });
   } catch (error) {
     console.error('Generate contract error:', error);
