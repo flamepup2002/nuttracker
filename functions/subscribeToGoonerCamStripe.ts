@@ -109,69 +109,28 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Create new subscription
-    const subscription = await stripe.subscriptions.create({
+    // Create checkout session instead of direct subscription
+    const session = await stripe.checkout.sessions.create({
       customer: stripeCustomerId,
-      items: [{ price: priceId }],
-      payment_behavior: 'error_if_incomplete',
+      mode: 'subscription',
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price: priceId,
+          quantity: 1,
+        },
+      ],
       metadata: {
         userId: user.id,
         tier: tier,
       },
-      off_session: true,
+      success_url: `${Deno.env.get('APP_URL')}/goonercam?subscription=success&tier=${tier}`,
+      cancel_url: `${Deno.env.get('APP_URL')}/goonercam?subscription=cancelled`,
     });
-
-    // Calculate next billing date
-    const nextBillingDate = new Date();
-    if (tierData.interval === 'year') {
-      nextBillingDate.setFullYear(nextBillingDate.getFullYear() + 1);
-    } else {
-      nextBillingDate.setMonth(nextBillingDate.getMonth() + 1);
-    }
-
-    // Create RecurringPaymentPlan record
-    const tierName = tier.replace('_monthly', '').replace('_yearly', '').charAt(0).toUpperCase() + tier.replace('_monthly', '').replace('_yearly', '').slice(1);
-    const isYearly = tierData.interval === 'year';
-    
-    await base44.entities.RecurringPaymentPlan.create({
-      name: `GoonerCam ${tierName} ${isYearly ? 'Yearly' : ''} Subscription`,
-      amount: tierData.price / 100,
-      frequency: isYearly ? 'yearly' : 'monthly',
-      description: `${tierData.coins > 0 ? `+${tierData.coins} bonus coins ${isYearly ? 'yearly' : 'monthly'}` : 'Basic access'}`,
-      benefits: [
-        `${tierName} tier benefits`,
-        tierData.coins > 0 ? `+${tierData.coins} coins ${isYearly ? 'per year' : 'each month'}` : 'Standard features',
-      ],
-      is_active: true,
-      stripe_subscription_id: subscription.id,
-      next_billing_date: nextBillingDate.toISOString(),
-      started_at: new Date().toISOString(),
-    });
-
-    // Update user profile
-    await base44.auth.updateMe({
-      goonercam_subscription_tier: tier,
-      stripe_customer_id: stripeCustomerId,
-      goonercam_subscription_started: new Date().toISOString(),
-    });
-
-    // Award bonus coins if applicable
-    if (tierData.coins > 0) {
-      const currentBalance = user.currency_balance || 0;
-      await base44.auth.updateMe({
-        currency_balance: currentBalance + tierData.coins,
-      });
-    }
 
     return Response.json({
       success: true,
-      subscription: {
-        id: subscription.id,
-        status: subscription.status,
-        tier: tier,
-        nextBillingDate: nextBillingDate.toISOString(),
-        bonusCoinsAwarded: tierData.coins,
-      },
+      checkoutUrl: session.url,
     });
   } catch (error) {
     console.error('Subscription error:', error);
