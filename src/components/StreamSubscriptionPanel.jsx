@@ -89,13 +89,11 @@ export default function StreamSubscriptionPanel() {
       return response.data;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['user'] });
-      if (data.success) {
-        toast.success('Subscription activated!', {
-          description: `Welcome to ${data.subscription.tier.toUpperCase()}! ${data.subscription.bonusCoinsAwarded > 0 ? `+${data.subscription.bonusCoinsAwarded} coins awarded!` : ''}`
-        });
+      if (data.success && data.checkoutUrl) {
+        // Redirect to Stripe checkout
+        window.location.href = data.checkoutUrl;
       } else {
-        toast.info(data.message || 'Subscription processed');
+        toast.error('Failed to create checkout session');
       }
     },
     onError: (error) => {
