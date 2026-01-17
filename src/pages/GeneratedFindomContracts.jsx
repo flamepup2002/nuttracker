@@ -5,7 +5,7 @@ import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { ArrowLeft, AlertTriangle, FileText, Settings } from 'lucide-react';
+import { ArrowLeft, AlertTriangle, FileText, Settings, X } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -921,6 +921,7 @@ export default function GeneratedFindomContracts() {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [customizingContract, setCustomizingContract] = useState(null);
   const [signatureData, setSignatureData] = useState(null);
+  const [showTermsModal, setShowTermsModal] = useState(false);
 
   const acceptMutation = useMutation({
     mutationFn: async (contract) => {
@@ -997,6 +998,11 @@ export default function GeneratedFindomContracts() {
     setShowConfirmation(true);
   };
 
+  const handleViewTerms = (contract) => {
+    setSelectedContract(contract);
+    setShowTermsModal(true);
+  };
+
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Header */}
@@ -1053,7 +1059,7 @@ export default function GeneratedFindomContracts() {
                 transition={{ delay: idx * 0.02 }}
               >
                 <button
-                  onClick={() => handleAcceptContract(contract)}
+                  onClick={() => handleViewTerms(contract)}
                   className="w-full group relative overflow-hidden"
                 >
                   <div className={`absolute inset-0 bg-gradient-to-r ${config.color} opacity-10 group-hover:opacity-20 transition-opacity`} />
@@ -1136,6 +1142,107 @@ export default function GeneratedFindomContracts() {
             onCustomize={handleCustomizationComplete}
             onCancel={() => setCustomizingContract(null)}
           />
+        )}
+      </AnimatePresence>
+
+      {/* Terms Modal */}
+      <AnimatePresence>
+        {showTermsModal && selectedContract && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setShowTermsModal(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+            >
+              <div className="sticky top-0 bg-zinc-900 border-b border-zinc-800 px-6 py-4 flex items-center justify-between">
+                <h2 className="text-white font-bold text-lg">{selectedContract.title}</h2>
+                <button
+                  onClick={() => setShowTermsModal(false)}
+                  className="text-zinc-400 hover:text-white transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="p-6 space-y-6">
+                {/* Description */}
+                <div>
+                  <p className="text-zinc-400 text-sm">{selectedContract.description}</p>
+                </div>
+
+                {/* Contract Details */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-zinc-800/50 rounded-lg p-3">
+                    <p className="text-zinc-500 text-xs mb-1">Monthly Payment</p>
+                    <p className="text-white font-bold text-lg">${selectedContract.monthly}</p>
+                  </div>
+                  <div className="bg-zinc-800/50 rounded-lg p-3">
+                    <p className="text-zinc-500 text-xs mb-1">Duration</p>
+                    <p className="text-white font-bold text-lg">{selectedContract.duration ? `${selectedContract.duration} months` : 'Indefinite'}</p>
+                  </div>
+                  <div className="bg-zinc-800/50 rounded-lg p-3">
+                    <p className="text-zinc-500 text-xs mb-1">Total Obligation</p>
+                    <p className="text-white font-bold text-lg">${selectedContract.monthly * (selectedContract.duration || 1)}</p>
+                  </div>
+                  <div className={`bg-zinc-800/50 rounded-lg p-3 border-l-4 ${
+                    selectedContract.intensity === 'mild' ? 'border-blue-500' :
+                    selectedContract.intensity === 'moderate' ? 'border-yellow-500' :
+                    selectedContract.intensity === 'intense' ? 'border-orange-500' :
+                    'border-red-500'
+                  }`}>
+                    <p className="text-zinc-500 text-xs mb-1">Intensity Level</p>
+                    <p className="text-white font-bold text-lg capitalize">{selectedContract.intensity}</p>
+                  </div>
+                </div>
+
+                {/* All Terms */}
+                <div>
+                  <h3 className="text-white font-bold mb-3 flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-red-400" />
+                    All Contract Terms
+                  </h3>
+                  <div className="bg-zinc-800/30 border border-zinc-800 rounded-lg p-4">
+                    <ol className="space-y-3">
+                      {selectedContract.terms.map((term, idx) => (
+                        <li key={idx} className="text-zinc-300 text-sm flex gap-3">
+                          <span className="text-red-400 font-bold flex-shrink-0 min-w-6">{idx + 1}.</span>
+                          <span>{term}</span>
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex gap-3 pt-4 border-t border-zinc-800">
+                  <Button
+                    onClick={() => setShowTermsModal(false)}
+                    variant="outline"
+                    className="flex-1 border-zinc-700"
+                  >
+                    Close
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      setShowTermsModal(false);
+                      handleAcceptContract(selectedContract);
+                    }}
+                    className={`flex-1 bg-gradient-to-r ${INTENSITY_CONFIG[selectedContract.intensity].color} hover:opacity-90 text-white font-bold`}
+                  >
+                    Accept This Contract
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
 
