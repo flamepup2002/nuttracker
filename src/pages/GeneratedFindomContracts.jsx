@@ -830,7 +830,9 @@ export default function GeneratedFindomContracts() {
   const acceptMutation = useMutation({
     mutationFn: async (contract) => {
       const total = contract.monthly * (contract.duration || 1);
-      return base44.entities.DebtContract.create({
+      
+      // Create the contract first
+      const newContract = await base44.entities.DebtContract.create({
         title: contract.title,
         description: contract.description,
         intensity_level: contract.intensity,
@@ -838,19 +840,42 @@ export default function GeneratedFindomContracts() {
         duration_months: contract.duration,
         total_obligation: total,
         terms: contract.terms,
-        is_accepted: true,
-        accepted_at: new Date().toISOString(),
+        is_accepted: false, // Will be set to true after payment
         next_payment_due: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
       });
+
+      // Process payment (recurring for perpetual/long contracts, one-time for short)
+      const paymentType = contract.duration === 0 || contract.duration > 3 ? 'recurring' : 'one_time';
+      const paymentResult = await base44.functions.invoke('processDebtContractPayment', {
+        contractId: newContract.id,
+        paymentType
+      });
+
+      if (!paymentResult.data.success) {
+        // Delete contract if payment failed
+        await base44.entities.DebtContract.delete(newContract.id);
+        throw new Error(paymentResult.data.error);
+      }
+
+      return { contract: newContract, payment: paymentResult.data };
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['debtContracts'] });
-      toast.success('Contract accepted - you are now bound');
+      const paymentMsg = data.payment.type === 'subscription' 
+        ? 'Subscription created - monthly payments will be charged automatically'
+        : 'Payment successful - contract paid in full';
+      toast.success(`Contract accepted! ${paymentMsg}`);
       setShowConfirmation(false);
       setSelectedContract(null);
     },
-    onError: () => {
-      toast.error('Failed to accept contract');
+    onError: (error) => {
+      if (error.message.includes('Payment method not set up')) {
+        toast.error('Please add a payment method first', {
+          description: 'Go to Buy Coins page to set up your payment method'
+        });
+      } else {
+        toast.error('Failed to process payment: ' + error.message);
+      }
     },
   });
 
@@ -1003,9 +1028,25 @@ export default function GeneratedFindomContracts() {
                   <span className="text-zinc-500">Duration:</span>
                   <span className="text-white font-bold ml-2">{selectedContract.duration ? `${selectedContract.duration} months` : 'Permanent'}</span>
                 </p>
+                <p className="text-sm">
+                  <span className="text-zinc-500">Payment Type:</span>
+                  <span className="text-white font-bold ml-2">
+                    {selectedContract.duration === 0 || selectedContract.duration > 3 
+                      ? 'Recurring Subscription' 
+                      : 'One-Time Payment'}
+                  </span>
+                </p>
+              </div>
+              <div className="bg-green-900/30 border border-green-600/50 rounded-lg p-3">
+                <p className="text-green-400 text-xs font-bold mb-1">💳 Payment Required</p>
+                <p className="text-green-300/80 text-xs">
+                  {selectedContract.duration === 0 || selectedContract.duration > 3 
+                    ? 'A recurring subscription will be created and charged monthly to your card.'
+                    : `A one-time payment of $${selectedContract.monthly * selectedContract.duration} will be charged immediately.`}
+                </p>
               </div>
               <p className="text-red-400 text-xs">
-                By accepting this contract, you pledge to make these payments. This is a binding financial commitment.
+                By accepting this contract, you authorize real payments. This is a binding financial commitment with actual charges to your card.
               </p>
             </AlertDialogDescription>
           )}
