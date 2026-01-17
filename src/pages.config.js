@@ -9,7 +9,6 @@ import FindomAnalytics from './pages/FindomAnalytics';
 import FindomChallenges from './pages/FindomChallenges';
 import FindomDebt from './pages/FindomDebt';
 import FindomSession from './pages/FindomSession';
-import GeneratedFindomContracts from './pages/GeneratedFindomContracts';
 import GoonSession from './pages/GoonSession';
 import GoonerCam from './pages/GoonerCam';
 import History from './pages/History';
@@ -21,6 +20,7 @@ import Profile from './pages/Profile';
 import SellHouse from './pages/SellHouse';
 import Settings from './pages/Settings';
 import Shop from './pages/Shop';
+import GeneratedFindomContracts from './pages/GeneratedFindomContracts';
 import __Layout from './Layout.jsx';
 
 
@@ -36,7 +36,6 @@ export const PAGES = {
     "FindomChallenges": FindomChallenges,
     "FindomDebt": FindomDebt,
     "FindomSession": FindomSession,
-    "GeneratedFindomContracts": GeneratedFindomContracts,
     "GoonSession": GoonSession,
     "GoonerCam": GoonerCam,
     "History": History,
@@ -48,6 +47,7 @@ export const PAGES = {
     "SellHouse": SellHouse,
     "Settings": Settings,
     "Shop": Shop,
+    "GeneratedFindomContracts": GeneratedFindomContracts,
 }
 
 export const pagesConfig = {

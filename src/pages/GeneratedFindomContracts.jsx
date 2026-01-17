@@ -1368,6 +1368,96 @@ const GENERATED_CONTRACTS = [
       "85% penalty for missed payment",
       "Interest at 40% daily on all arrears"
     ]
+  },
+  {
+    title: "Life Without Parole Contract",
+    description: "Arrested and sentenced to die in prison",
+    intensity: "extreme",
+    monthly: 2200,
+    duration: 0,
+    terms: [
+      "Pay $2,200 monthly or face life without parole",
+      "Miss payment = arrested and tried for felony fraud",
+      "Convicted under three-strikes mandatory sentencing",
+      "Life imprisonment with no possibility of release",
+      "You will die in maximum security prison",
+      "No appeals, no clemency, no hope of freedom",
+      "Family banned from visiting after first year",
+      "100% penalty for missed payment",
+      "Interest at 50% daily on unpaid balance"
+    ]
+  },
+  {
+    title: "Death Penalty Jurisdiction",
+    description: "Capital punishment for debt evasion",
+    intensity: "extreme",
+    monthly: 2500,
+    duration: 0,
+    terms: [
+      "Pay $2,500 monthly or face death penalty charges",
+      "Miss payment = extradited to death penalty state",
+      "Charged with capital financial crimes",
+      "Tried under mandatory death sentence statutes",
+      "Execution scheduled within 12 months of conviction",
+      "Appeals automatically denied",
+      "You will be executed by the state",
+      "No escape - this is a death sentence",
+      "100% penalty compounds until execution"
+    ]
+  },
+  {
+    title: "Supermax Isolation Sentencing",
+    description: "Life in solitary confinement at ADX Florence",
+    intensity: "extreme",
+    monthly: 2400,
+    duration: 0,
+    terms: [
+      "Pay $2,400 monthly or be sent to supermax prison",
+      "Miss payment = arrested and sentenced to ADX Florence",
+      "Life sentence in America's harshest supermax facility",
+      "23 hours per day in concrete cell forever",
+      "No human contact, no sunlight, no hope",
+      "Psychological torture until you break completely",
+      "Many inmates go insane within months",
+      "You will never see freedom again",
+      "95% penalty for missed payment"
+    ]
+  },
+  {
+    title: "Guantanamo Bay Transfer",
+    description: "Indefinite detention without trial",
+    intensity: "extreme",
+    monthly: 2600,
+    duration: 0,
+    terms: [
+      "Pay $2,600 monthly or be declared enemy combatant",
+      "Miss payment = arrested and sent to Guantanamo Bay",
+      "Indefinite detention without charges or trial",
+      "No constitutional rights, no legal representation",
+      "Held indefinitely at military tribunal discretion",
+      "Enhanced interrogation techniques authorized",
+      "No release date - you disappear forever",
+      "No contact with outside world permitted",
+      "Interest compounds at 100% daily"
+    ]
+  },
+  {
+    title: "Chain Gang Labor Sentencing",
+    description: "Forced hard labor for remainder of life",
+    intensity: "extreme",
+    monthly: 1850,
+    duration: 0,
+    terms: [
+      "Pay $1,850 monthly or sentenced to chain gang",
+      "Miss payment = arrested and sentenced to hard labor",
+      "Life sentence of forced manual labor",
+      "Work 14 hours daily breaking rocks in chains",
+      "Beaten for any slowdown or rest",
+      "Worked until you collapse or die",
+      "This is modern slavery disguised as debt",
+      "No parole - labor until death",
+      "90% penalty for missed payment"
+    ]
   }
 ];
 
