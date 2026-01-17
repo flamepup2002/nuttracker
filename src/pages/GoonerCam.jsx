@@ -6,7 +6,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { 
   ArrowLeft, Video, Users, Eye, Heart, MessageCircle,
-  Radio, Zap, Crown, Search, Lock
+  Radio, Zap, Crown, Search, Lock, Filter, SlidersHorizontal, Star, TrendingUp
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -80,6 +80,9 @@ function CamCard({ cam }) {
 export default function GoonerCam() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [minViewers, setMinViewers] = useState(0);
+  const [showFilters, setShowFilters] = useState(false);
 
   const { data: settings, isLoading } = useQuery({
     queryKey: ['userSettings'],
@@ -98,6 +101,12 @@ export default function GoonerCam() {
     enabled: settings?.goonercam_enabled,
   });
 
+  const { data: viewingHistory = [] } = useQuery({
+    queryKey: ['viewingHistory'],
+    queryFn: () => base44.entities.ViewingHistory.list('-created_date', 50),
+    enabled: settings?.goonercam_enabled,
+  });
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
@@ -105,6 +114,65 @@ export default function GoonerCam() {
       </div>
     );
   }
+
+  // Get personalized recommendations based on viewing history
+  const recommendedTags = React.useMemo(() => {
+    const tagCounts = {};
+    viewingHistory.forEach(vh => {
+      vh.tags?.forEach(tag => {
+        tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+      });
+    });
+    return Object.entries(tagCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(([tag]) => tag);
+  }, [viewingHistory]);
+
+  // Process and categorize broadcasts
+  const processedBroadcasts = React.useMemo(() => {
+    return broadcasts.map(b => {
+      const viewerCount = Math.floor(Math.random() * 500) + 50;
+      const username = b.created_by?.split('@')[0] || 'Anonymous';
+      const tags = b.tags || ['live'];
+      
+      // Calculate recommendation score
+      const tagMatch = tags.some(t => recommendedTags.includes(t)) ? 2 : 0;
+      const viewerBonus = viewerCount > 200 ? 1 : 0;
+      const score = tagMatch + viewerBonus + Math.random();
+
+      return {
+        id: b.id,
+        username,
+        viewers: viewerCount,
+        duration: b.duration_seconds ? `${Math.floor(b.duration_seconds / 60)}m` : '0m',
+        tags,
+        isLive: true,
+        isPremium: viewerCount > 300,
+        recommendationScore: score,
+        isFeatured: viewerCount > 200,
+      };
+    });
+  }, [broadcasts, recommendedTags]);
+
+  // Filter broadcasts
+  const filteredBroadcasts = React.useMemo(() => {
+    return processedBroadcasts.filter(b => {
+      const categoryMatch = selectedCategory === 'All' || b.tags.includes(selectedCategory.toLowerCase());
+      const viewerMatch = b.viewers >= minViewers;
+      const searchMatch = searchQuery === '' || 
+        b.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        b.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
+      return categoryMatch && viewerMatch && searchMatch;
+    });
+  }, [processedBroadcasts, selectedCategory, minViewers, searchQuery]);
+
+  // Get featured and recommended streams
+  const featuredStreams = filteredBroadcasts.filter(b => b.isFeatured).slice(0, 4);
+  const recommendedStreams = filteredBroadcasts
+    .sort((a, b) => b.recommendationScore - a.recommendationScore)
+    .slice(0, 6);
+  const allStreams = filteredBroadcasts;
 
   if (!settings?.goonercam_enabled) {
     return (
@@ -157,16 +225,62 @@ export default function GoonerCam() {
             <div className="w-16" />
           </div>
 
-          {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
-            <Input
-              placeholder="Search cams, tags, users..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-zinc-900/50 border-zinc-800 text-white"
-            />
+          {/* Search & Filter */}
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+              <Input
+                placeholder="Search cams, tags, users..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 bg-zinc-900/50 border-zinc-800 text-white"
+              />
+            </div>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setShowFilters(!showFilters)}
+              className={`border-zinc-800 ${showFilters ? 'bg-purple-600 border-purple-600 text-white' : 'text-zinc-400'}`}
+            >
+              <SlidersHorizontal className="w-4 h-4" />
+            </Button>
           </div>
+
+          {/* Advanced Filters */}
+          {showFilters && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mt-4 bg-zinc-900/50 rounded-xl p-4 border border-zinc-800 space-y-4"
+            >
+              <div>
+                <label className="text-zinc-400 text-xs mb-2 block">Minimum Viewers</label>
+                <input
+                  type="range"
+                  min="0"
+                  max="500"
+                  step="50"
+                  value={minViewers}
+                  onChange={(e) => setMinViewers(parseInt(e.target.value))}
+                  className="w-full"
+                />
+                <p className="text-white text-sm mt-1">{minViewers}+ viewers</p>
+              </div>
+              {recommendedTags.length > 0 && (
+                <div>
+                  <label className="text-zinc-400 text-xs mb-2 block">Your Preferences</label>
+                  <div className="flex flex-wrap gap-2">
+                    {recommendedTags.map(tag => (
+                      <Badge key={tag} className="bg-purple-600/20 text-purple-400 border-purple-600/30">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          )}
         </div>
       </div>
 
@@ -203,9 +317,10 @@ export default function GoonerCam() {
           {['All', 'Edging', 'Findom', 'Denial', 'Marathon', 'Breathplay', 'Poppers'].map((category) => (
             <Button
               key={category}
-              variant={category === 'All' ? 'default' : 'outline'}
+              onClick={() => setSelectedCategory(category)}
+              variant={category === selectedCategory ? 'default' : 'outline'}
               size="sm"
-              className={category === 'All' 
+              className={category === selectedCategory 
                 ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700' 
                 : 'border-zinc-700 text-zinc-400 hover:text-white hover:border-zinc-600'
               }
@@ -217,31 +332,76 @@ export default function GoonerCam() {
       </div>
 
       {/* Cam Grid */}
-      <div className="px-6 space-y-6">
+      <div className="px-6 space-y-8">
         {broadcastsLoading ? (
           <div className="flex items-center justify-center py-12">
             <div className="animate-spin w-8 h-8 border-2 border-pink-500 border-t-transparent rounded-full" />
           </div>
-        ) : broadcasts.length > 0 ? (
-          <div>
-            <h2 className="text-white font-bold text-lg mb-4">Live Now</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {broadcasts.map((broadcast) => (
-                <CamCard 
-                  key={broadcast.id} 
-                  cam={{
-                    id: broadcast.id,
-                    username: broadcast.created_by?.split('@')[0] || 'Anonymous',
-                    viewers: Math.floor(Math.random() * 500) + 50,
-                    duration: broadcast.duration_seconds ? `${Math.floor(broadcast.duration_seconds / 60)}m` : '0m',
-                    tags: ['live', 'streaming'],
-                    isLive: true,
-                    isPremium: false
-                  }} 
-                />
-              ))}
+        ) : filteredBroadcasts.length > 0 ? (
+          <>
+            {/* Featured Streams */}
+            {featuredStreams.length > 0 && (
+              <div>
+                <div className="flex items-center gap-2 mb-4">
+                  <Star className="w-5 h-5 text-yellow-400" />
+                  <h2 className="text-white font-bold text-lg">Featured</h2>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {featuredStreams.map((cam) => (
+                    <CamCard key={cam.id} cam={cam} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Recommended For You */}
+            {recommendedTags.length > 0 && recommendedStreams.length > 0 && (
+              <div>
+                <div className="flex items-center gap-2 mb-4">
+                  <TrendingUp className="w-5 h-5 text-purple-400" />
+                  <h2 className="text-white font-bold text-lg">Recommended For You</h2>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {recommendedStreams.slice(0, 4).map((cam) => (
+                    <CamCard key={cam.id} cam={cam} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* All Live Streams */}
+            <div>
+              <h2 className="text-white font-bold text-lg mb-4">All Live ({allStreams.length})</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {allStreams.map((cam) => (
+                  <CamCard key={cam.id} cam={cam} />
+                ))}
+              </div>
             </div>
-          </div>
+          </>
+        ) : broadcasts.length > 0 ? (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center py-12"
+          >
+            <Filter className="w-12 h-12 text-zinc-700 mx-auto mb-3" />
+            <h3 className="text-white font-bold text-xl mb-2">No Results</h3>
+            <p className="text-zinc-400 text-sm mb-6">
+              Try adjusting your filters or search terms
+            </p>
+            <Button
+              onClick={() => {
+                setSelectedCategory('All');
+                setMinViewers(0);
+                setSearchQuery('');
+              }}
+              variant="outline"
+              className="border-zinc-700"
+            >
+              Clear Filters
+            </Button>
+          </motion.div>
         ) : (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
