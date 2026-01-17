@@ -22,14 +22,30 @@ const EXAMPLE_PROMPTS = [
 export default function AIContractDrafter() {
   const navigate = useNavigate();
   const [requirements, setRequirements] = useState('');
+  const [intensity, setIntensity] = useState('moderate');
+  const [customKeywords, setCustomKeywords] = useState('');
+  const [keywords, setKeywords] = useState([]);
   const [generatedContract, setGeneratedContract] = useState(null);
   const [editedContract, setEditedContract] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
 
+  const addKeyword = () => {
+    if (customKeywords.trim() && !keywords.includes(customKeywords.trim())) {
+      setKeywords([...keywords, customKeywords.trim()]);
+      setCustomKeywords('');
+    }
+  };
+
+  const removeKeyword = (index) => {
+    setKeywords(keywords.filter((_, i) => i !== index));
+  };
+
   const generateMutation = useMutation({
     mutationFn: async (reqs) => {
       const response = await base44.functions.invoke('generateCustomContract', {
-        requirements: reqs
+        requirements: reqs,
+        intensity: intensity,
+        keywords: keywords
       });
       return response.data;
     },
@@ -114,43 +130,106 @@ export default function AIContractDrafter() {
 
       <div className="px-6 pb-24 space-y-6 pt-6">
         {/* Input Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6"
-        >
-          <h2 className="text-white font-bold text-lg mb-4">Describe Your Contract</h2>
-          
-          <div className="space-y-4">
-            <div>
-              <Label className="text-zinc-400">Contract Requirements</Label>
-              <Textarea
-                value={requirements}
-                onChange={(e) => setRequirements(e.target.value)}
-                placeholder="Describe what you want in your contract: duration, payment amount, intensity level, special terms, collateral, penalties, etc."
-                className="bg-zinc-800 border-zinc-700 text-white mt-2 min-h-[120px]"
-              />
-            </div>
+         <motion.div
+           initial={{ opacity: 0, y: 20 }}
+           animate={{ opacity: 1, y: 0 }}
+           className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6"
+         >
+           <h2 className="text-white font-bold text-lg mb-4">Design Your Contract</h2>
 
-            <Button
-              onClick={handleGenerate}
-              disabled={generateMutation.isPending}
-              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-            >
-              {generateMutation.isPending ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Generating...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  Generate Contract
-                </>
-              )}
-            </Button>
-          </div>
-        </motion.div>
+           <div className="space-y-4">
+             {/* Intensity Level Selection */}
+             <div>
+               <Label className="text-zinc-400 text-sm">Intensity Level</Label>
+               <div className="grid grid-cols-4 gap-2 mt-2">
+                 {['mild', 'moderate', 'intense', 'extreme'].map((level) => (
+                   <button
+                     key={level}
+                     onClick={() => setIntensity(level)}
+                     className={`py-2 px-3 rounded-lg font-semibold text-sm transition-all ${
+                       intensity === level
+                         ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
+                         : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+                     }`}
+                   >
+                     {level.charAt(0).toUpperCase() + level.slice(1)}
+                   </button>
+                 ))}
+               </div>
+               <p className="text-zinc-500 text-xs mt-2">
+                 {intensity === 'mild' && 'Light, beginner-friendly terms'}
+                 {intensity === 'moderate' && 'Balanced mix of pleasure and control'}
+                 {intensity === 'intense' && 'Strict terms with significant consequences'}
+                 {intensity === 'extreme' && 'Maximum control and severe penalties'}
+               </p>
+             </div>
+
+             {/* Custom Keywords/Themes */}
+             <div>
+               <Label className="text-zinc-400 text-sm">Custom Keywords & Themes</Label>
+               <div className="flex gap-2 mt-2">
+                 <Input
+                   value={customKeywords}
+                   onChange={(e) => setCustomKeywords(e.target.value)}
+                   onKeyDown={(e) => e.key === 'Enter' && addKeyword()}
+                   placeholder="e.g., humiliation, wealth transfer, chastity..."
+                   className="bg-zinc-800 border-zinc-700 text-white flex-1"
+                 />
+                 <Button
+                   onClick={addKeyword}
+                   variant="outline"
+                   className="border-purple-500/50 text-purple-400"
+                 >
+                   Add
+                 </Button>
+               </div>
+               {keywords.length > 0 && (
+                 <div className="flex flex-wrap gap-2 mt-3">
+                   {keywords.map((keyword, idx) => (
+                     <div key={idx} className="bg-purple-900/30 border border-purple-600/50 rounded-full px-3 py-1 flex items-center gap-2">
+                       <span className="text-sm text-purple-300">{keyword}</span>
+                       <button
+                         onClick={() => removeKeyword(idx)}
+                         className="text-purple-400 hover:text-purple-300"
+                       >
+                         <X className="w-3 h-3" />
+                       </button>
+                     </div>
+                   ))}
+                 </div>
+               )}
+             </div>
+
+             {/* Contract Requirements */}
+             <div>
+               <Label className="text-zinc-400 text-sm">Additional Requirements (optional)</Label>
+               <Textarea
+                 value={requirements}
+                 onChange={(e) => setRequirements(e.target.value)}
+                 placeholder="Describe specific terms: duration, payment amount, special conditions, collateral, penalties, etc. (optional)"
+                 className="bg-zinc-800 border-zinc-700 text-white mt-2 min-h-[100px]"
+               />
+             </div>
+
+             <Button
+               onClick={handleGenerate}
+               disabled={generateMutation.isPending}
+               className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+             >
+               {generateMutation.isPending ? (
+                 <>
+                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                   Generating...
+                 </>
+               ) : (
+                 <>
+                   <Sparkles className="w-4 h-4 mr-2" />
+                   Generate Contract
+                 </>
+               )}
+             </Button>
+           </div>
+         </motion.div>
 
         {/* Example Prompts */}
         <motion.div
