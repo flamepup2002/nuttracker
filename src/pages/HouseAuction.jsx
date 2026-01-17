@@ -163,7 +163,8 @@ export default function HouseAuction() {
                           <p className="text-zinc-500 text-xs">Starting Price</p>
                           <p className="text-green-400 font-bold">${listing.initial_value.toLocaleString()}</p>
                         </div>
-                        <div>
+                        <div className="relative">
+                          <div className="absolute -top-1 -right-1 w-2 h-2 bg-green-400 rounded-full animate-pulse" />
                           <p className="text-zinc-500 text-xs">Current Bid</p>
                           <p className="text-pink-400 font-bold">${listing.current_bid.toLocaleString()}</p>
                         </div>
