@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Crown, Check, Sparkles } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -7,35 +7,73 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 const SUBSCRIPTION_TIERS = [
+  // Monthly
   {
-    id: 'basic',
+    id: 'basic_monthly',
     name: 'Basic',
     price: 4.99,
     coins: 0,
+    billing: 'monthly',
     features: ['Access to basic streams', 'Chat participation', 'Standard quality'],
     color: 'from-blue-600 to-blue-700'
   },
   {
-    id: 'premium',
+    id: 'premium_monthly',
     name: 'Premium',
     price: 9.99,
     coins: 500,
+    billing: 'monthly',
     features: ['All Basic features', 'HD quality streams', '500 bonus coins/month', 'Exclusive emotes', 'Priority chat'],
     color: 'from-purple-600 to-purple-700',
     badge: '🔥 Popular'
   },
   {
-    id: 'vip',
+    id: 'vip_monthly',
     name: 'VIP',
     price: 19.99,
     coins: 1500,
+    billing: 'monthly',
     features: ['All Premium features', '1500 bonus coins/month', 'VIP badge', 'Private streams access', 'Ad-free experience', 'Early access'],
     color: 'from-yellow-600 to-amber-600',
     badge: '👑 Best Value'
+  },
+  // Yearly (20% discount)
+  {
+    id: 'basic_yearly',
+    name: 'Basic',
+    price: 47.88,
+    coins: 0,
+    billing: 'yearly',
+    originalPrice: 59.88,
+    features: ['Access to basic streams', 'Chat participation', 'Standard quality'],
+    color: 'from-blue-600 to-blue-700'
+  },
+  {
+    id: 'premium_yearly',
+    name: 'Premium',
+    price: 95.88,
+    coins: 7500,
+    billing: 'yearly',
+    originalPrice: 119.88,
+    features: ['All Basic features', 'HD quality streams', '7500 bonus coins/year', 'Exclusive emotes', 'Priority chat'],
+    color: 'from-purple-600 to-purple-700',
+    badge: '💰 Save 20%'
+  },
+  {
+    id: 'vip_yearly',
+    name: 'VIP',
+    price: 191.88,
+    coins: 22500,
+    billing: 'yearly',
+    originalPrice: 239.88,
+    features: ['All Premium features', '22500 bonus coins/year', 'VIP badge', 'Private streams access', 'Ad-free experience', 'Early access'],
+    color: 'from-yellow-600 to-amber-600',
+    badge: '👑 Best Savings'
   }
 ];
 
 export default function StreamSubscriptionPanel() {
+  const [billingPeriod, setBillingPeriod] = useState('monthly');
   const queryClient = useQueryClient();
 
   const { data: user } = useQuery({
@@ -67,7 +105,8 @@ export default function StreamSubscriptionPanel() {
     }
   });
 
-  const currentTier = user?.goonercam_subscription_tier || 'basic';
+  const currentTier = user?.goonercam_subscription_tier || null;
+  const filteredTiers = SUBSCRIPTION_TIERS.filter(t => t.billing === billingPeriod);
 
   return (
     <div className="space-y-4">
@@ -76,10 +115,36 @@ export default function StreamSubscriptionPanel() {
         <p className="text-zinc-400 text-sm">Get exclusive perks and bonus coins</p>
       </div>
 
+      {/* Billing Period Toggle */}
+      <div className="flex gap-2 bg-zinc-900 rounded-xl p-1 mb-4">
+        <button
+          onClick={() => setBillingPeriod('monthly')}
+          className={`flex-1 py-2 rounded-lg font-semibold transition-all ${
+            billingPeriod === 'monthly'
+              ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white'
+              : 'text-zinc-400 hover:text-white'
+          }`}
+        >
+          Monthly
+        </button>
+        <button
+          onClick={() => setBillingPeriod('yearly')}
+          className={`flex-1 py-2 rounded-lg font-semibold transition-all ${
+            billingPeriod === 'yearly'
+              ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white'
+              : 'text-zinc-400 hover:text-white'
+          }`}
+        >
+          Yearly
+          <span className="text-xs ml-1 text-green-400">Save 20%</span>
+        </button>
+      </div>
+
       <div className="grid gap-4">
-        {SUBSCRIPTION_TIERS.map((tier, idx) => {
-          const isActive = currentTier === tier.id;
-          const isUpgrade = SUBSCRIPTION_TIERS.findIndex(t => t.id === currentTier) < idx;
+        {filteredTiers.map((tier, idx) => {
+          const tierBase = tier.id.replace('_monthly', '').replace('_yearly', '');
+          const isActive = currentTier?.includes(tierBase);
+          const isUpgrade = !isActive;
 
           return (
             <motion.div
@@ -105,13 +170,19 @@ export default function StreamSubscriptionPanel() {
                   </h3>
                   <div className="flex items-baseline gap-1 mt-1">
                     <span className="text-white font-bold text-2xl">${tier.price}</span>
-                    <span className="text-zinc-500 text-sm">/month</span>
+                    <span className="text-zinc-500 text-sm">/{billingPeriod === 'yearly' ? 'year' : 'month'}</span>
                   </div>
-                  {tier.coins > 0 && (
-                    <div className="flex items-center gap-1 mt-1">
-                      <Sparkles className="w-3 h-3 text-yellow-400" />
-                      <span className="text-yellow-400 text-xs font-bold">+{tier.coins} coins/mo</span>
+                  {tier.originalPrice && (
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-zinc-500 text-xs line-through">${tier.originalPrice}</span>
+                      <span className="text-green-400 text-xs font-bold">Save $${(tier.originalPrice - tier.price).toFixed(2)}</span>
                     </div>
+                  )}
+                  {tier.coins > 0 && (
+                   <div className="flex items-center gap-1 mt-1">
+                     <Sparkles className="w-3 h-3 text-yellow-400" />
+                     <span className="text-yellow-400 text-xs font-bold">+{tier.coins} coins/{billingPeriod === 'yearly' ? 'year' : 'month'}</span>
+                   </div>
                   )}
                 </div>
               </div>
