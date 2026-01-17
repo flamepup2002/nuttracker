@@ -4,7 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, User, Save, Mail, Phone, MapPin, Calendar, Heart, FileText, DollarSign, TrendingUp, Package } from 'lucide-react';
+import AchievementBadge from '@/components/AchievementBadge';
+import { ArrowLeft, User, Save, Mail, Phone, MapPin, Calendar, Heart, FileText, DollarSign, TrendingUp, Package, Trophy } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -50,6 +51,11 @@ export default function Profile() {
   const { data: houseListings = [] } = useQuery({
     queryKey: ['houseListings'],
     queryFn: () => base44.entities.HouseListing.list(),
+  });
+
+  const { data: achievements = [] } = useQuery({
+    queryKey: ['achievements'],
+    queryFn: () => base44.entities.UserAchievement.list('-unlocked_at', 100),
   });
 
   const activityStats = {
@@ -168,8 +174,31 @@ export default function Profile() {
           </div>
         </motion.div>
 
+        {/* Achievements */}
+         {achievements.length > 0 && (
+           <motion.div
+             initial={{ opacity: 0, y: 20 }}
+             animate={{ opacity: 1, y: 0 }}
+             className="bg-gradient-to-br from-yellow-900/30 to-orange-900/30 border-2 border-yellow-500/30 rounded-2xl p-6"
+           >
+             <h3 className="text-white font-bold mb-4 flex items-center gap-2">
+               <Trophy className="w-5 h-5 text-yellow-400" />
+               Achievements ({achievements.length})
+             </h3>
+             <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
+               {achievements.map((achievement) => (
+                 <AchievementBadge
+                   key={achievement.id}
+                   achievement={achievement}
+                   isShowcased={achievement.is_showcased}
+                 />
+               ))}
+             </div>
+           </motion.div>
+         )}
+
         {/* Activity Summary */}
-        <motion.div
+         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.05 }}
