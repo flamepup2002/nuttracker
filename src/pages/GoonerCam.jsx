@@ -223,7 +223,12 @@ export default function GoonerCam() {
               <Video className="w-5 h-5 text-purple-400" />
               GoonerCam
             </h1>
-            <div className="w-16" />
+            <button 
+              onClick={() => navigate(createPageUrl('StreamSubscriptions'))}
+              className="text-yellow-400 hover:text-yellow-300 transition-colors"
+            >
+              <Crown className="w-5 h-5" />
+            </button>
           </div>
 
           {/* Search & Filter */}
