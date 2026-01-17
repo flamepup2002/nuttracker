@@ -1368,6 +1368,24 @@ const GENERATED_CONTRACTS = [
       "85% penalty for missed payment",
       "Interest at 40% daily on all arrears"
     ]
+  },
+  {
+    title: "Maximum Security Sentencing",
+    description: "Arrest warrant leads to life in maximum security prison",
+    intensity: "extreme",
+    monthly: 2200,
+    duration: 0,
+    terms: [
+      "Pay $2,200 monthly or face maximum security imprisonment",
+      "Miss payment = arrest warrant for aggravated debt fraud",
+      "Arrested and charged with Class A felony",
+      "Mandatory life sentence without parole possibility",
+      "Sent to maximum security supermax facility",
+      "23-hour lockdown, no human contact for decades",
+      "Death in prison is your only release",
+      "100% penalty for missed payment",
+      "Interest at 50% daily - you'll die owing millions"
+    ]
   }
 ];
 
