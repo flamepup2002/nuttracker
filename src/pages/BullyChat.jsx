@@ -3,18 +3,35 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
-import { ArrowLeft, Send, Loader2, MessageCircle } from 'lucide-react';
+import { useQueryClient, useMutation } from '@tanstack/react-query';
+import { ArrowLeft, Send, Loader2, MessageCircle, Sparkles } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { toast } from 'sonner';
 
 export default function BullyChat() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [dangerousMode, setDangerousMode] = useState(false);
   const [workplaceMode, setWorkplaceMode] = useState(false);
   const messagesEndRef = useRef(null);
+
+  const assignTaskMutation = useMutation({
+    mutationFn: async (category) => {
+      const response = await base44.functions.invoke('assignBullyTask', { category, difficulty: 'medium' });
+      return response.data;
+    },
+    onSuccess: (data) => {
+      toast.success(`Task assigned: ${data.task.task_description}`);
+      queryClient.invalidateQueries({ queryKey: ['bullyTasks'] });
+    },
+    onError: () => {
+      toast.error('Failed to assign task');
+    }
+  });
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -104,6 +121,15 @@ Respond with a cocky, extreme message and assign a dangerous task:`;
       };
 
       setMessages(prev => [...prev, aiMessage]);
+
+      // Track analytics
+      await base44.functions.invoke('trackSessionAnalytics', {
+        feature: 'bully_chat',
+        sessionDuration: 0,
+        engagementLevel: 85,
+        interactions: 1,
+        featureData: { message_count: 1 }
+      });
     } catch (error) {
       console.error('Failed to get AI response:', error);
       const fallbacks = [
@@ -148,7 +174,7 @@ Respond with a cocky, extreme message and assign a dangerous task:`;
               <MessageCircle className="w-5 h-5 text-red-400" />
               Bully AI
             </h1>
-            <div className="flex gap-2 mt-2">
+            <div className="flex gap-2 mt-2 flex-wrap justify-center">
               <button
                 onClick={() => setWorkplaceMode(!workplaceMode)}
                 className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${
@@ -159,6 +185,16 @@ Respond with a cocky, extreme message and assign a dangerous task:`;
               >
                 🏢 Work Mode
               </button>
+              <Button
+                onClick={() => assignTaskMutation.mutate('goon')}
+                disabled={assignTaskMutation.isPending}
+                size="sm"
+                variant="outline"
+                className="border-purple-600/50 text-purple-400 hover:bg-purple-900/20 h-7"
+              >
+                <Sparkles className="w-3 h-3 mr-1" />
+                Get Task
+              </Button>
             </div>
           </div>
           <div className="w-16" />
