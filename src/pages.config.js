@@ -35,6 +35,7 @@ import Reports from './pages/Reports';
 import StreamSetup from './pages/StreamSetup';
 import WatchStream from './pages/WatchStream';
 import StreamSubscriptions from './pages/StreamSubscriptions';
+import HornyJail from './pages/HornyJail';
 import __Layout from './Layout.jsx';
 
 
@@ -76,6 +77,7 @@ export const PAGES = {
     "StreamSetup": StreamSetup,
     "WatchStream": WatchStream,
     "StreamSubscriptions": StreamSubscriptions,
+    "HornyJail": HornyJail,
 }
 
 export const pagesConfig = {
