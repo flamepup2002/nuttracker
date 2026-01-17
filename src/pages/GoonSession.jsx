@@ -25,6 +25,7 @@ export default function GoonSession() {
   const [heartRate, setHeartRate] = useState(null);
   const [heartRateData, setHeartRateData] = useState([]);
   const [showStats, setShowStats] = useState(false);
+  const [isBroadcasting, setIsBroadcasting] = useState(false);
   
   // Detect iOS (Web Bluetooth not supported)
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
@@ -44,13 +45,30 @@ export default function GoonSession() {
         is_findom: false,
         status: 'active',
         heart_rate_data: [],
+        broadcast_enabled: false,
       });
       setSession(newSession);
       setIsActive(true);
+      setIsBroadcasting(false);
       setHeartRateData([]);
       toast.success('Goon session started!');
     } catch (error) {
       toast.error('Failed to start session');
+    }
+  };
+
+  const toggleBroadcast = async () => {
+    if (!session || !settings?.broadcast_enabled) return;
+    
+    try {
+      const newBroadcastState = !isBroadcasting;
+      await base44.entities.Session.update(session.id, {
+        broadcast_enabled: newBroadcastState,
+      });
+      setIsBroadcasting(newBroadcastState);
+      toast.success(newBroadcastState ? 'Now broadcasting live!' : 'Stopped broadcasting');
+    } catch (error) {
+      toast.error('Failed to update broadcast status');
     }
   };
 
@@ -75,6 +93,7 @@ export default function GoonSession() {
       });
       
       setIsActive(false);
+      setIsBroadcasting(false);
       setShowStats(true);
       toast.success('Session completed!');
     } catch (error) {
@@ -127,18 +146,46 @@ export default function GoonSession() {
 
       {/* Main Content */}
       <div className="px-6 pb-24 space-y-6">
-        {/* Broadcasting Indicator */}
+        {/* Broadcasting Controls */}
         {isActive && settings?.broadcast_enabled && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-gradient-to-r from-red-600/20 to-pink-600/20 border border-red-500/30 rounded-xl p-3 flex items-center gap-3"
+            className={`${
+              isBroadcasting 
+                ? 'bg-gradient-to-r from-red-600/20 to-pink-600/20 border-red-500/30' 
+                : 'bg-zinc-900/50 border-zinc-800'
+            } border rounded-xl p-4`}
           >
-            <div className="flex items-center gap-2">
-              <Radio className="w-4 h-4 text-red-400 animate-pulse" />
-              <span className="text-red-400 font-bold text-sm">LIVE</span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                {isBroadcasting ? (
+                  <>
+                    <div className="flex items-center gap-2">
+                      <Radio className="w-4 h-4 text-red-400 animate-pulse" />
+                      <span className="text-red-400 font-bold text-sm">LIVE</span>
+                    </div>
+                    <p className="text-zinc-400 text-xs">Broadcasting on GoonerCam</p>
+                  </>
+                ) : (
+                  <>
+                    <Radio className="w-4 h-4 text-zinc-500" />
+                    <p className="text-zinc-400 text-sm">Broadcast to GoonerCam</p>
+                  </>
+                )}
+              </div>
+              <Button
+                onClick={toggleBroadcast}
+                size="sm"
+                className={
+                  isBroadcasting
+                    ? 'bg-red-600 hover:bg-red-700 text-white'
+                    : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white'
+                }
+              >
+                {isBroadcasting ? 'Stop' : 'Go Live'}
+              </Button>
             </div>
-            <p className="text-zinc-400 text-xs">Broadcasting on GoonerCam</p>
           </motion.div>
         )}
 
