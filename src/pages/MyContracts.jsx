@@ -10,7 +10,6 @@ import {
   CheckCircle, XCircle, Clock, CreditCard, Ban
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import ContractDetailsModal from "@/components/ContractDetailsModal";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,7 +30,6 @@ export default function MyContracts() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [selectedContract, setSelectedContract] = useState(null);
-  const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [showDisputeDialog, setShowDisputeDialog] = useState(false);
   const [disputeReason, setDisputeReason] = useState('');
@@ -230,11 +228,7 @@ export default function MyContracts() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.05 }}
-                  className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 cursor-pointer hover:border-zinc-700 hover:bg-zinc-800/80 transition-all"
-                  onClick={() => {
-                    setSelectedContract(contract);
-                    setShowDetailsModal(true);
-                  }}
+                  className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5"
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">
@@ -324,8 +318,7 @@ export default function MyContracts() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
+                      onClick={() => {
                         setSelectedContract(contract);
                         setShowDisputeDialog(true);
                       }}
@@ -339,8 +332,7 @@ export default function MyContracts() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
+                        onClick={() => {
                           setSelectedContract(contract);
                           setShowCancelDialog(true);
                         }}
@@ -357,13 +349,6 @@ export default function MyContracts() {
           </div>
         )}
       </div>
-
-      {/* Contract Details Modal */}
-      <ContractDetailsModal 
-        contract={selectedContract} 
-        isOpen={showDetailsModal} 
-        onClose={() => setShowDetailsModal(false)} 
-      />
 
       {/* Cancel Confirmation Dialog */}
       <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
