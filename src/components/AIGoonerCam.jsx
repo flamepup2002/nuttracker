@@ -26,22 +26,7 @@ export default function AIGoonerCam() {
     },
   });
 
-  const chatMutation = useMutation({
-    mutationFn: async (message) => {
-      const response = await base44.functions.invoke('aiLiveStreamChat', {
-        message,
-        streamDuration
-      });
-      return response.data;
-    },
-    onSuccess: (data) => {
-      setStreamChat(prev => [...prev, {
-        role: 'assistant',
-        content: data.response,
-        timestamp: new Date().toISOString()
-      }]);
-    },
-  });
+
 
   // Generate initial image
   useEffect(() => {
@@ -69,23 +54,7 @@ export default function AIGoonerCam() {
     }
   }, [isStreaming]);
 
-  const handleSendChat = (e) => {
-    e.preventDefault();
-    if (!chatInput.trim()) return;
 
-    const userMsg = {
-      role: 'user',
-      content: chatInput,
-      timestamp: new Date().toISOString()
-    };
-    setStreamChat(prev => [...prev, userMsg]);
-    chatMutation.mutate(chatInput);
-    setChatInput('');
-  };
-
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [streamChat]);
 
   const formatTime = (seconds) => {
     const hrs = Math.floor(seconds / 3600);
