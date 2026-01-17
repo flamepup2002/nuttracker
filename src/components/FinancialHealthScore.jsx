@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { TrendingUp, TrendingDown, AlertCircle, CheckCircle, Info } from 'lucide-react';
+import { TrendingUp, TrendingDown, AlertCircle, CheckCircle, Info, Zap, Target } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 
@@ -101,12 +101,14 @@ export default function FinancialHealthScore({ compact = false }) {
         </h3>
         <div className="grid grid-cols-2 gap-3">
           <div className="bg-zinc-800/50 rounded-lg p-3">
-            <p className="text-zinc-500 text-xs">Payment Timeliness</p>
+            <p className="text-zinc-500 text-xs">Payment Reliability</p>
             <p className="text-white font-bold">{metrics.paymentTimeliness}%</p>
+            <p className="text-zinc-600 text-xs mt-1">{metrics.successfulPayments}/{metrics.totalPayments} successful</p>
           </div>
           <div className="bg-zinc-800/50 rounded-lg p-3">
             <p className="text-zinc-500 text-xs">Debt-to-Asset</p>
             <p className="text-white font-bold">{metrics.debtToAssetRatio}%</p>
+            <p className="text-zinc-600 text-xs mt-1">{metrics.debtToAssetRatio < 30 ? 'Excellent' : metrics.debtToAssetRatio < 50 ? 'Good' : 'High'}</p>
           </div>
           <div className="bg-zinc-800/50 rounded-lg p-3">
             <p className="text-zinc-500 text-xs">Total Assets</p>
@@ -115,6 +117,16 @@ export default function FinancialHealthScore({ compact = false }) {
           <div className="bg-zinc-800/50 rounded-lg p-3">
             <p className="text-zinc-500 text-xs">Total Debt</p>
             <p className="text-white font-bold">${metrics.totalDebt.toLocaleString()}</p>
+          </div>
+          <div className="bg-zinc-800/50 rounded-lg p-3">
+            <p className="text-zinc-500 text-xs">Active Contracts</p>
+            <p className="text-white font-bold">{metrics.activeContracts}</p>
+            <p className="text-zinc-600 text-xs mt-1">{metrics.completedContracts} completed</p>
+          </div>
+          <div className="bg-zinc-800/50 rounded-lg p-3">
+            <p className="text-zinc-500 text-xs">Platform Tenure</p>
+            <p className="text-white font-bold">{Math.floor(metrics.daysSinceRegistration / 30)}mo</p>
+            <p className="text-zinc-600 text-xs mt-1">{metrics.daysSinceRegistration} days</p>
           </div>
         </div>
       </motion.div>
@@ -142,26 +154,52 @@ export default function FinancialHealthScore({ compact = false }) {
         </motion.div>
       )}
 
-      {/* Recommendations */}
+      {/* Recommendations with Impact */}
       {recommendations.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="bg-blue-900/30 border border-blue-700/30 rounded-2xl p-5"
+          className="bg-gradient-to-br from-blue-900/40 to-purple-900/40 border border-blue-700/30 rounded-2xl p-5"
         >
-          <h3 className="text-white font-bold mb-3 flex items-center gap-2">
-            <TrendingUp className="w-4 h-4 text-blue-400" />
-            Recommendations
+          <h3 className="text-white font-bold mb-4 flex items-center gap-2">
+            <Target className="w-5 h-5 text-blue-400" />
+            How to Improve Your Score
           </h3>
-          <ul className="space-y-2">
-            {recommendations.map((rec, idx) => (
-              <li key={idx} className="text-blue-200 text-sm flex items-start gap-2">
-                <CheckCircle className="w-4 h-4 text-blue-400 flex-shrink-0 mt-0.5" />
-                <span>{rec}</span>
-              </li>
-            ))}
-          </ul>
+          <div className="space-y-3">
+            {recommendations.map((rec, idx) => {
+              const impactColor = rec.impact === 'Critical' ? 'text-red-400 bg-red-900/30' :
+                                  rec.impact === 'High' ? 'text-orange-400 bg-orange-900/30' :
+                                  rec.impact === 'Medium' ? 'text-yellow-400 bg-yellow-900/30' :
+                                  'text-blue-400 bg-blue-900/30';
+              
+              return (
+                <div key={idx} className="bg-zinc-900/50 rounded-lg p-4 border border-zinc-800">
+                  <div className="flex items-start justify-between gap-3 mb-2">
+                    <p className="text-white text-sm flex-1">{rec.action}</p>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <span className={`text-xs px-2 py-1 rounded-full ${impactColor} font-bold`}>
+                        {rec.impact}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs">
+                    <Zap className="w-3 h-3 text-green-400" />
+                    <span className="text-green-400 font-bold">+{rec.potentialPoints} points</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          
+          {recommendations.length > 0 && (
+            <div className="mt-4 pt-4 border-t border-zinc-800">
+              <p className="text-zinc-400 text-xs flex items-center gap-2">
+                <Info className="w-3 h-3" />
+                Total potential improvement: +{recommendations.reduce((sum, r) => sum + r.potentialPoints, 0)} points
+              </p>
+            </div>
+          )}
         </motion.div>
       )}
     </div>
