@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -85,6 +85,7 @@ export default function GoonerCam() {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [minViewers, setMinViewers] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
+  const [liveViewers, setLiveViewers] = useState({});
 
   const { data: settings, isLoading } = useQuery({
     queryKey: ['userSettings'],
@@ -108,6 +109,26 @@ export default function GoonerCam() {
     queryFn: () => base44.entities.ViewingHistory.list('-created_date', 50),
     enabled: settings?.goonercam_enabled,
   });
+
+  // Real-time subscriptions for broadcast updates
+  useEffect(() => {
+    if (!settings?.goonercam_enabled || broadcasts.length === 0) return;
+
+    const unsubscribes = broadcasts.map(broadcast => 
+      base44.entities.Session.subscribe((event) => {
+        if (event.id === broadcast.id && event.type === 'update') {
+          setLiveViewers(prev => ({
+            ...prev,
+            [broadcast.id]: event.data.viewer_count || Math.floor(Math.random() * 500) + 50
+          }));
+        }
+      })
+    );
+
+    return () => {
+      unsubscribes.forEach(unsub => unsub?.());
+    };
+  }, [broadcasts, settings?.goonercam_enabled]);
 
   if (isLoading) {
     return (
@@ -134,7 +155,7 @@ export default function GoonerCam() {
   // Process and categorize broadcasts
   const processedBroadcasts = React.useMemo(() => {
     return broadcasts.map(b => {
-      const viewerCount = Math.floor(Math.random() * 500) + 50;
+      const viewerCount = liveViewers[b.id] || Math.floor(Math.random() * 500) + 50;
       const username = b.created_by?.split('@')[0] || 'Anonymous';
       const tags = b.tags || ['live'];
       
@@ -155,7 +176,7 @@ export default function GoonerCam() {
         isFeatured: viewerCount > 200,
       };
     });
-  }, [broadcasts, recommendedTags]);
+  }, [broadcasts, recommendedTags, liveViewers]);
 
   // Filter broadcasts
   const filteredBroadcasts = React.useMemo(() => {
