@@ -21,6 +21,7 @@ import SellHouse from './pages/SellHouse';
 import Settings from './pages/Settings';
 import Shop from './pages/Shop';
 import GeneratedFindomContracts from './pages/GeneratedFindomContracts';
+import MyContracts from './pages/MyContracts';
 import __Layout from './Layout.jsx';
 
 
@@ -48,6 +49,7 @@ export const PAGES = {
     "Settings": Settings,
     "Shop": Shop,
     "GeneratedFindomContracts": GeneratedFindomContracts,
+    "MyContracts": MyContracts,
 }
 
 export const pagesConfig = {

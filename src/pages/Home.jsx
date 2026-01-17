@@ -361,7 +361,20 @@ export default function Home() {
             >
               <FileText className="w-8 h-8 text-white mb-3" />
               <p className="text-white font-bold text-lg">AI Contracts</p>
-              <p className="text-white/70 text-sm">47 findom contracts</p>
+              <p className="text-white/70 text-sm">51 findom contracts</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+
+          <Link to={createPageUrl('MyContracts')}>
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-purple-800 to-purple-900"
+            >
+              <FileText className="w-8 h-8 text-white mb-3" />
+              <p className="text-white font-bold text-lg">My Contracts</p>
+              <p className="text-white/70 text-sm">Manage active contracts</p>
               <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
             </motion.div>
           </Link>
