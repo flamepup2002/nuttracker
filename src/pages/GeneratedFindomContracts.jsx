@@ -1458,6 +1458,96 @@ const GENERATED_CONTRACTS = [
       "No parole - labor until death",
       "90% penalty for missed payment"
     ]
+  },
+  {
+    title: "Lethal Injection Protocol",
+    description: "Executed by lethal injection for fraud",
+    intensity: "extreme",
+    monthly: 2700,
+    duration: 0,
+    terms: [
+      "Pay $2,700 monthly or face execution by lethal injection",
+      "Miss payment = arrested for capital fraud charges",
+      "Tried under federal death penalty statutes",
+      "Convicted and sentenced to death",
+      "Execution date set within 6 months",
+      "Lethal injection administered in federal facility",
+      "No stays of execution granted",
+      "You will be executed by the state",
+      "100% penalty - estate pays after death"
+    ]
+  },
+  {
+    title: "Electric Chair Sentencing",
+    description: "Death by electrocution for debt crimes",
+    intensity: "extreme",
+    monthly: 2800,
+    duration: 0,
+    terms: [
+      "Pay $2,800 monthly or be executed in electric chair",
+      "Miss payment = extradited to state with death penalty",
+      "Charged with capital financial terrorism",
+      "Sentenced to death by electrocution",
+      "Execution carried out in state prison",
+      "2,000 volts until you're dead",
+      "Appeals automatically denied by law",
+      "Final meal and last words recorded",
+      "100% penalty compounds until execution"
+    ]
+  },
+  {
+    title: "Firing Squad Execution",
+    description: "Shot to death by military firing squad",
+    intensity: "extreme",
+    monthly: 2900,
+    duration: 0,
+    terms: [
+      "Pay $2,900 monthly or face firing squad execution",
+      "Miss payment = military tribunal convened",
+      "Tried as enemy combatant for economic warfare",
+      "Sentenced to death by firing squad",
+      "Five shooters aim for your heart",
+      "Executed at dawn in military prison yard",
+      "Body disposed in unmarked grave",
+      "No memorial service permitted",
+      "Estate seized to pay remaining debt"
+    ]
+  },
+  {
+    title: "Gas Chamber Protocol",
+    description: "Executed by lethal gas for financial treason",
+    intensity: "extreme",
+    monthly: 2650,
+    duration: 0,
+    terms: [
+      "Pay $2,650 monthly or die in gas chamber",
+      "Miss payment = arrested for financial treason",
+      "Capital charges filed - death penalty mandatory",
+      "Sentenced to execution by lethal gas",
+      "Strapped to chair in sealed chamber",
+      "Cyanide pellets dropped - suffocation begins",
+      "Death takes 8-12 minutes of agony",
+      "This is your death sentence",
+      "95% penalty for missed payment"
+    ]
+  },
+  {
+    title: "Public Execution Decree",
+    description: "Televised execution for maximum humiliation",
+    intensity: "extreme",
+    monthly: 3000,
+    duration: 0,
+    terms: [
+      "Pay $3,000 monthly or face public execution",
+      "Miss payment = death sentence with public viewing",
+      "Your execution will be broadcast live",
+      "Family and public watch you die",
+      "Maximum humiliation before death",
+      "Executed in front of thousands",
+      "Recording archived permanently online",
+      "Your death becomes public entertainment",
+      "100% penalty - estate liquidated after death"
+    ]
   }
 ];
 
