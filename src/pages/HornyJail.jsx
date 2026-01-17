@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Lock, Unlock, Clock, Zap, AlertTriangle, Bluetooth } from 'lucide-react';
+import { ArrowLeft, Lock, Unlock, Clock, Zap, AlertTriangle, Bluetooth, MessageCircle, Send } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { toast } from 'sonner';
 
 export default function HornyJail() {
@@ -16,6 +17,9 @@ export default function HornyJail() {
   const [isLocked, setIsLocked] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [aiActive, setAiActive] = useState(false);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [messageInput, setMessageInput] = useState('');
+  const chatEndRef = useRef(null);
 
   const { data: session } = useQuery({
     queryKey: ['hornyJailSession'],
@@ -71,6 +75,25 @@ export default function HornyJail() {
         toast.success('AI has released you... for now');
       }
       queryClient.invalidateQueries({ queryKey: ['hornyJailSession'] });
+    },
+  });
+
+  const chatMutation = useMutation({
+    mutationFn: async (message) => {
+      const response = await base44.functions.invoke('hornyJailAIChat', {
+        sessionId: session?.id,
+        message,
+        isPermanentlyLocked: session?.horny_jail_permanent_lock || false,
+        timeRemaining: Math.floor(timeRemaining / 60)
+      });
+      return response.data;
+    },
+    onSuccess: (data) => {
+      setChatMessages(prev => [...prev, {
+        role: 'assistant',
+        content: data.response,
+        timestamp: new Date().toISOString()
+      }]);
     },
   });
 
@@ -133,6 +156,25 @@ export default function HornyJail() {
     const secs = seconds % 60;
     return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
+
+  const handleSendMessage = (e) => {
+    e.preventDefault();
+    if (!messageInput.trim() || !aiActive) return;
+
+    const userMessage = {
+      role: 'user',
+      content: messageInput,
+      timestamp: new Date().toISOString()
+    };
+    
+    setChatMessages(prev => [...prev, userMessage]);
+    chatMutation.mutate(messageInput);
+    setMessageInput('');
+  };
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatMessages]);
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -299,6 +341,62 @@ export default function HornyJail() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* AI Chat */}
+        {aiActive && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-5"
+          >
+            <div className="flex items-center gap-2 mb-4">
+              <MessageCircle className="w-4 h-4 text-red-400" />
+              <h3 className="text-white font-bold">Chat with AI Warden</h3>
+            </div>
+
+            <div className="bg-black/40 rounded-xl p-4 h-64 overflow-y-auto mb-4 space-y-3">
+              {chatMessages.length === 0 && (
+                <p className="text-zinc-500 text-xs italic text-center py-8">
+                  The AI is watching... try begging for release
+                </p>
+              )}
+              {chatMessages.map((msg, idx) => (
+                <div
+                  key={idx}
+                  className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                >
+                  <div
+                    className={`max-w-[80%] rounded-lg px-4 py-2 ${
+                      msg.role === 'user'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-red-900/40 border border-red-500/30 text-red-200'
+                    }`}
+                  >
+                    <p className="text-sm">{msg.content}</p>
+                  </div>
+                </div>
+              ))}
+              <div ref={chatEndRef} />
+            </div>
+
+            <form onSubmit={handleSendMessage} className="flex gap-2">
+              <Input
+                value={messageInput}
+                onChange={(e) => setMessageInput(e.target.value)}
+                placeholder="Beg for mercy..."
+                disabled={chatMutation.isPending}
+                className="bg-zinc-900 border-zinc-800 text-white text-sm"
+              />
+              <Button
+                type="submit"
+                disabled={chatMutation.isPending || !messageInput.trim()}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                <Send className="w-4 h-4" />
+              </Button>
+            </form>
+          </motion.div>
+        )}
 
         {/* Rules */}
         <motion.div
