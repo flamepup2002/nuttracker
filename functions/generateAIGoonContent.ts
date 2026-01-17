@@ -29,24 +29,33 @@ Deno.serve(async (req) => {
     const keywords = customKeywords.length > 0 ? `, ${customKeywords.join(', ')}` : '';
     const fullPrompt = `${basePrompt}${keywords}, seductive, alluring, high detail, 4k quality`;
 
-    // Generate image
-    const result = await base44.integrations.Core.GenerateImage({
-      prompt: fullPrompt
-    });
+    // Generate image with retry logic to prevent blank screens
+    let result = null;
+    let retries = 0;
+    const maxRetries = 2;
 
-    // Track usage
-    await base44.asServiceRole.entities.Session.create({
-      created_by: user.email,
-      start_time: new Date().toISOString(),
-      status: 'completed',
-      end_time: new Date().toISOString(),
-      ai_goon_content_generated: true
-    });
+    while (!result && retries < maxRetries) {
+      try {
+        result = await base44.integrations.Core.GenerateImage({
+          prompt: fullPrompt
+        });
+        if (result?.url) break;
+      } catch (e) {
+        retries++;
+        if (retries >= maxRetries) throw e;
+        await new Promise(r => setTimeout(r, 500)); // Small delay before retry
+      }
+    }
+
+    if (!result?.url) {
+      throw new Error('Failed to generate image after retries');
+    }
 
     return Response.json({
       success: true,
       url: result.url,
-      style
+      style,
+      timestamp: Date.now()
     });
 
   } catch (error) {

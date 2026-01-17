@@ -12,6 +12,8 @@ export default function AIGoonerCam() {
   const [isMuted, setIsMuted] = useState(false);
   const [viewerCount, setViewerCount] = useState(Math.floor(Math.random() * 150) + 50);
   const [streamDuration, setStreamDuration] = useState(0);
+  const [commentary, setCommentary] = useState('');
+  const [showCommentary, setShowCommentary] = useState(false);
 
   const generateMutation = useMutation({
     mutationFn: async () => {
@@ -19,12 +21,34 @@ export default function AIGoonerCam() {
       return response.data;
     },
     onSuccess: (data) => {
-      setCurrentImage(data.url);
-    },
-    onError: () => {
-      toast.error('Stream interrupted');
+      if (data.url) {
+        setCurrentImage(data.url);
+        triggerCommentary(true);
+      }
     },
   });
+
+  const commentaryMutation = useMutation({
+    mutationFn: async ({ viewerCount, streamDuration, isNewImage }) => {
+      const response = await base44.functions.invoke('generateAIStreamCommentary', {
+        viewerCount,
+        streamDuration,
+        isNewImage
+      });
+      return response.data;
+    },
+    onSuccess: (data) => {
+      setCommentary(data.commentary);
+      setShowCommentary(true);
+      setTimeout(() => setShowCommentary(false), 4000);
+    },
+  });
+
+  const triggerCommentary = (isNewImage = false) => {
+    if (!isMuted && Math.random() > 0.3) {
+      commentaryMutation.mutate({ viewerCount, streamDuration, isNewImage });
+    }
+  };
 
 
 
@@ -42,6 +66,16 @@ export default function AIGoonerCam() {
       return () => clearInterval(interval);
     }
   }, [isStreaming]);
+
+  // Random commentary when not muted
+  useEffect(() => {
+    if (isStreaming && !isMuted) {
+      const commentaryInterval = setInterval(() => {
+        triggerCommentary(false);
+      }, 12000);
+      return () => clearInterval(commentaryInterval);
+    }
+  }, [isStreaming, isMuted]);
 
   // Stream timer
   useEffect(() => {
@@ -113,6 +147,21 @@ export default function AIGoonerCam() {
               <span className="text-white text-xs font-bold">{formatTime(streamDuration)}</span>
             </div>
           </div>
+
+          {/* AI Commentary */}
+          <AnimatePresence>
+            {showCommentary && commentary && (
+              <motion.div
+                key="commentary"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="absolute bottom-16 left-4 right-4 bg-black/70 backdrop-blur-sm border border-purple-500/50 rounded-lg px-3 py-2"
+              >
+                <p className="text-purple-300 text-xs italic">{commentary}</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Stream Controls Bottom */}
           <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
