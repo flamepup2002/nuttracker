@@ -5,7 +5,7 @@ import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { ArrowLeft, AlertTriangle, FileText, ChevronDown } from 'lucide-react';
+import { ArrowLeft, AlertTriangle, FileText, Settings } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -15,6 +15,7 @@ import {
   AlertDialogDescription,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import ContractCustomizer from '@/components/ContractCustomizer';
 
 const GENERATED_CONTRACTS = [
   {
@@ -898,12 +899,13 @@ export default function GeneratedFindomContracts() {
   const queryClient = useQueryClient();
   const [selectedContract, setSelectedContract] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [customizingContract, setCustomizingContract] = useState(null);
 
   const acceptMutation = useMutation({
     mutationFn: async (contract) => {
       const total = contract.monthly * (contract.duration || 1);
       
-      // Create the contract first
+      // Create the contract first with customizations
       const newContract = await base44.entities.DebtContract.create({
         title: contract.title,
         description: contract.description,
@@ -914,6 +916,12 @@ export default function GeneratedFindomContracts() {
         terms: contract.terms,
         is_accepted: false, // Will be set to true after payment
         next_payment_due: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        penalty_percentage: contract.penalty_percentage,
+        custom_penalty_clause: contract.custom_penalty_clause,
+        collateral_type: contract.collateral_type,
+        collateral_details: contract.collateral_details,
+        interest_rate: contract.interest_rate,
+        compound_frequency: contract.compound_frequency,
       });
 
       // Process payment (recurring for perpetual/long contracts, one-time for short)
@@ -950,6 +958,16 @@ export default function GeneratedFindomContracts() {
       }
     },
   });
+
+  const handleCustomize = (contract) => {
+    setCustomizingContract(contract);
+  };
+
+  const handleCustomizationComplete = (customizedContract) => {
+    setCustomizingContract(null);
+    setSelectedContract(customizedContract);
+    setShowConfirmation(true);
+  };
 
   const handleAcceptContract = (contract) => {
     setSelectedContract(contract);
@@ -1064,11 +1082,21 @@ export default function GeneratedFindomContracts() {
                       </ul>
                     </div>
 
-                    <Button
-                      className={`w-full bg-gradient-to-r ${config.color} hover:opacity-90 text-white font-bold`}
-                    >
-                      Accept Contract
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={() => handleCustomize(contract)}
+                        variant="outline"
+                        className="flex-1 border-zinc-700 text-purple-400 hover:bg-purple-900/20"
+                      >
+                        <Settings className="w-4 h-4 mr-2" />
+                        Customize
+                      </Button>
+                      <Button
+                        className={`flex-1 bg-gradient-to-r ${config.color} hover:opacity-90 text-white font-bold`}
+                      >
+                        Accept
+                      </Button>
+                    </div>
                   </div>
                 </button>
               </motion.div>
@@ -1076,6 +1104,17 @@ export default function GeneratedFindomContracts() {
           })}
         </motion.div>
       </div>
+
+      {/* Contract Customizer */}
+      <AnimatePresence>
+        {customizingContract && (
+          <ContractCustomizer
+            contract={customizingContract}
+            onCustomize={handleCustomizationComplete}
+            onCancel={() => setCustomizingContract(null)}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Confirmation Dialog */}
       <AlertDialog open={showConfirmation} onOpenChange={setShowConfirmation}>
@@ -1108,6 +1147,24 @@ export default function GeneratedFindomContracts() {
                       : 'One-Time Payment'}
                   </span>
                 </p>
+                {selectedContract.penalty_percentage > 0 && (
+                  <p className="text-sm">
+                    <span className="text-zinc-500">Late Penalty:</span>
+                    <span className="text-red-400 font-bold ml-2">{selectedContract.penalty_percentage}%</span>
+                  </p>
+                )}
+                {selectedContract.collateral_type && selectedContract.collateral_type !== 'none' && (
+                  <p className="text-sm">
+                    <span className="text-zinc-500">Collateral:</span>
+                    <span className="text-orange-400 font-bold ml-2">{selectedContract.collateral_type.replace('_', ' ')}</span>
+                  </p>
+                )}
+                {selectedContract.interest_rate > 0 && (
+                  <p className="text-sm">
+                    <span className="text-zinc-500">Interest Rate:</span>
+                    <span className="text-yellow-400 font-bold ml-2">{selectedContract.interest_rate}% ({selectedContract.compound_frequency})</span>
+                  </p>
+                )}
               </div>
               <div className="bg-green-900/30 border border-green-600/50 rounded-lg p-3">
                 <p className="text-green-400 text-xs font-bold mb-1">💳 Payment Required</p>
