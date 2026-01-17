@@ -80,6 +80,26 @@ function CamCard({ cam, onClick }) {
 }
 
 export default function GoonerCam() {
+  const queryClient = useQueryClient();
+  
+  // Check for checkout success
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get('session_id');
+    
+    if (sessionId) {
+      base44.functions.invoke('handleGoonerCamCheckoutSuccess', { sessionId })
+        .then(() => {
+          queryClient.invalidateQueries({ queryKey: ['user'] });
+          toast.success('Subscription activated! Check your profile for details.');
+          // Clean up URL
+          window.history.replaceState({}, document.title, window.location.pathname);
+        })
+        .catch(err => {
+          toast.error('Failed to activate subscription: ' + err.message);
+        });
+    }
+  }, []);
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
