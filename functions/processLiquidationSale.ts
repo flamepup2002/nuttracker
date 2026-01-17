@@ -48,7 +48,7 @@ Deno.serve(async (req) => {
       await base44.asServiceRole.entities.UserAsset.delete(auction.user_asset_id);
     }
 
-    // Send notification
+    // Send notification email
     await base44.asServiceRole.integrations.Core.SendEmail({
       to: debtContract.created_by,
       subject: 'Asset Liquidation Completed',
@@ -60,6 +60,17 @@ ${isFullyPaid
   ? '✅ Contract is now fully paid and closed!' 
   : `Remaining balance: $${(remainingDebt - saleProceeds).toLocaleString()}`
 }`
+    });
+
+    // Create notification
+    await base44.asServiceRole.functions.invoke('createNotification', {
+      userEmail: debtContract.created_by,
+      type: 'collateral_liquidation',
+      title: '✅ Collateral Liquidation Complete',
+      message: `Your asset sold for $${saleProceeds.toFixed(2)}. Applied to "${debtContract.title}". Remaining balance: $${Math.max(0, remainingDebt - saleProceeds).toFixed(2)}`,
+      contractId: debtContract.id,
+      actionUrl: 'MyContracts',
+      priority: 'high'
     });
 
     return Response.json({

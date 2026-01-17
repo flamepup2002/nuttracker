@@ -4,7 +4,7 @@ import Stripe from 'npm:stripe@17.5.0';
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const { subscriptionId } = await req.json();
+    const { subscriptionId, contractId, contractTitle } = await req.json();
     
     const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY'));
     
@@ -15,6 +15,19 @@ Deno.serve(async (req) => {
 
     // Cancel the subscription
     const subscription = await stripe.subscriptions.cancel(subscriptionId);
+
+    // Create notification
+    if (contractId && contractTitle) {
+      await base44.asServiceRole.functions.invoke('createNotification', {
+        userEmail: user.email,
+        type: 'contract_cancelled',
+        title: '🚫 Contract Cancelled',
+        message: `Your contract "${contractTitle}" has been cancelled.`,
+        contractId,
+        actionUrl: 'MyContracts',
+        priority: 'medium'
+      });
+    }
 
     return Response.json({
       success: true,

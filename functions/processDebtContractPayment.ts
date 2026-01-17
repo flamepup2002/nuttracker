@@ -69,6 +69,17 @@ Deno.serve(async (req) => {
         next_payment_due: new Date(subscription.current_period_end * 1000).toISOString(),
       });
 
+      // Create notification
+      await base44.asServiceRole.functions.invoke('createNotification', {
+        userEmail: user.email,
+        type: 'contract_accepted',
+        title: '✅ Contract Accepted',
+        message: `You've accepted the contract "${contract.title}". Monthly payments will be charged automatically.`,
+        contractId,
+        actionUrl: 'MyContracts',
+        priority: 'medium'
+      });
+
       return Response.json({
         success: true,
         type: 'subscription',
@@ -117,6 +128,17 @@ Deno.serve(async (req) => {
           contract_id: contractId,
           payment_type: 'one_time_full',
         }
+      });
+
+      // Create notification
+      await base44.asServiceRole.functions.invoke('createNotification', {
+        userEmail: user.email,
+        type: 'contract_accepted',
+        title: '✅ Contract Accepted',
+        message: `You've accepted the contract "${contract.title}". Payment processed successfully.`,
+        contractId,
+        actionUrl: 'MyContracts',
+        priority: 'medium'
       });
 
       return Response.json({

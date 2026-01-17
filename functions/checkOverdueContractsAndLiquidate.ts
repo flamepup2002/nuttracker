@@ -76,6 +76,17 @@ View liquidation: ${Deno.env.get('BASE44_APP_URL') || 'https://app.base44.com'}/
 Outstanding amount: $${contract.total_obligation - contract.amount_paid}`
           });
 
+          // Create notification
+          await base44.asServiceRole.functions.invoke('createNotification', {
+            userEmail: contract.created_by,
+            type: 'collateral_liquidation',
+            title: '🔴 Collateral Liquidation Started',
+            message: `Your ${asset.name} is now being auctioned due to overdue payments on "${contract.title}"`,
+            contractId: contract.id,
+            actionUrl: 'AssetAuction',
+            priority: 'urgent'
+          });
+
           liquidations.push({
             contractId: contract.id,
             assetId: asset.id,
