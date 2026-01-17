@@ -911,6 +911,7 @@ const GENERATED_CONTRACTS = [
     intensity: "extreme",
     monthly: 1200,
     duration: 0,
+    extreme_mode_only: true,
     terms: [
       "Pay $1,200 monthly indefinitely",
       "Missing payment triggers automatic IRS reporting",
@@ -930,6 +931,7 @@ const GENERATED_CONTRACTS = [
     intensity: "extreme",
     monthly: 1500,
     duration: 0,
+    extreme_mode_only: true,
     terms: [
       "Pay $1,500 monthly or face arrest",
       "FIRST late payment triggers warrant filing with police",
@@ -949,6 +951,7 @@ const GENERATED_CONTRACTS = [
     intensity: "extreme",
     monthly: 2000,
     duration: 0,
+    extreme_mode_only: true,
     terms: [
       "Pay $2,000 monthly or face federal fraud charges",
       "Missing payment = federal conspiracy charges filed",
@@ -968,6 +971,7 @@ const GENERATED_CONTRACTS = [
     intensity: "extreme",
     monthly: 1000,
     duration: 0,
+    extreme_mode_only: true,
     terms: [
       "Pay $1,000 monthly as probation violation fee",
       "Missing payment counts as probation violation",
@@ -987,6 +991,7 @@ const GENERATED_CONTRACTS = [
     intensity: "extreme",
     monthly: 2500,
     duration: 0,
+    extreme_mode_only: true,
     terms: [
       "Pay $2,500 monthly or join FBI Most Wanted",
       "Unpaid balance triggers federal fugitive status",
@@ -1006,6 +1011,7 @@ const GENERATED_CONTRACTS = [
     intensity: "extreme",
     monthly: 1800,
     duration: 0,
+    extreme_mode_only: true,
     terms: [
       "Pay $1,800 monthly indefinitely",
       "Each missed payment adds a new felony conviction",
@@ -1025,6 +1031,7 @@ const GENERATED_CONTRACTS = [
     intensity: "extreme",
     monthly: 2200,
     duration: 0,
+    extreme_mode_only: true,
     terms: [
       "Pay $2,200 monthly to stay out of jail",
       "Missing payment = bail revoked immediately",
@@ -1044,6 +1051,7 @@ const GENERATED_CONTRACTS = [
     intensity: "extreme",
     monthly: 3000,
     duration: 0,
+    extreme_mode_only: true,
     terms: [
       "Pay $3,000 monthly forever or become fugitive",
       "Fugitive status never expires - hunted for life",
@@ -1063,6 +1071,7 @@ const GENERATED_CONTRACTS = [
     intensity: "extreme",
     monthly: 2800,
     duration: 0,
+    extreme_mode_only: true,
     terms: [
       "Pay $2,800 monthly or collect federal felonies",
       "Month 1 unpaid: Wire fraud felony filed",
@@ -1082,6 +1091,7 @@ const GENERATED_CONTRACTS = [
     intensity: "extreme",
     monthly: 3500,
     duration: 0,
+    extreme_mode_only: true,
     terms: [
       "Pay $3,500 monthly or face international manhunt",
       "Interpol red notice issued on first late payment",
@@ -1112,6 +1122,21 @@ export default function GeneratedFindomContracts() {
   const [customizingContract, setCustomizingContract] = useState(null);
   const [signatureData, setSignatureData] = useState(null);
   const [showTermsModal, setShowTermsModal] = useState(false);
+
+  const { data: settings } = useQuery({
+    queryKey: ['userSettings'],
+    queryFn: async () => {
+      const list = await base44.entities.UserSettings.list();
+      return list[0] || { extreme_mode: false };
+    },
+  });
+
+  const filteredContracts = GENERATED_CONTRACTS.filter(contract => {
+    if (contract.extreme_mode_only) {
+      return settings?.extreme_mode === true;
+    }
+    return true;
+  });
 
   const acceptMutation = useMutation({
     mutationFn: async (contract) => {
@@ -1236,9 +1261,9 @@ export default function GeneratedFindomContracts() {
           animate={{ opacity: 1, y: 0 }}
           className="space-y-4"
         >
-          <h2 className="text-zinc-400 text-sm font-medium uppercase tracking-wider">Available Contracts ({GENERATED_CONTRACTS.length})</h2>
+          <h2 className="text-zinc-400 text-sm font-medium uppercase tracking-wider">Available Contracts ({filteredContracts.length})</h2>
           
-          {GENERATED_CONTRACTS.map((contract, idx) => {
+          {filteredContracts.map((contract, idx) => {
             const config = INTENSITY_CONFIG[contract.intensity];
             
             return (
