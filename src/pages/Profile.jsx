@@ -3,8 +3,8 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, User, Save, Mail, Phone, MapPin, Calendar, Heart } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { ArrowLeft, User, Save, Mail, Phone, MapPin, Calendar, Heart, FileText, DollarSign, TrendingUp, Package } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -27,8 +27,37 @@ export default function Profile() {
     address: '',
     birth_date: '',
     phone: '',
+    findom_intensity_preference: '',
   });
   const [customGender, setCustomGender] = useState(false);
+
+  // Fetch activity stats
+  const { data: contracts = [] } = useQuery({
+    queryKey: ['contracts'],
+    queryFn: () => base44.entities.DebtContract.list(),
+  });
+
+  const { data: payments = [] } = useQuery({
+    queryKey: ['payments'],
+    queryFn: () => base44.entities.Payment.list(),
+  });
+
+  const { data: assetListings = [] } = useQuery({
+    queryKey: ['assetListings'],
+    queryFn: () => base44.entities.AssetListing.list(),
+  });
+
+  const { data: houseListings = [] } = useQuery({
+    queryKey: ['houseListings'],
+    queryFn: () => base44.entities.HouseListing.list(),
+  });
+
+  const activityStats = {
+    totalContracts: contracts.length,
+    activeContracts: contracts.filter(c => c.is_accepted && !c.cancelled_at).length,
+    totalPaid: payments.reduce((sum, p) => sum + (p.status === 'succeeded' ? p.amount : 0), 0),
+    assetsListed: assetListings.length + houseListings.length,
+  };
 
   useEffect(() => {
     const loadUser = async () => {
@@ -43,6 +72,7 @@ export default function Profile() {
           address: userData.address || '',
           birth_date: userData.birth_date || '',
           phone: userData.phone || '',
+          findom_intensity_preference: userData.findom_intensity_preference || '',
         });
         
         // Check if gender is a custom one
@@ -134,6 +164,54 @@ export default function Profile() {
             <div className="absolute w-32 h-32 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 opacity-20 blur-2xl" />
             <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center relative z-10">
               <User className="w-12 h-12 text-white" />
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Activity Summary */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+          className="bg-gradient-to-br from-purple-900/30 to-pink-900/30 border-2 border-purple-500/30 rounded-2xl p-6"
+        >
+          <h3 className="text-white font-bold mb-4 flex items-center gap-2">
+            <TrendingUp className="w-5 h-5 text-purple-400" />
+            Activity Summary
+          </h3>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-zinc-900/50 rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <FileText className="w-4 h-4 text-blue-400" />
+                <p className="text-zinc-400 text-xs">Total Contracts</p>
+              </div>
+              <p className="text-white font-bold text-2xl">{activityStats.totalContracts}</p>
+              <p className="text-zinc-500 text-xs mt-1">{activityStats.activeContracts} active</p>
+            </div>
+            <div className="bg-zinc-900/50 rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <DollarSign className="w-4 h-4 text-green-400" />
+                <p className="text-zinc-400 text-xs">Total Paid</p>
+              </div>
+              <p className="text-white font-bold text-2xl">${activityStats.totalPaid.toFixed(0)}</p>
+              <p className="text-zinc-500 text-xs mt-1">from {payments.length} payments</p>
+            </div>
+            <div className="bg-zinc-900/50 rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Package className="w-4 h-4 text-orange-400" />
+                <p className="text-zinc-400 text-xs">Assets Listed</p>
+              </div>
+              <p className="text-white font-bold text-2xl">{activityStats.assetsListed}</p>
+              <p className="text-zinc-500 text-xs mt-1">for auction</p>
+            </div>
+            <div className="bg-zinc-900/50 rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Heart className="w-4 h-4 text-pink-400" />
+                <p className="text-zinc-400 text-xs">Member Since</p>
+              </div>
+              <p className="text-white font-bold text-lg">
+                {user?.created_date ? new Date(user.created_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'N/A'}
+              </p>
             </div>
           </div>
         </motion.div>
@@ -312,6 +390,27 @@ export default function Profile() {
               placeholder="Tell us about yourself..."
               className="bg-zinc-800 border-zinc-700 text-white h-32"
             />
+          </div>
+
+          <div>
+            <Label className="text-zinc-400 text-sm mb-2">Findom Intensity Preference</Label>
+            <Select 
+              value={profile.findom_intensity_preference} 
+              onValueChange={(value) => handleChange('findom_intensity_preference', value)}
+            >
+              <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white">
+                <SelectValue placeholder="Select your preferred intensity" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="mild">Mild - Light financial play</SelectItem>
+                <SelectItem value="moderate">Moderate - Balanced experience</SelectItem>
+                <SelectItem value="intense">Intense - Serious commitment</SelectItem>
+                <SelectItem value="extreme">Extreme - Maximum intensity</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-zinc-600 text-xs mt-1">
+              This helps AI suggest contracts matching your preference
+            </p>
           </div>
         </motion.div>
 
