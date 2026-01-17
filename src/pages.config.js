@@ -39,6 +39,8 @@ import StreamSubscriptions from './pages/StreamSubscriptions';
 import WatchStream from './pages/WatchStream';
 import MyContracts from './pages/MyContracts';
 import ContractHistory from './pages/ContractHistory';
+import MyTasks from './pages/MyTasks';
+import AnalyticsDashboard from './pages/AnalyticsDashboard';
 import __Layout from './Layout.jsx';
 
 
@@ -84,6 +86,8 @@ export const PAGES = {
     "WatchStream": WatchStream,
     "MyContracts": MyContracts,
     "ContractHistory": ContractHistory,
+    "MyTasks": MyTasks,
+    "AnalyticsDashboard": AnalyticsDashboard,
 }
 
 export const pagesConfig = {
