@@ -1,10 +1,13 @@
 import AICoach from './pages/AICoach';
+import AIContractDrafter from './pages/AIContractDrafter';
 import AIGuidedSession from './pages/AIGuidedSession';
 import Achievements from './pages/Achievements';
 import AssetAuction from './pages/AssetAuction';
 import BullyChat from './pages/BullyChat';
 import BuyCoins from './pages/BuyCoins';
+import Dashboard from './pages/Dashboard';
 import Edge from './pages/Edge';
+import FinancialHealth from './pages/FinancialHealth';
 import FindomAI from './pages/FindomAI';
 import FindomAnalytics from './pages/FindomAnalytics';
 import FindomChallenges from './pages/FindomChallenges';
@@ -17,7 +20,10 @@ import History from './pages/History';
 import Home from './pages/Home';
 import HouseAuction from './pages/HouseAuction';
 import KinkSessions from './pages/KinkSessions';
+import MyAssets from './pages/MyAssets';
 import MyContracts from './pages/MyContracts';
+import NotificationPreferences from './pages/NotificationPreferences';
+import Notifications from './pages/Notifications';
 import PaymentSettings from './pages/PaymentSettings';
 import PremiumFindom from './pages/PremiumFindom';
 import Profile from './pages/Profile';
@@ -25,23 +31,20 @@ import SellAssets from './pages/SellAssets';
 import SellHouse from './pages/SellHouse';
 import Settings from './pages/Settings';
 import Shop from './pages/Shop';
-import Dashboard from './pages/Dashboard';
-import AIContractDrafter from './pages/AIContractDrafter';
-import MyAssets from './pages/MyAssets';
-import FinancialHealth from './pages/FinancialHealth';
-import Notifications from './pages/Notifications';
-import NotificationPreferences from './pages/NotificationPreferences';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "AICoach": AICoach,
+    "AIContractDrafter": AIContractDrafter,
     "AIGuidedSession": AIGuidedSession,
     "Achievements": Achievements,
     "AssetAuction": AssetAuction,
     "BullyChat": BullyChat,
     "BuyCoins": BuyCoins,
+    "Dashboard": Dashboard,
     "Edge": Edge,
+    "FinancialHealth": FinancialHealth,
     "FindomAI": FindomAI,
     "FindomAnalytics": FindomAnalytics,
     "FindomChallenges": FindomChallenges,
@@ -54,7 +57,10 @@ export const PAGES = {
     "Home": Home,
     "HouseAuction": HouseAuction,
     "KinkSessions": KinkSessions,
+    "MyAssets": MyAssets,
     "MyContracts": MyContracts,
+    "NotificationPreferences": NotificationPreferences,
+    "Notifications": Notifications,
     "PaymentSettings": PaymentSettings,
     "PremiumFindom": PremiumFindom,
     "Profile": Profile,
@@ -62,12 +68,6 @@ export const PAGES = {
     "SellHouse": SellHouse,
     "Settings": Settings,
     "Shop": Shop,
-    "Dashboard": Dashboard,
-    "AIContractDrafter": AIContractDrafter,
-    "MyAssets": MyAssets,
-    "FinancialHealth": FinancialHealth,
-    "Notifications": Notifications,
-    "NotificationPreferences": NotificationPreferences,
 }
 
 export const pagesConfig = {
