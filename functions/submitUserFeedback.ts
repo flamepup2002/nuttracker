@@ -9,7 +9,7 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { feedbackType, category, rating, message, pageReported } = await req.json();
+    const { feedbackType, category, rating, message, pageReported, contactInfo } = await req.json();
 
     // Validate required fields
     if (!message || !rating || !feedbackType) {
@@ -24,7 +24,9 @@ Deno.serve(async (req) => {
       category,
       rating,
       message,
-      page_reported: pageReported
+      page_reported: pageReported,
+      contact_info: contactInfo,
+      status: 'new'
     });
 
     // Send notification email

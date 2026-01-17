@@ -18,6 +18,7 @@ export default function Feedback() {
   const [category, setCategory] = useState('features');
   const [message, setMessage] = useState('');
   const [pageReported, setPageReported] = useState('');
+  const [contactInfo, setContactInfo] = useState('');
 
   const submitMutation = useMutation({
     mutationFn: async () => {
@@ -26,7 +27,8 @@ export default function Feedback() {
         category,
         rating,
         message,
-        pageReported
+        pageReported,
+        contactInfo
       });
       return response.data;
     },
@@ -160,6 +162,23 @@ export default function Feedback() {
               placeholder="e.g., GoonerCam, Settings, Home..."
               className="bg-zinc-900 border-zinc-800 text-white"
             />
+          </div>
+
+          {/* Contact Info */}
+          <div>
+            <label className="text-white font-bold text-sm mb-2 block">
+              Contact Info (optional)
+            </label>
+            <Input
+              type="email"
+              value={contactInfo}
+              onChange={(e) => setContactInfo(e.target.value)}
+              placeholder="Your email or preferred contact method"
+              className="bg-zinc-900 border-zinc-800 text-white"
+            />
+            <p className="text-zinc-500 text-xs mt-1">
+              Only share if you'd like us to follow up with you
+            </p>
           </div>
 
           {/* Message */}

@@ -37,6 +37,7 @@ import StreamSetup from './pages/StreamSetup';
 import StreamSubscriptions from './pages/StreamSubscriptions';
 import WatchStream from './pages/WatchStream';
 import Feedback from './pages/Feedback';
+import AdminFeedback from './pages/AdminFeedback';
 import __Layout from './Layout.jsx';
 
 
@@ -80,6 +81,7 @@ export const PAGES = {
     "StreamSubscriptions": StreamSubscriptions,
     "WatchStream": WatchStream,
     "Feedback": Feedback,
+    "AdminFeedback": AdminFeedback,
 }
 
 export const pagesConfig = {
