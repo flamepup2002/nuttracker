@@ -38,6 +38,7 @@ import StreamSetup from './pages/StreamSetup';
 import StreamSubscriptions from './pages/StreamSubscriptions';
 import WatchStream from './pages/WatchStream';
 import MyContracts from './pages/MyContracts';
+import ContractHistory from './pages/ContractHistory';
 import __Layout from './Layout.jsx';
 
 
@@ -82,6 +83,7 @@ export const PAGES = {
     "StreamSubscriptions": StreamSubscriptions,
     "WatchStream": WatchStream,
     "MyContracts": MyContracts,
+    "ContractHistory": ContractHistory,
 }
 
 export const pagesConfig = {

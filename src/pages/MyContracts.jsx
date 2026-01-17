@@ -7,7 +7,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { 
   ArrowLeft, FileText, DollarSign, Calendar, AlertTriangle, 
-  CheckCircle, XCircle, Clock, CreditCard, Ban
+  CheckCircle, XCircle, Clock, CreditCard, Ban, History
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import {
@@ -137,22 +137,28 @@ export default function MyContracts() {
     <div className="min-h-screen bg-black text-white">
       {/* Header */}
       <div className="relative border-b border-zinc-800">
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-900/10 to-transparent" />
-        <div className="relative px-6 py-4 flex items-center justify-between">
-          <button
-            onClick={() => navigate(createPageUrl('Home'))}
-            className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            Back
-          </button>
-          <h1 className="text-lg font-bold flex items-center gap-2">
-            <FileText className="w-5 h-5 text-purple-500" />
-            My Contracts
-          </h1>
-          <div className="w-12" />
-        </div>
-      </div>
+         <div className="absolute inset-0 bg-gradient-to-r from-purple-900/10 to-transparent" />
+         <div className="relative px-6 py-4 flex items-center justify-between">
+           <button
+             onClick={() => navigate(createPageUrl('Home'))}
+             className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors"
+           >
+             <ArrowLeft className="w-5 h-5" />
+             Back
+           </button>
+           <h1 className="text-lg font-bold flex items-center gap-2">
+             <FileText className="w-5 h-5 text-purple-500" />
+             My Contracts
+           </h1>
+           <button
+             onClick={() => navigate(createPageUrl('ContractHistory'))}
+             className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors"
+           >
+             <History className="w-5 h-5" />
+             History
+           </button>
+         </div>
+       </div>
 
       <div className="px-6 pb-24 space-y-6 pt-6">
         {/* Summary Stats */}
