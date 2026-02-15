@@ -14,6 +14,25 @@ import {
   Shield, Compass, Infinity, Radio, MapPin, Gauge, Circle
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+
+const ACHIEVEMENT_REWARDS = {
+  'first_orgasm': { type: 'coins', value: 50, data: null },
+  'pied_club': { type: 'coins', value: 100, data: null },
+  'first_findom': { type: 'coins', value: 75, data: null },
+  'big_spender': { type: 'coins', value: 200, data: null },
+  'whale': { type: 'theme', value: 0, data: { theme_name: 'emerald' } },
+  'addict': { type: 'coins', value: 250, data: null },
+  'century': { type: 'title', value: 0, data: { title: 'Century Club Member' } },
+  'financial_domination': { type: 'theme', value: 0, data: { theme_name: 'gold' } },
+  'legend': { type: 'title', value: 0, data: { title: 'Legendary Gooner' } },
+  'broadcaster': { type: 'coins', value: 150, data: null },
+  'three_hundred_club': { type: 'aura', value: 0, data: { aura_name: 'purple_glow' } },
+  'thousand_orgasm_god': { type: 'title', value: 0, data: { title: 'Orgasm God' } },
+  'findom_emperor': { type: 'theme', value: 0, data: { theme_name: 'crimson' } },
+  'goon_legend': { type: 'aura', value: 0, data: { aura_name: 'gold_radiance' } },
+};
 
 const ACHIEVEMENTS = [
   {
@@ -22,6 +41,7 @@ const ACHIEVEMENTS = [
     description: 'Log your first orgasm',
     icon: Flame,
     color: 'from-orange-500 to-red-500',
+    rarity: 'common',
     checkFn: (data) => data.orgasms.length >= 1,
   },
   {
@@ -582,7 +602,7 @@ export default function Achievements() {
 
   const { data: userAchievements = [] } = useQuery({
     queryKey: ['achievements'],
-    queryFn: () => base44.entities.Achievement.list(),
+    queryFn: () => base44.entities.UserAchievement.list('-unlocked_at', 1000),
   });
 
   const { data: orgasms = [] } = useQuery({
@@ -596,10 +616,22 @@ export default function Achievements() {
   });
 
   const unlockMutation = useMutation({
-    mutationFn: (achievementId) => base44.entities.Achievement.create({
-      achievement_id: achievementId,
-      unlocked_at: new Date().toISOString(),
-    }),
+    mutationFn: (achievementId) => {
+      const achievement = ACHIEVEMENTS.find(a => a.id === achievementId);
+      const reward = ACHIEVEMENT_REWARDS[achievementId];
+      return base44.entities.UserAchievement.create({
+        achievement_id: achievementId,
+        achievement_name: achievement.title,
+        category: achievement.category || 'goon',
+        description: achievement.description,
+        rarity: achievement.rarity || 'common',
+        unlocked_at: new Date().toISOString(),
+        reward_type: reward?.type || 'badge',
+        reward_value: reward?.value || 0,
+        reward_data: reward?.data || null,
+        reward_claimed: false,
+      });
+    },
     onSuccess: (data, achievementId) => {
       queryClient.invalidateQueries({ queryKey: ['achievements'] });
       const achievement = ACHIEVEMENTS.find(a => a.id === achievementId);
@@ -609,6 +641,28 @@ export default function Achievements() {
           duration: 5000,
         });
       }
+    },
+  });
+
+  const claimRewardMutation = useMutation({
+    mutationFn: (achievementId) => base44.functions.invoke('claimAchievementReward', { achievementId }),
+    onSuccess: (response, achievementId) => {
+      queryClient.invalidateQueries({ queryKey: ['achievements'] });
+      queryClient.invalidateQueries({ queryKey: ['user'] });
+      const data = response.data;
+      
+      if (data.reward.coins) {
+        toast.success(`Claimed ${data.reward.coins} kinkcoins!`);
+      } else if (data.reward.theme) {
+        toast.success(`Unlocked ${data.reward.theme} theme!`);
+      } else if (data.reward.title) {
+        toast.success(`Unlocked title: ${data.reward.title}!`);
+      } else if (data.reward.aura) {
+        toast.success(`Unlocked ${data.reward.aura} aura effect!`);
+      }
+    },
+    onError: (error) => {
+      toast.error('Failed to claim reward: ' + error.message);
     },
   });
 
@@ -686,6 +740,8 @@ export default function Achievements() {
       <div className="px-6 pt-6 space-y-4">
         {ACHIEVEMENTS.map((achievement, idx) => {
           const isUnlocked = unlockedIds.includes(achievement.id);
+          const userAchievement = userAchievements.find(a => a.achievement_id === achievement.id);
+          const reward = ACHIEVEMENT_REWARDS[achievement.id];
           const Icon = achievement.icon;
 
           return (
@@ -706,25 +762,69 @@ export default function Achievements() {
                 </div>
               )}
               
-              <div className="flex items-center gap-4">
+              <div className="flex items-start gap-4">
                 <div className={`w-14 h-14 rounded-xl ${
                   isUnlocked ? 'bg-white/20' : 'bg-zinc-800'
-                } flex items-center justify-center`}>
+                } flex items-center justify-center flex-shrink-0`}>
                   <Icon className="w-7 h-7 text-white" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-white font-bold text-lg">{achievement.title}</h3>
-                  <p className={`text-sm mt-1 ${
-                    isUnlocked ? 'text-white/80' : 'text-zinc-500'
-                  }`}>
-                    {achievement.description}
-                  </p>
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1">
+                      <h3 className="text-white font-bold text-lg">{achievement.title}</h3>
+                      <p className={`text-sm mt-1 ${
+                        isUnlocked ? 'text-white/80' : 'text-zinc-500'
+                      }`}>
+                        {achievement.description}
+                      </p>
+                    </div>
+                    {achievement.rarity && (
+                      <Badge className={`
+                        ${achievement.rarity === 'common' ? 'bg-gray-600/30 text-gray-300' : ''}
+                        ${achievement.rarity === 'uncommon' ? 'bg-green-600/30 text-green-300' : ''}
+                        ${achievement.rarity === 'rare' ? 'bg-blue-600/30 text-blue-300' : ''}
+                        ${achievement.rarity === 'epic' ? 'bg-purple-600/30 text-purple-300' : ''}
+                        ${achievement.rarity === 'legendary' ? 'bg-yellow-600/30 text-yellow-300' : ''}
+                      `}>
+                        {achievement.rarity}
+                      </Badge>
+                    )}
+                  </div>
+                  
+                  {reward && (
+                    <div className="mt-2">
+                      <p className="text-white/60 text-xs">
+                        Reward: {reward.type === 'coins' && `${reward.value} kinkcoins`}
+                        {reward.type === 'theme' && `${reward.data.theme_name} theme`}
+                        {reward.type === 'title' && `"${reward.data.title}" title`}
+                        {reward.type === 'aura' && `${reward.data.aura_name} aura`}
+                        {reward.type === 'badge' && 'Exclusive badge'}
+                      </p>
+                    </div>
+                  )}
+                  
                   {isUnlocked && (
-                    <p className="text-white/60 text-xs mt-2">
-                      Unlocked {new Date(
-                        userAchievements.find(a => a.achievement_id === achievement.id)?.unlocked_at
-                      ).toLocaleDateString()}
-                    </p>
+                    <div className="mt-3 flex items-center gap-3">
+                      <p className="text-white/60 text-xs">
+                        Unlocked {new Date(userAchievement?.unlocked_at).toLocaleDateString()}
+                      </p>
+                      {userAchievement && !userAchievement.reward_claimed && reward && (
+                        <Button
+                          size="sm"
+                          onClick={() => claimRewardMutation.mutate(achievement.id)}
+                          disabled={claimRewardMutation.isPending}
+                          className="bg-yellow-600 hover:bg-yellow-700 text-white h-7 text-xs"
+                        >
+                          <Gift className="w-3 h-3 mr-1" />
+                          {claimRewardMutation.isPending ? 'Claiming...' : 'Claim Reward'}
+                        </Button>
+                      )}
+                      {userAchievement?.reward_claimed && (
+                        <Badge className="bg-green-600/30 text-green-300 text-xs">
+                          ✓ Claimed
+                        </Badge>
+                      )}
+                    </div>
                   )}
                 </div>
               </div>

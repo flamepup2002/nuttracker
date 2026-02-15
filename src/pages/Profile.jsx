@@ -181,18 +181,49 @@ export default function Profile() {
              animate={{ opacity: 1, y: 0 }}
              className="bg-gradient-to-br from-yellow-900/30 to-orange-900/30 border-2 border-yellow-500/30 rounded-2xl p-6"
            >
-             <h3 className="text-white font-bold mb-4 flex items-center gap-2">
-               <Trophy className="w-5 h-5 text-yellow-400" />
-               Achievements ({achievements.length})
-             </h3>
-             <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
-               {achievements.map((achievement) => (
-                 <AchievementBadge
-                   key={achievement.id}
-                   achievement={achievement}
-                   isShowcased={achievement.is_showcased}
-                 />
-               ))}
+             <div className="flex items-center justify-between mb-4">
+               <h3 className="text-white font-bold flex items-center gap-2">
+                 <Trophy className="w-5 h-5 text-yellow-400" />
+                 Achievements ({achievements.length})
+               </h3>
+               <Button
+                 size="sm"
+                 variant="ghost"
+                 onClick={() => navigate(createPageUrl('Achievements'))}
+                 className="text-yellow-400 hover:text-yellow-300"
+               >
+                 View All
+               </Button>
+             </div>
+             
+             {/* Showcased Achievements */}
+             {achievements.filter(a => a.is_showcased).length > 0 && (
+               <div className="mb-6">
+                 <p className="text-zinc-400 text-xs mb-2">★ Showcased</p>
+                 <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
+                   {achievements.filter(a => a.is_showcased).map((achievement) => (
+                     <AchievementBadge
+                       key={achievement.id}
+                       achievement={achievement}
+                       isShowcased={true}
+                     />
+                   ))}
+                 </div>
+               </div>
+             )}
+             
+             {/* Recent Achievements */}
+             <div>
+               <p className="text-zinc-400 text-xs mb-2">Recent</p>
+               <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
+                 {achievements.slice(0, 6).map((achievement) => (
+                   <AchievementBadge
+                     key={achievement.id}
+                     achievement={achievement}
+                     isShowcased={achievement.is_showcased}
+                   />
+                 ))}
+               </div>
              </div>
            </motion.div>
          )}
