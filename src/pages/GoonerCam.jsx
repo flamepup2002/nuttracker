@@ -3,7 +3,8 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import { 
   ArrowLeft, Video, Users, Eye, Heart, MessageCircle,
   Radio, Zap, Crown, Search, Lock, Filter, SlidersHorizontal, Star, TrendingUp, Sparkles
