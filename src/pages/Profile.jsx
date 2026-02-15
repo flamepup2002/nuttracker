@@ -5,6 +5,7 @@ import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import AchievementBadge from '@/components/AchievementBadge';
+import { Link } from 'react-router-dom';
 import { ArrowLeft, User, Save, Mail, Phone, MapPin, Calendar, Heart, FileText, DollarSign, TrendingUp, Package, Trophy } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -57,6 +58,8 @@ export default function Profile() {
     queryKey: ['achievements'],
     queryFn: () => base44.entities.UserAchievement.list('-unlocked_at', 100),
   });
+
+  const showcasedCount = achievements.filter(a => a.is_showcased).length;
 
   const activityStats = {
     totalContracts: contracts.length,
@@ -186,18 +189,19 @@ export default function Profile() {
                  <Trophy className="w-5 h-5 text-yellow-400" />
                  Achievements ({achievements.length})
                </h3>
-               <Button
-                 size="sm"
-                 variant="ghost"
-                 onClick={() => navigate(createPageUrl('Achievements'))}
-                 className="text-yellow-400 hover:text-yellow-300"
-               >
-                 View All
-               </Button>
+               <Link to={createPageUrl('Achievements')}>
+                 <Button
+                   size="sm"
+                   variant="ghost"
+                   className="text-yellow-400 hover:text-yellow-300"
+                 >
+                   View All
+                 </Button>
+               </Link>
              </div>
              
              {/* Showcased Achievements */}
-             {achievements.filter(a => a.is_showcased).length > 0 && (
+             {showcasedCount > 0 && (
                <div className="mb-6">
                  <p className="text-zinc-400 text-xs mb-2">★ Showcased</p>
                  <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
