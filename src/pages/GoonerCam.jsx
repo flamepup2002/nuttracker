@@ -82,25 +82,6 @@ function CamCard({ cam, onClick }) {
 
 export default function GoonerCam() {
   const queryClient = useQueryClient();
-  
-  // Check for checkout success
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const sessionId = params.get('session_id');
-    
-    if (sessionId) {
-      base44.functions.invoke('handleGoonerCamCheckoutSuccess', { sessionId })
-        .then(() => {
-          queryClient.invalidateQueries({ queryKey: ['user'] });
-          toast.success('Subscription activated! Check your profile for details.');
-          // Clean up URL
-          window.history.replaceState({}, document.title, window.location.pathname);
-        })
-        .catch(err => {
-          toast.error('Failed to activate subscription: ' + err.message);
-        });
-    }
-  }, []);
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -130,34 +111,6 @@ export default function GoonerCam() {
     queryFn: () => base44.entities.ViewingHistory.list('-created_date', 50),
     enabled: settings?.goonercam_enabled,
   });
-
-  // Real-time subscriptions for broadcast updates
-  useEffect(() => {
-    if (!settings?.goonercam_enabled || broadcasts.length === 0) return;
-
-    const unsubscribes = broadcasts.map(broadcast => 
-      base44.entities.Session.subscribe((event) => {
-        if (event.id === broadcast.id && event.type === 'update') {
-          setLiveViewers(prev => ({
-            ...prev,
-            [broadcast.id]: event.data.viewer_count || Math.floor(Math.random() * 500) + 50
-          }));
-        }
-      })
-    );
-
-    return () => {
-      unsubscribes.forEach(unsub => unsub?.());
-    };
-  }, [broadcasts, settings?.goonercam_enabled]);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-pink-500 border-t-transparent rounded-full" />
-      </div>
-    );
-  }
 
   // Get personalized recommendations based on viewing history
   const recommendedTags = React.useMemo(() => {
@@ -217,6 +170,52 @@ export default function GoonerCam() {
     .sort((a, b) => b.recommendationScore - a.recommendationScore)
     .slice(0, 6);
   const allStreams = filteredBroadcasts;
+
+  // Real-time subscriptions for broadcast updates
+  useEffect(() => {
+    if (!settings?.goonercam_enabled || broadcasts.length === 0) return;
+
+    const unsubscribes = broadcasts.map(broadcast => 
+      base44.entities.Session.subscribe((event) => {
+        if (event.id === broadcast.id && event.type === 'update') {
+          setLiveViewers(prev => ({
+            ...prev,
+            [broadcast.id]: event.data.viewer_count || Math.floor(Math.random() * 500) + 50
+          }));
+        }
+      })
+    );
+
+    return () => {
+      unsubscribes.forEach(unsub => unsub?.());
+    };
+  }, [broadcasts, settings?.goonercam_enabled]);
+
+  // Check for checkout success
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get('session_id');
+    
+    if (sessionId) {
+      base44.functions.invoke('handleGoonerCamCheckoutSuccess', { sessionId })
+        .then(() => {
+          queryClient.invalidateQueries({ queryKey: ['user'] });
+          toast.success('Subscription activated! Check your profile for details.');
+          window.history.replaceState({}, document.title, window.location.pathname);
+        })
+        .catch(err => {
+          toast.error('Failed to activate subscription: ' + err.message);
+        });
+    }
+  }, [queryClient]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-2 border-pink-500 border-t-transparent rounded-full" />
+      </div>
+    );
+  }
 
   if (!settings?.goonercam_enabled) {
     return (
