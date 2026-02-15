@@ -32,6 +32,17 @@ const ACHIEVEMENT_REWARDS = {
   'thousand_orgasm_god': { type: 'title', value: 0, data: { title: 'Orgasm God' } },
   'findom_emperor': { type: 'theme', value: 0, data: { theme_name: 'crimson' } },
   'goon_legend': { type: 'aura', value: 0, data: { aura_name: 'gold_radiance' } },
+  'first_jail': { type: 'coins', value: 100, data: null },
+  'jail_veteran': { type: 'coins', value: 200, data: null },
+  'extended_sentence': { type: 'title', value: 0, data: { title: 'Extended Prisoner' } },
+  'permanent_prisoner': { type: 'aura', value: 0, data: { aura_name: 'red_chains' } },
+  'task_novice': { type: 'coins', value: 50, data: null },
+  'task_warrior': { type: 'coins', value: 150, data: null },
+  'task_master': { type: 'title', value: 0, data: { title: 'Task Master' } },
+  'perfect_submission': { type: 'aura', value: 0, data: { aura_name: 'pink_sparkle' } },
+  'coin_collector': { type: 'coins', value: 500, data: null },
+  'contract_holder': { type: 'coins', value: 100, data: null },
+  'contract_addict': { type: 'theme', value: 0, data: { theme_name: 'neon' } },
 };
 
 const ACHIEVEMENTS = [
@@ -592,7 +603,118 @@ const ACHIEVEMENTS = [
     description: 'Ruin yourself 200 times',
     icon: Zap,
     color: 'from-orange-700 to-red-700',
+    rarity: 'epic',
     checkFn: (data) => data.orgasms.filter(o => o.type === 'ruined').length >= 200,
+  },
+  {
+    id: 'first_jail',
+    title: 'Locked Up',
+    description: 'Complete your first horny jail session',
+    icon: Lock,
+    color: 'from-red-600 to-orange-600',
+    rarity: 'common',
+    category: 'engagement',
+    checkFn: (data) => data.sessions.some(s => s.is_horny_jail),
+  },
+  {
+    id: 'jail_veteran',
+    title: 'Jail Veteran',
+    description: 'Complete 5 horny jail sessions',
+    icon: Lock,
+    color: 'from-red-700 to-orange-700',
+    rarity: 'uncommon',
+    category: 'engagement',
+    checkFn: (data) => data.sessions.filter(s => s.is_horny_jail).length >= 5,
+  },
+  {
+    id: 'extended_sentence',
+    title: 'Extended Sentence',
+    description: 'Have AI extend your time 5 times',
+    icon: AlertCircle,
+    color: 'from-orange-600 to-red-700',
+    rarity: 'rare',
+    category: 'engagement',
+    checkFn: (data) => data.sessions.some(s => s.horny_jail_extensions >= 5),
+  },
+  {
+    id: 'permanent_prisoner',
+    title: 'Permanent Prisoner',
+    description: 'Get permanently locked by AI',
+    icon: Infinity,
+    color: 'from-red-800 to-orange-900',
+    rarity: 'legendary',
+    category: 'engagement',
+    checkFn: (data) => data.sessions.some(s => s.horny_jail_permanent_lock),
+  },
+  {
+    id: 'task_novice',
+    title: 'Task Novice',
+    description: 'Complete your first Bully AI task',
+    icon: Target,
+    color: 'from-purple-600 to-pink-600',
+    rarity: 'common',
+    category: 'bully_ai',
+    checkFn: (data) => data.tasks?.filter(t => t.status === 'completed').length >= 1,
+  },
+  {
+    id: 'task_warrior',
+    title: 'Task Warrior',
+    description: 'Complete 10 Bully AI tasks',
+    icon: Trophy,
+    color: 'from-purple-700 to-pink-700',
+    rarity: 'uncommon',
+    category: 'bully_ai',
+    checkFn: (data) => data.tasks?.filter(t => t.status === 'completed').length >= 10,
+  },
+  {
+    id: 'task_master',
+    title: 'Task Master',
+    description: 'Complete 25 Bully AI tasks',
+    icon: Crown,
+    color: 'from-purple-800 to-pink-800',
+    rarity: 'rare',
+    category: 'bully_ai',
+    checkFn: (data) => data.tasks?.filter(t => t.status === 'completed').length >= 25,
+  },
+  {
+    id: 'perfect_submission',
+    title: 'Perfect Submission',
+    description: 'Complete 10 tasks with image proof',
+    icon: Sparkles,
+    color: 'from-pink-700 to-rose-700',
+    rarity: 'epic',
+    category: 'bully_ai',
+    checkFn: (data) => data.taskCompletions?.filter(tc => tc.proof_images?.length > 0).length >= 10,
+  },
+  {
+    id: 'coin_collector',
+    title: 'Coin Collector',
+    description: 'Earn 1000 kinkcoins from tasks',
+    icon: Coins,
+    color: 'from-yellow-600 to-amber-600',
+    rarity: 'rare',
+    category: 'bully_ai',
+    checkFn: (data) => data.taskCompletions?.reduce((sum, tc) => sum + (tc.coins_awarded || 0), 0) >= 1000,
+  },
+  {
+    id: 'contract_holder',
+    title: 'Contract Holder',
+    description: 'Sign your first findom contract',
+    icon: FileText,
+    color: 'from-purple-600 to-indigo-600',
+    rarity: 'uncommon',
+    category: 'findom',
+    checkFn: (data) => data.contracts?.length >= 1,
+  },
+  {
+    id: 'contract_addict',
+    title: 'Contract Addict',
+    description: 'Sign 5 findom contracts',
+    icon: FileText,
+    color: 'from-purple-700 to-indigo-700',
+    rarity: 'rare',
+    category: 'findom',
+    checkFn: (data) => data.contracts?.length >= 5,
   },
 ];
 
@@ -613,6 +735,21 @@ export default function Achievements() {
   const { data: sessions = [] } = useQuery({
     queryKey: ['sessions'],
     queryFn: () => base44.entities.Session.list('-created_date', 1000),
+  });
+
+  const { data: tasks = [] } = useQuery({
+    queryKey: ['tasks'],
+    queryFn: () => base44.entities.BullyTask.list('-created_date', 1000),
+  });
+
+  const { data: taskCompletions = [] } = useQuery({
+    queryKey: ['taskCompletions'],
+    queryFn: () => base44.entities.TaskCompletion.list('-created_date', 1000),
+  });
+
+  const { data: contracts = [] } = useQuery({
+    queryKey: ['contracts'],
+    queryFn: () => base44.entities.DebtContract.list('-created_date', 1000),
   });
 
   const unlockMutation = useMutation({
@@ -667,7 +804,7 @@ export default function Achievements() {
   });
 
   const checkAchievements = () => {
-    const data = { orgasms, sessions };
+    const data = { orgasms, sessions, tasks, taskCompletions, contracts };
     const unlockedIds = userAchievements.map(a => a.achievement_id);
 
     ACHIEVEMENTS.forEach(achievement => {
@@ -678,10 +815,10 @@ export default function Achievements() {
   };
 
   useEffect(() => {
-    if (orgasms.length > 0 || sessions.length > 0) {
+    if (orgasms.length > 0 || sessions.length > 0 || tasks.length > 0 || taskCompletions.length > 0 || contracts.length > 0) {
       checkAchievements();
     }
-  }, [orgasms.length, sessions.length]);
+  }, [orgasms.length, sessions.length, tasks.length, taskCompletions.length, contracts.length]);
 
   const unlockedIds = userAchievements.map(a => a.achievement_id);
   const unlockedCount = unlockedIds.length;
