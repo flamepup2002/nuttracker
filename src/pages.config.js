@@ -90,6 +90,7 @@ import Shop from './pages/Shop';
 import StreamSetup from './pages/StreamSetup';
 import StreamSubscriptions from './pages/StreamSubscriptions';
 import WatchStream from './pages/WatchStream';
+import ProfileCustomization from './pages/ProfileCustomization';
 import __Layout from './Layout.jsx';
 
 
@@ -137,6 +138,7 @@ export const PAGES = {
     "StreamSetup": StreamSetup,
     "StreamSubscriptions": StreamSubscriptions,
     "WatchStream": WatchStream,
+    "ProfileCustomization": ProfileCustomization,
 }
 
 export const pagesConfig = {

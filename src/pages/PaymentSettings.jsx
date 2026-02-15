@@ -123,15 +123,22 @@ export default function PaymentSettings() {
                 <span>Payment method verified and active</span>
               </div>
 
-              <Button
-                variant="outline"
-                onClick={() => removePaymentMutation.mutate()}
-                disabled={removePaymentMutation.isPending}
-                className="w-full border-red-800 text-red-400 hover:bg-red-900/20"
-              >
-                <Trash2 className="w-4 h-4 mr-2" />
-                {removePaymentMutation.isPending ? 'Removing...' : 'Remove Payment Method'}
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => setShowAddPayment(true)}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700"
+                >
+                  Update Payment Method
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => removePaymentMutation.mutate()}
+                  disabled={removePaymentMutation.isPending}
+                  className="border-red-800 text-red-400 hover:bg-red-900/20"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
           ) : (
             <div className="text-center py-8">
