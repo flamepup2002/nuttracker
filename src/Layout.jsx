@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import NotificationToast from './components/NotificationToast';
+import BottomNav from './components/BottomNav';
 
 const THEME_COLORS = {
   default: {
@@ -54,6 +55,15 @@ export default function Layout({ children }) {
     <div className="min-h-screen bg-black">
       <NotificationToast />
       <style>{`
+        @media (prefers-color-scheme: light) {
+          :root {
+            --background: 0 0% 100%;
+            --foreground: 0 0% 0%;
+            --card: 0 0% 95%;
+            --card-foreground: 0 0% 0%;
+          }
+        }
+        
         :root {
           --background: 0 0% 0%;
           --foreground: 0 0% 100%;
@@ -79,6 +89,9 @@ export default function Layout({ children }) {
         body {
           background: black;
           -webkit-tap-highlight-color: transparent;
+          overscroll-behavior-y: none;
+          padding-top: env(safe-area-inset-top);
+          padding-bottom: env(safe-area-inset-bottom);
         }
         
         * {
@@ -100,11 +113,19 @@ export default function Layout({ children }) {
           border-radius: 3px;
         }
         
+        button, a, nav {
+          user-select: none;
+          -webkit-user-select: none;
+          -moz-user-select: none;
+          -ms-user-select: none;
+        }
+        
         .slider-pink [data-orientation="horizontal"] > span:first-child {
           background: linear-gradient(to right, #ec4899, #a855f7);
         }
       `}</style>
       {children}
+      <BottomNav />
     </div>
   );
 }
