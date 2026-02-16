@@ -6,12 +6,23 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import AchievementBadge from '@/components/AchievementBadge';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, User, Save, Mail, Phone, MapPin, Calendar, Heart, FileText, DollarSign, TrendingUp, Package, Trophy, Sparkles, Settings } from 'lucide-react';
+import { ArrowLeft, User, Save, Mail, Phone, MapPin, Calendar, Heart, FileText, DollarSign, TrendingUp, Package, Trophy, Sparkles, Settings, AlertTriangle, Trash2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { toast } from 'sonner';
 
 export default function Profile() {
@@ -32,6 +43,7 @@ export default function Profile() {
     findom_intensity_preference: '',
   });
   const [customGender, setCustomGender] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   // Fetch activity stats
   const { data: contracts = [] } = useQuery({
@@ -109,6 +121,21 @@ export default function Profile() {
     },
     onError: () => {
       toast.error('Failed to update profile');
+    },
+  });
+
+  const deleteAccountMutation = useMutation({
+    mutationFn: async () => {
+      // Call backend function to delete account
+      return await base44.functions.invoke('deleteAccount');
+    },
+    onSuccess: () => {
+      toast.success('Account deleted successfully');
+      // Logout and redirect
+      base44.auth.logout();
+    },
+    onError: (error) => {
+      toast.error('Failed to delete account: ' + error.message);
     },
   });
 
@@ -476,6 +503,61 @@ export default function Profile() {
               This helps AI suggest contracts matching your preference
             </p>
           </div>
+        </motion.div>
+
+        {/* Danger Zone */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="bg-red-900/20 border-2 border-red-500/50 rounded-2xl p-6"
+        >
+          <h3 className="text-red-400 font-bold mb-2 flex items-center gap-2">
+            <AlertTriangle className="w-5 h-5" />
+            Danger Zone
+          </h3>
+          <p className="text-zinc-400 text-sm mb-4">
+            Permanently delete your account and all associated data. This action cannot be undone.
+          </p>
+          
+          <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="outline"
+                className="border-red-800 text-red-400 hover:bg-red-900/30"
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                Delete Account
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent className="bg-zinc-900 border-zinc-800">
+              <AlertDialogHeader>
+                <AlertDialogTitle className="text-white">Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription className="text-zinc-400">
+                  This action cannot be undone. This will permanently delete your account
+                  and remove all your data from our servers including:
+                  <ul className="list-disc list-inside mt-2 space-y-1">
+                    <li>All sessions and orgasm logs</li>
+                    <li>Payment history and contracts</li>
+                    <li>Achievements and progress</li>
+                    <li>Profile information</li>
+                  </ul>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel className="bg-zinc-800 text-white border-zinc-700">
+                  Cancel
+                </AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => deleteAccountMutation.mutate()}
+                  disabled={deleteAccountMutation.isPending}
+                  className="bg-red-600 hover:bg-red-700 text-white"
+                >
+                  {deleteAccountMutation.isPending ? 'Deleting...' : 'Delete Account'}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </motion.div>
 
         {/* Save Button */}
