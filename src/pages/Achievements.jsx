@@ -11,7 +11,7 @@ import {
   Star, Crown, Coins, Activity, Video, Milestone,
   FastForward, Undo2, Hourglass, AlertCircle, Skull,
   Wind, Gem, Rocket, Lightbulb, Gift,
-  Shield, Compass, Infinity, Radio, MapPin, Gauge, Circle
+  Shield, Compass, Infinity, Radio, MapPin, Gauge, Circle, FileText
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from "@/components/ui/button";

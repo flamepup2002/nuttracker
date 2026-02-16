@@ -82,6 +82,7 @@ import Notifications from './pages/Notifications';
 import PaymentSettings from './pages/PaymentSettings';
 import PremiumFindom from './pages/PremiumFindom';
 import Profile from './pages/Profile';
+import ProfileCustomization from './pages/ProfileCustomization';
 import Reports from './pages/Reports';
 import SellAssets from './pages/SellAssets';
 import SellHouse from './pages/SellHouse';
@@ -90,7 +91,6 @@ import Shop from './pages/Shop';
 import StreamSetup from './pages/StreamSetup';
 import StreamSubscriptions from './pages/StreamSubscriptions';
 import WatchStream from './pages/WatchStream';
-import ProfileCustomization from './pages/ProfileCustomization';
 import __Layout from './Layout.jsx';
 
 
@@ -130,6 +130,7 @@ export const PAGES = {
     "PaymentSettings": PaymentSettings,
     "PremiumFindom": PremiumFindom,
     "Profile": Profile,
+    "ProfileCustomization": ProfileCustomization,
     "Reports": Reports,
     "SellAssets": SellAssets,
     "SellHouse": SellHouse,
@@ -138,7 +139,6 @@ export const PAGES = {
     "StreamSetup": StreamSetup,
     "StreamSubscriptions": StreamSubscriptions,
     "WatchStream": WatchStream,
-    "ProfileCustomization": ProfileCustomization,
 }
 
 export const pagesConfig = {
