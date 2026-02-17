@@ -180,16 +180,9 @@ export default function Shop() {
     <div className="min-h-screen bg-black text-white">
       {/* Header */}
       <div className="relative px-6 py-4 flex items-center justify-between border-b border-zinc-800">
-        <button
-          onClick={() => navigate(createPageUrl('Home'))}
-          className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          <span>Back</span>
-        </button>
-        <h1 className="text-lg font-bold flex items-center gap-2">
-          <ShoppingBag className="w-5 h-5" />
-          KinkCoin Shop
+        <h1 className="text-2xl font-bold flex items-center gap-2">
+          <ShoppingBag className="w-6 h-6 text-yellow-400" />
+          Shop
         </h1>
         <div className="flex items-center gap-2 bg-gradient-to-r from-yellow-600/20 to-amber-600/20 border border-yellow-500/30 rounded-lg px-3 py-1.5">
           <Coins className="w-4 h-4 text-yellow-400" />
