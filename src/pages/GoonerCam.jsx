@@ -89,6 +89,13 @@ export default function GoonerCam() {
   const [showFilters, setShowFilters] = useState(false);
   const [liveViewers, setLiveViewers] = useState({});
 
+  const handleRefresh = async () => {
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ['activeBroadcasts'] }),
+      queryClient.invalidateQueries({ queryKey: ['userSettings'] }),
+    ]);
+  };
+
   const { data: settings, isLoading } = useQuery({
     queryKey: ['userSettings'],
     queryFn: async () => {
@@ -488,7 +495,7 @@ export default function GoonerCam() {
           </motion.div>
         )}
       </div>
-    </div>
+      </div>
     </PullToRefresh>
   );
 }
