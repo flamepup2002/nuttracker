@@ -42,11 +42,30 @@ export default function MyTasks() {
       });
       return response.data;
     },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['bullyTasks', 'taskCompletions'] });
-      toast.success('Task submitted! AI feedback: ' + data.feedback);
+    onMutate: async (taskId) => {
+      await queryClient.cancelQueries({ queryKey: ['bullyTasks'] });
+      const previousTasks = queryClient.getQueryData(['bullyTasks']);
       
-      // Award coins if applicable
+      // Optimistically mark as submitted
+      queryClient.setQueryData(['bullyTasks'], (old = []) =>
+        old.map(task => 
+          task.id === taskId 
+            ? { ...task, status: 'submitted' }
+            : task
+        )
+      );
+      
+      toast.loading('Submitting to Bully AI...', { id: 'submit-task' });
+      
+      return { previousTasks };
+    },
+    onError: (error, taskId, context) => {
+      queryClient.setQueryData(['bullyTasks'], context.previousTasks);
+      toast.error('Failed to submit task: ' + error.message, { id: 'submit-task' });
+    },
+    onSuccess: (data) => {
+      toast.success('Task submitted! AI feedback: ' + data.feedback, { id: 'submit-task' });
+      
       if (data.coinsAwarded > 0) {
         toast.success(`Earned ${data.coinsAwarded} coins!`);
       }
@@ -55,8 +74,9 @@ export default function MyTasks() {
       setReportText('');
       setUploadedImages([]);
     },
-    onError: (error) => {
-      toast.error('Failed to submit task: ' + error.message);
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['bullyTasks'] });
+      queryClient.invalidateQueries({ queryKey: ['taskCompletions'] });
     }
   });
 
