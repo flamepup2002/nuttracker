@@ -80,16 +80,23 @@ export default function Shop() {
 
       return item;
     },
-    onSuccess: (item) => {
-      queryClient.invalidateQueries({ queryKey: ['userPurchases'] });
+    onMutate: async (item) => {
+      // Optimistically update balance
+      const previousUser = user;
       setUser(prev => ({
         ...prev,
         currency_balance: (prev?.currency_balance || 0) - item.price,
       }));
-      toast.success(`${item.name} purchased!`);
+      toast.loading(`Purchasing ${item.name}...`, { id: 'purchase' });
+      return { previousUser };
     },
-    onError: (error) => {
-      toast.error(error.message || 'Purchase failed');
+    onError: (error, item, context) => {
+      setUser(context.previousUser);
+      toast.error(error.message || 'Purchase failed', { id: 'purchase' });
+    },
+    onSuccess: (item) => {
+      queryClient.invalidateQueries({ queryKey: ['userPurchases'] });
+      toast.success(`${item.name} purchased!`, { id: 'purchase' });
     },
   });
 

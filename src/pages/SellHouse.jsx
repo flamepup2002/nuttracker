@@ -162,6 +162,7 @@ export default function SellHouse() {
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400">$</span>
                   <Input
                     type="number"
+                    inputMode="numeric"
                     value={houseValue}
                     onChange={(e) => setHouseValue(e.target.value)}
                     placeholder="500000"
@@ -177,6 +178,7 @@ export default function SellHouse() {
                   <Label className="text-zinc-300 mb-2 block text-sm">Bedrooms</Label>
                   <Input
                     type="number"
+                    inputMode="numeric"
                     value={bedrooms}
                     onChange={(e) => setBedrooms(e.target.value)}
                     placeholder="3"
@@ -188,6 +190,7 @@ export default function SellHouse() {
                   <Label className="text-zinc-300 mb-2 block text-sm">Bathrooms</Label>
                   <Input
                     type="number"
+                    inputMode="decimal"
                     value={bathrooms}
                     onChange={(e) => setBathrooms(e.target.value)}
                     placeholder="2"
@@ -200,6 +203,7 @@ export default function SellHouse() {
                   <Label className="text-zinc-300 mb-2 block text-sm">Sq. Ft.</Label>
                   <Input
                     type="number"
+                    inputMode="numeric"
                     value={squareFootage}
                     onChange={(e) => setSquareFootage(e.target.value)}
                     placeholder="2500"
