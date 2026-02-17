@@ -487,6 +487,6 @@ export default function GoonerCam() {
           </motion.div>
         )}
       </div>
-    </div>
+    </PullToRefresh>
   );
 }

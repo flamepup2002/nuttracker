@@ -55,15 +55,6 @@ export default function Layout({ children }) {
     <div className="min-h-screen bg-black">
       <NotificationToast />
       <style>{`
-        @media (prefers-color-scheme: light) {
-          :root {
-            --background: 0 0% 100%;
-            --foreground: 0 0% 0%;
-            --card: 0 0% 95%;
-            --card-foreground: 0 0% 0%;
-          }
-        }
-        
         :root {
           --background: 0 0% 0%;
           --foreground: 0 0% 100%;
@@ -95,22 +86,12 @@ export default function Layout({ children }) {
         }
         
         * {
-          scrollbar-width: thin;
-          scrollbar-color: #27272a transparent;
+          scrollbar-width: none;
+          -ms-overflow-style: none;
         }
         
         *::-webkit-scrollbar {
-          width: 6px;
-          height: 6px;
-        }
-        
-        *::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        
-        *::-webkit-scrollbar-thumb {
-          background: #27272a;
-          border-radius: 3px;
+          display: none;
         }
         
         button, a, nav {

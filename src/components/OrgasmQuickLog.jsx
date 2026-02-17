@@ -4,7 +4,7 @@ import { Droplet, X, Ban, DollarSign, Flame, Plus } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 const baseOrgasmTypes = [
   { id: 'cumshot', label: 'Cumshot', icon: Droplet, color: 'from-blue-500 to-cyan-400', description: 'Full release' },
@@ -14,6 +14,7 @@ const baseOrgasmTypes = [
 ];
 
 export default function OrgasmQuickLog({ sessionId, isFindom, currentCost, heartRate, onLog }) {
+  const queryClient = useQueryClient();
   const { data: settings } = useQuery({
     queryKey: ['userSettings'],
     queryFn: async () => {
@@ -24,31 +25,58 @@ export default function OrgasmQuickLog({ sessionId, isFindom, currentCost, heart
 
   const orgasmTypes = baseOrgasmTypes.filter(type => !type.requiresFindom || settings?.findom_enabled);
   const [isOpen, setIsOpen] = useState(false);
-  const [logging, setLogging] = useState(null);
 
-  const handleLog = async (type) => {
-    setLogging(type);
-    try {
-      const orgasmData = {
-        type,
-        session_id: sessionId || null,
-        is_findom: isFindom || false,
-        cost: isFindom ? currentCost : 0,
-        heart_rate_at_time: heartRate || null,
-      };
+  const logMutation = useMutation({
+    mutationFn: async (orgasmData) => {
+      return await base44.entities.Orgasm.create(orgasmData);
+    },
+    onMutate: async (newOrgasm) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['orgasms'] });
       
-      await base44.entities.Orgasm.create(orgasmData);
-      toast.success(`${type.charAt(0).toUpperCase() + type.slice(1)} logged!`, {
-        description: isFindom ? `Cost: $${currentCost?.toFixed(2)}` : undefined,
+      // Snapshot previous value
+      const previousOrgasms = queryClient.getQueryData(['orgasms']);
+      
+      // Optimistically update
+      queryClient.setQueryData(['orgasms'], (old = []) => {
+        const optimisticOrgasm = {
+          ...newOrgasm,
+          id: `temp-${Date.now()}`,
+          created_date: new Date().toISOString(),
+        };
+        return [optimisticOrgasm, ...old];
       });
       
-      if (onLog) onLog(orgasmData);
-      setIsOpen(false);
-    } catch (error) {
+      return { previousOrgasms };
+    },
+    onError: (err, newOrgasm, context) => {
+      // Rollback on error
+      queryClient.setQueryData(['orgasms'], context.previousOrgasms);
       toast.error('Failed to log');
-    } finally {
-      setLogging(null);
-    }
+    },
+    onSuccess: (data, variables) => {
+      toast.success(`${variables.type.charAt(0).toUpperCase() + variables.type.slice(1)} logged!`, {
+        description: variables.is_findom ? `Cost: $${variables.cost?.toFixed(2)}` : undefined,
+      });
+      if (onLog) onLog(variables);
+    },
+    onSettled: () => {
+      // Refetch to ensure consistency
+      queryClient.invalidateQueries({ queryKey: ['orgasms'] });
+    },
+  });
+
+  const handleLog = (type) => {
+    const orgasmData = {
+      type,
+      session_id: sessionId || null,
+      is_findom: isFindom || false,
+      cost: isFindom ? currentCost : 0,
+      heart_rate_at_time: heartRate || null,
+    };
+    
+    logMutation.mutate(orgasmData);
+    setIsOpen(false);
   };
 
   return (
@@ -98,10 +126,10 @@ export default function OrgasmQuickLog({ sessionId, isFindom, currentCost, heart
                       key={type.id}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      disabled={logging === type.id}
+                      disabled={logMutation.isPending}
                       onClick={() => handleLog(type.id)}
                       className={`relative overflow-hidden rounded-2xl p-4 text-left transition-all ${
-                        logging === type.id ? 'opacity-50' : ''
+                        logMutation.isPending ? 'opacity-50' : ''
                       }`}
                     >
                       <div className={`absolute inset-0 bg-gradient-to-br ${type.color} opacity-20`} />

@@ -3,8 +3,9 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import PullToRefresh from '@/components/PullToRefresh';
 import { 
         Flame, Activity, DollarSign, Droplet, X, Ban, 
         TrendingUp, Calendar, Play, Settings, ChevronRight, Coins, Sparkles, Trophy, Video, User, Zap, Home as HomeIcon, Gavel, FileText, CreditCard, Bell, BarChart3, Lock, MessageSquare, Target
@@ -14,7 +15,17 @@ import StatsCard from '@/components/StatsCard';
 import OrgasmQuickLog from '@/components/OrgasmQuickLog';
 
 export default function Home() {
+  const queryClient = useQueryClient();
   const [user, setUser] = useState(null);
+
+  const handleRefresh = async () => {
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ['orgasms'] }),
+      queryClient.invalidateQueries({ queryKey: ['sessions'] }),
+      queryClient.invalidateQueries({ queryKey: ['notifications'] }),
+      queryClient.invalidateQueries({ queryKey: ['userSettings'] }),
+    ]);
+  };
 
   const { data: orgasms = [] } = useQuery({
     queryKey: ['orgasms'],
@@ -107,8 +118,9 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      {/* Header */}
+    <PullToRefresh onRefresh={handleRefresh}>
+      <div className="min-h-screen bg-black text-white">
+        {/* Header */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-pink-900/10 to-black" />
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-full blur-3xl" />
@@ -654,7 +666,8 @@ export default function Home() {
         </motion.div>
       </div>
 
-      <OrgasmQuickLog />
-    </div>
+        <OrgasmQuickLog />
+      </div>
+    </PullToRefresh>
   );
 }

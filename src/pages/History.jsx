@@ -5,6 +5,7 @@ import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import PullToRefresh from '@/components/PullToRefresh';
 import { 
   ArrowLeft, Droplet, X, Ban, DollarSign, 
   Calendar, Activity, Clock, Filter, ChevronDown, Trash2
@@ -32,6 +33,13 @@ export default function History() {
   const queryClient = useQueryClient();
   const [filter, setFilter] = useState('all');
   const [timeRange, setTimeRange] = useState('all');
+
+  const handleRefresh = async () => {
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ['orgasms'] }),
+      queryClient.invalidateQueries({ queryKey: ['sessions'] }),
+    ]);
+  };
 
   const { data: orgasms = [], isLoading } = useQuery({
     queryKey: ['orgasms'],
@@ -82,12 +90,26 @@ export default function History() {
 
   const deleteMutation = useMutation({
     mutationFn: (id) => base44.entities.Orgasm.delete(id),
+    onMutate: async (deletedId) => {
+      await queryClient.cancelQueries({ queryKey: ['orgasms'] });
+      const previousOrgasms = queryClient.getQueryData(['orgasms']);
+      
+      // Optimistically remove from UI
+      queryClient.setQueryData(['orgasms'], (old = []) => 
+        old.filter(o => o.id !== deletedId)
+      );
+      
+      return { previousOrgasms };
+    },
+    onError: (err, deletedId, context) => {
+      queryClient.setQueryData(['orgasms'], context.previousOrgasms);
+      toast.error('Failed to delete');
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['orgasms'] });
       toast.success('Orgasm deleted');
     },
-    onError: () => {
-      toast.error('Failed to delete');
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['orgasms'] });
     },
   });
 
@@ -99,8 +121,9 @@ export default function History() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      {/* Header */}
+    <PullToRefresh onRefresh={handleRefresh}>
+      <div className="min-h-screen bg-black text-white">
+        {/* Header */}
       <div className="relative">
         <div className="absolute inset-0 bg-gradient-to-b from-zinc-900/50 to-transparent" />
         <div className="relative px-6 py-4 flex items-center justify-between">
@@ -267,6 +290,6 @@ export default function History() {
           </div>
         )}
       </div>
-    </div>
+    </PullToRefresh>
   );
 }
