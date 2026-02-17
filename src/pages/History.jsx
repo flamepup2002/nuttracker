@@ -290,6 +290,7 @@ export default function History() {
           </div>
         )}
       </div>
+      </div>
     </PullToRefresh>
   );
 }

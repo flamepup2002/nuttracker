@@ -246,9 +246,10 @@ export default function GoonerCam() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white pb-24">
-      {/* Header */}
-      <div className="relative overflow-hidden">
+    <PullToRefresh onRefresh={handleRefresh}>
+      <div className="min-h-screen bg-black text-white pb-24">
+        {/* Header */}
+        <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-pink-900/10 to-black" />
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-full blur-3xl" />
         
@@ -487,6 +488,7 @@ export default function GoonerCam() {
           </motion.div>
         )}
       </div>
+    </div>
     </PullToRefresh>
   );
 }
