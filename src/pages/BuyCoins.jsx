@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { ArrowLeft, Coins, Sparkles, Check, CreditCard, Plus } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { toast } from 'sonner';
@@ -23,8 +23,6 @@ export default function BuyCoins() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [user, setUser] = useState(null);
-  const [purchasing, setPurchasing] = useState(false);
-  const [selectedPackage, setSelectedPackage] = useState(null);
   const [showPaymentSetup, setShowPaymentSetup] = useState(false);
 
   useEffect(() => {
@@ -40,33 +38,42 @@ export default function BuyCoins() {
     initialData: { hasPaymentMethod: false },
   });
 
-  const handlePurchase = async (pkg) => {
+  const purchaseMutation = useMutation({
+    mutationFn: async (pkg) => {
+      const response = await base44.functions.invoke('purchaseCoins', {
+        coinAmount: pkg.coins
+      });
+      return { ...response.data, coins: pkg.coins };
+    },
+    onMutate: async (pkg) => {
+      // Optimistically update the balance
+      const currentUser = user;
+      setUser(prev => ({
+        ...prev,
+        currency_balance: (prev?.currency_balance || 0) + pkg.coins
+      }));
+      
+      toast.loading(`Processing ${pkg.coins} coins purchase...`, { id: 'purchase' });
+      
+      return { currentUser };
+    },
+    onError: (error, pkg, context) => {
+      // Rollback on error
+      setUser(context.currentUser);
+      toast.error(error.response?.data?.error || 'Purchase failed', { id: 'purchase' });
+    },
+    onSuccess: (data) => {
+      toast.success(`Successfully purchased ${data.coins} coins!`, { id: 'purchase' });
+      queryClient.invalidateQueries({ queryKey: ['user'] });
+    },
+  });
+
+  const handlePurchase = (pkg) => {
     if (!user?.stripe_payment_method_id) {
       toast.error('Please add a payment method in Settings first');
       return;
     }
-
-    setSelectedPackage(pkg);
-    setPurchasing(true);
-
-    try {
-      const response = await base44.functions.invoke('purchaseCoins', {
-        coinAmount: pkg.coins
-      });
-
-      if (response.data.success) {
-        toast.success(`Successfully purchased ${pkg.coins} coins!`);
-        setUser(prev => ({ ...prev, currency_balance: response.data.newBalance }));
-        queryClient.invalidateQueries({ queryKey: ['user'] });
-      } else {
-        toast.error('Purchase failed. Please try again.');
-      }
-    } catch (error) {
-      toast.error(error.response?.data?.error || 'Purchase failed');
-    } finally {
-      setPurchasing(false);
-      setSelectedPackage(null);
-    }
+    purchaseMutation.mutate(pkg);
   };
 
 
@@ -203,7 +210,7 @@ export default function BuyCoins() {
             )}
             <button
               onClick={() => handlePurchase(pkg)}
-              disabled={purchasing}
+              disabled={purchaseMutation.isPending}
               className={`w-full rounded-2xl p-5 flex items-center justify-between transition-all disabled:opacity-50 ${
                 pkg.popular ? 'bg-gradient-to-r from-pink-600/30 to-purple-600/30 border border-pink-500/50 hover:from-pink-600/40 hover:to-purple-600/40' : 'bg-zinc-900/50 border border-zinc-800 hover:bg-zinc-800/50'
               }`}
@@ -217,7 +224,7 @@ export default function BuyCoins() {
                   <p className="text-zinc-500 text-sm">${pkg.price.toFixed(2)}</p>
                 </div>
               </div>
-              {purchasing && selectedPackage?.coins === pkg.coins ? (
+              {purchaseMutation.isPending ? (
                 <div className="animate-spin w-6 h-6 border-2 border-pink-500 border-t-transparent rounded-full" />
               ) : (
                 <div className="bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 px-4 py-2 rounded-lg font-bold text-white text-sm">
