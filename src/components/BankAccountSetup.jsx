@@ -13,17 +13,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
 import { toast } from 'sonner';
+import MobileSelect from '@/components/MobileSelect';
 
 export default function BankAccountSetup({ user, onSuccess }) {
   const queryClient = useQueryClient();
@@ -208,53 +199,17 @@ export default function BankAccountSetup({ user, onSuccess }) {
 
             <div>
               <Label className="text-zinc-300 mb-2 block">Account Type</Label>
-              <div className="md:hidden">
-                <Drawer>
-                  <DrawerTrigger asChild>
-                    <Button variant="outline" className="w-full justify-start bg-zinc-700 border-zinc-600 text-white">
-                      {formData.bank_account_type === 'checking' ? 'Checking' : 'Savings'}
-                    </Button>
-                  </DrawerTrigger>
-                  <DrawerContent>
-                    <DrawerHeader>
-                      <DrawerTitle>Select Account Type</DrawerTitle>
-                    </DrawerHeader>
-                    <div className="p-4 space-y-2">
-                      <Button
-                        variant={formData.bank_account_type === 'checking' ? 'default' : 'outline'}
-                        className="w-full justify-start"
-                        onClick={() => {
-                          setFormData(prev => ({...prev, bank_account_type: 'checking'}));
-                          document.querySelector('[data-vaul-drawer]')?.click();
-                        }}
-                      >
-                        Checking
-                      </Button>
-                      <Button
-                        variant={formData.bank_account_type === 'savings' ? 'default' : 'outline'}
-                        className="w-full justify-start"
-                        onClick={() => {
-                          setFormData(prev => ({...prev, bank_account_type: 'savings'}));
-                          document.querySelector('[data-vaul-drawer]')?.click();
-                        }}
-                      >
-                        Savings
-                      </Button>
-                    </div>
-                  </DrawerContent>
-                </Drawer>
-              </div>
-              <div className="hidden md:block">
-                <Select value={formData.bank_account_type} onValueChange={(value) => setFormData(prev => ({...prev, bank_account_type: value}))}>
-                  <SelectTrigger className="bg-zinc-700 border-zinc-600 text-white">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="checking">Checking</SelectItem>
-                    <SelectItem value="savings">Savings</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              <MobileSelect
+                value={formData.bank_account_type}
+                onValueChange={(value) => setFormData(prev => ({...prev, bank_account_type: value}))}
+                options={[
+                  { value: 'checking', label: 'Checking' },
+                  { value: 'savings', label: 'Savings' }
+                ]}
+                title="Select Account Type"
+                className="bg-zinc-700 border-zinc-600 text-white"
+                triggerClassName="bg-zinc-700 border-zinc-600 text-white"
+              />
             </div>
 
             <div className="flex gap-2 pt-2">

@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import MobileSelect from '@/components/MobileSelect';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -178,7 +179,7 @@ export default function Profile() {
             Profile
           </h1>
           <Link to={createPageUrl('ProfileCustomization')}>
-            <Button variant="ghost" size="icon" className="text-zinc-400 hover:text-white">
+            <Button variant="ghost" size="icon" className="text-zinc-400 hover:text-white min-w-[44px] min-h-[44px]">
               <Sparkles className="w-5 h-5" />
             </Button>
           </Link>
@@ -458,18 +459,15 @@ export default function Profile() {
 
           <div>
             <Label className="text-zinc-400 text-sm mb-2">Sexual Orientation</Label>
-            <Select value={profile.sexual_preference} onValueChange={(value) => handleChange('sexual_preference', value)}>
-              <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white">
-                <SelectValue placeholder="Select your orientation" />
-              </SelectTrigger>
-              <SelectContent>
-                {sexualPreferences.map(pref => (
-                  <SelectItem key={pref.value} value={pref.value}>
-                    {pref.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <MobileSelect
+              value={profile.sexual_preference}
+              onValueChange={(value) => handleChange('sexual_preference', value)}
+              options={sexualPreferences}
+              placeholder="Select your orientation"
+              title="Select Sexual Orientation"
+              className="bg-zinc-800 border-zinc-700 text-white"
+              triggerClassName="bg-zinc-800 border-zinc-700 text-white"
+            />
           </div>
 
           <div>
@@ -484,20 +482,20 @@ export default function Profile() {
 
           <div>
             <Label className="text-zinc-400 text-sm mb-2">Findom Intensity Preference</Label>
-            <Select 
-              value={profile.findom_intensity_preference} 
+            <MobileSelect
+              value={profile.findom_intensity_preference}
               onValueChange={(value) => handleChange('findom_intensity_preference', value)}
-            >
-              <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white">
-                <SelectValue placeholder="Select your preferred intensity" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="mild">Mild - Light financial play</SelectItem>
-                <SelectItem value="moderate">Moderate - Balanced experience</SelectItem>
-                <SelectItem value="intense">Intense - Serious commitment</SelectItem>
-                <SelectItem value="extreme">Extreme - Maximum intensity</SelectItem>
-              </SelectContent>
-            </Select>
+              options={[
+                { value: 'mild', label: 'Mild - Light financial play' },
+                { value: 'moderate', label: 'Moderate - Balanced experience' },
+                { value: 'intense', label: 'Intense - Serious commitment' },
+                { value: 'extreme', label: 'Extreme - Maximum intensity' }
+              ]}
+              placeholder="Select your preferred intensity"
+              title="Select Findom Intensity"
+              className="bg-zinc-800 border-zinc-700 text-white"
+              triggerClassName="bg-zinc-800 border-zinc-700 text-white"
+            />
             <p className="text-zinc-600 text-xs mt-1">
               This helps AI suggest contracts matching your preference
             </p>
