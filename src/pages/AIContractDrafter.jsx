@@ -11,6 +11,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
 
 const EXAMPLE_PROMPTS = [
   "Create a 6-month contract with $200 monthly payments, moderate intensity, focused on financial discipline",
@@ -374,20 +384,51 @@ export default function AIContractDrafter() {
                     </div>
                     <div>
                       <Label className="text-zinc-400 text-xs">Intensity Level</Label>
-                      <Select
-                        value={editedContract.intensity_level}
-                        onValueChange={(val) => updateEditedField('intensity_level', val)}
-                      >
-                        <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white mt-1">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="bg-zinc-900 border-zinc-700">
-                          <SelectItem value="mild">Mild</SelectItem>
-                          <SelectItem value="moderate">Moderate</SelectItem>
-                          <SelectItem value="intense">Intense</SelectItem>
-                          <SelectItem value="extreme">Extreme</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <div className="md:hidden">
+                        <Drawer>
+                          <DrawerTrigger asChild>
+                            <Button variant="outline" className="w-full justify-start bg-zinc-800 border-zinc-700 text-white mt-1 capitalize">
+                              {editedContract.intensity_level}
+                            </Button>
+                          </DrawerTrigger>
+                          <DrawerContent>
+                            <DrawerHeader>
+                              <DrawerTitle>Select Intensity Level</DrawerTitle>
+                            </DrawerHeader>
+                            <div className="p-4 space-y-2">
+                              {['mild', 'moderate', 'intense', 'extreme'].map(level => (
+                                <Button
+                                  key={level}
+                                  variant={editedContract.intensity_level === level ? 'default' : 'outline'}
+                                  className="w-full justify-start capitalize"
+                                  onClick={() => {
+                                    updateEditedField('intensity_level', level);
+                                    document.querySelector('[data-vaul-drawer]')?.click();
+                                  }}
+                                >
+                                  {level}
+                                </Button>
+                              ))}
+                            </div>
+                          </DrawerContent>
+                        </Drawer>
+                      </div>
+                      <div className="hidden md:block">
+                        <Select
+                          value={editedContract.intensity_level}
+                          onValueChange={(val) => updateEditedField('intensity_level', val)}
+                        >
+                          <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white mt-1">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="bg-zinc-900 border-zinc-700">
+                            <SelectItem value="mild">Mild</SelectItem>
+                            <SelectItem value="moderate">Moderate</SelectItem>
+                            <SelectItem value="intense">Intense</SelectItem>
+                            <SelectItem value="extreme">Extreme</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
                     <div>
                       <Label className="text-zinc-400 text-xs">Penalty (%)</Label>
@@ -409,43 +450,105 @@ export default function AIContractDrafter() {
                     </div>
                     <div>
                       <Label className="text-zinc-400 text-xs">Compound Frequency</Label>
-                      <Select
-                        value={editedContract.compound_frequency}
-                        onValueChange={(val) => updateEditedField('compound_frequency', val)}
-                      >
-                        <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white mt-1">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="bg-zinc-900 border-zinc-700">
-                          <SelectItem value="none">None</SelectItem>
-                          <SelectItem value="daily">Daily</SelectItem>
-                          <SelectItem value="weekly">Weekly</SelectItem>
-                          <SelectItem value="monthly">Monthly</SelectItem>
-                          <SelectItem value="quarterly">Quarterly</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <div className="md:hidden">
+                        <Drawer>
+                          <DrawerTrigger asChild>
+                            <Button variant="outline" className="w-full justify-start bg-zinc-800 border-zinc-700 text-white mt-1 capitalize">
+                              {editedContract.compound_frequency}
+                            </Button>
+                          </DrawerTrigger>
+                          <DrawerContent>
+                            <DrawerHeader>
+                              <DrawerTitle>Select Compound Frequency</DrawerTitle>
+                            </DrawerHeader>
+                            <div className="p-4 space-y-2">
+                              {['none', 'daily', 'weekly', 'monthly', 'quarterly'].map(freq => (
+                                <Button
+                                  key={freq}
+                                  variant={editedContract.compound_frequency === freq ? 'default' : 'outline'}
+                                  className="w-full justify-start capitalize"
+                                  onClick={() => {
+                                    updateEditedField('compound_frequency', freq);
+                                    document.querySelector('[data-vaul-drawer]')?.click();
+                                  }}
+                                >
+                                  {freq}
+                                </Button>
+                              ))}
+                            </div>
+                          </DrawerContent>
+                        </Drawer>
+                      </div>
+                      <div className="hidden md:block">
+                        <Select
+                          value={editedContract.compound_frequency}
+                          onValueChange={(val) => updateEditedField('compound_frequency', val)}
+                        >
+                          <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white mt-1">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="bg-zinc-900 border-zinc-700">
+                            <SelectItem value="none">None</SelectItem>
+                            <SelectItem value="daily">Daily</SelectItem>
+                            <SelectItem value="weekly">Weekly</SelectItem>
+                            <SelectItem value="monthly">Monthly</SelectItem>
+                            <SelectItem value="quarterly">Quarterly</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
                     <div>
                       <Label className="text-zinc-400 text-xs">Collateral Type</Label>
-                      <Select
-                        value={editedContract.collateral_type}
-                        onValueChange={(val) => updateEditedField('collateral_type', val)}
-                      >
-                        <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white mt-1">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="bg-zinc-900 border-zinc-700">
-                          <SelectItem value="none">None</SelectItem>
-                          <SelectItem value="house">House</SelectItem>
-                          <SelectItem value="car">Car</SelectItem>
-                          <SelectItem value="savings">Savings</SelectItem>
-                          <SelectItem value="retirement_accounts">Retirement</SelectItem>
-                          <SelectItem value="crypto">Crypto</SelectItem>
-                          <SelectItem value="jewelry">Jewelry</SelectItem>
-                          <SelectItem value="electronics">Electronics</SelectItem>
-                          <SelectItem value="all_assets">All Assets</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <div className="md:hidden">
+                        <Drawer>
+                          <DrawerTrigger asChild>
+                            <Button variant="outline" className="w-full justify-start bg-zinc-800 border-zinc-700 text-white mt-1 capitalize">
+                              {editedContract.collateral_type.replace('_', ' ')}
+                            </Button>
+                          </DrawerTrigger>
+                          <DrawerContent>
+                            <DrawerHeader>
+                              <DrawerTitle>Select Collateral Type</DrawerTitle>
+                            </DrawerHeader>
+                            <div className="p-4 space-y-2 max-h-[60vh] overflow-y-auto">
+                              {['none', 'house', 'car', 'savings', 'retirement_accounts', 'crypto', 'jewelry', 'electronics', 'all_assets'].map(type => (
+                                <Button
+                                  key={type}
+                                  variant={editedContract.collateral_type === type ? 'default' : 'outline'}
+                                  className="w-full justify-start capitalize"
+                                  onClick={() => {
+                                    updateEditedField('collateral_type', type);
+                                    document.querySelector('[data-vaul-drawer]')?.click();
+                                  }}
+                                >
+                                  {type.replace('_', ' ')}
+                                </Button>
+                              ))}
+                            </div>
+                          </DrawerContent>
+                        </Drawer>
+                      </div>
+                      <div className="hidden md:block">
+                        <Select
+                          value={editedContract.collateral_type}
+                          onValueChange={(val) => updateEditedField('collateral_type', val)}
+                        >
+                          <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white mt-1">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="bg-zinc-900 border-zinc-700">
+                            <SelectItem value="none">None</SelectItem>
+                            <SelectItem value="house">House</SelectItem>
+                            <SelectItem value="car">Car</SelectItem>
+                            <SelectItem value="savings">Savings</SelectItem>
+                            <SelectItem value="retirement_accounts">Retirement</SelectItem>
+                            <SelectItem value="crypto">Crypto</SelectItem>
+                            <SelectItem value="jewelry">Jewelry</SelectItem>
+                            <SelectItem value="electronics">Electronics</SelectItem>
+                            <SelectItem value="all_assets">All Assets</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
                   </div>
 
