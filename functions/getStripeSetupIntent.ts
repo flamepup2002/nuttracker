@@ -4,7 +4,7 @@ import Stripe from 'npm:stripe@17.5.0';
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY'));
+    const stripe = new Stripe(Deno.env.get('stripe_secret_key'));
     const user = await base44.auth.me();
     
     if (!user) {
