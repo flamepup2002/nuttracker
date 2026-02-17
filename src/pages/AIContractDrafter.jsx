@@ -368,6 +368,7 @@ export default function AIContractDrafter() {
                       <Label className="text-zinc-400 text-xs">Monthly Payment ($)</Label>
                       <Input
                         type="number"
+                        inputMode="decimal"
                         value={editedContract.monthly_payment}
                         onChange={(e) => updateEditedField('monthly_payment', parseFloat(e.target.value))}
                         className="bg-zinc-800 border-zinc-700 text-white mt-1"
@@ -377,6 +378,7 @@ export default function AIContractDrafter() {
                       <Label className="text-zinc-400 text-xs">Duration (months, 0 = permanent)</Label>
                       <Input
                         type="number"
+                        inputMode="numeric"
                         value={editedContract.duration_months}
                         onChange={(e) => updateEditedField('duration_months', parseInt(e.target.value))}
                         className="bg-zinc-800 border-zinc-700 text-white mt-1"
@@ -434,6 +436,7 @@ export default function AIContractDrafter() {
                       <Label className="text-zinc-400 text-xs">Penalty (%)</Label>
                       <Input
                         type="number"
+                        inputMode="decimal"
                         value={editedContract.penalty_percentage}
                         onChange={(e) => updateEditedField('penalty_percentage', parseFloat(e.target.value))}
                         className="bg-zinc-800 border-zinc-700 text-white mt-1"
@@ -443,6 +446,7 @@ export default function AIContractDrafter() {
                       <Label className="text-zinc-400 text-xs">Interest Rate (%)</Label>
                       <Input
                         type="number"
+                        inputMode="decimal"
                         value={editedContract.interest_rate}
                         onChange={(e) => updateEditedField('interest_rate', parseFloat(e.target.value))}
                         className="bg-zinc-800 border-zinc-700 text-white mt-1"

@@ -185,10 +185,11 @@ export default function BankAccountSetup({ user, onSuccess }) {
             <div>
               <Label className="text-zinc-300 mb-2 block">Account Number</Label>
               <Input
+                type="password"
+                inputMode="numeric"
                 value={formData.bank_account_number}
                 onChange={(e) => setFormData(prev => ({...prev, bank_account_number: e.target.value}))}
                 placeholder="1234567890"
-                type="password"
                 className="bg-zinc-700 border-zinc-600 text-white"
               />
             </div>
@@ -196,10 +197,11 @@ export default function BankAccountSetup({ user, onSuccess }) {
             <div>
               <Label className="text-zinc-300 mb-2 block">Routing Number</Label>
               <Input
+                type="password"
+                inputMode="numeric"
                 value={formData.bank_routing_number}
                 onChange={(e) => setFormData(prev => ({...prev, bank_routing_number: e.target.value}))}
                 placeholder="021000021"
-                type="password"
                 className="bg-zinc-700 border-zinc-600 text-white"
               />
             </div>
