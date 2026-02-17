@@ -59,12 +59,12 @@ function CamCard({ cam, onClick }) {
       <div className="p-4 bg-zinc-900/50 border-x border-b border-zinc-800">
         <div className="flex items-center justify-between mb-2">
           <p className="text-white font-bold">{cam.username}</p>
-          <div className="flex items-center gap-2 text-zinc-400">
-            <button className="hover:text-pink-400 transition-colors">
-              <Heart className="w-4 h-4" />
+          <div className="flex items-center gap-3 text-zinc-400">
+            <button className="hover:text-pink-400 transition-colors p-2 -m-2 min-w-[44px] min-h-[44px] flex items-center justify-center">
+              <Heart className="w-5 h-5" />
             </button>
-            <button className="hover:text-blue-400 transition-colors">
-              <MessageCircle className="w-4 h-4" />
+            <button className="hover:text-blue-400 transition-colors p-2 -m-2 min-w-[44px] min-h-[44px] flex items-center justify-center">
+              <MessageCircle className="w-5 h-5" />
             </button>
           </div>
         </div>

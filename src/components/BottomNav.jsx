@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Home, Zap, Video, ShoppingBag, User } from 'lucide-react';
 import {
@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 
 export default function BottomNav() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [sessionDrawerOpen, setSessionDrawerOpen] = useState(false);
 
   const isActive = (path) => location.pathname === path;
@@ -22,8 +23,7 @@ export default function BottomNav() {
   const handleTabClick = (path) => {
     // If already on this tab, navigate to its root
     if (isActive(path)) {
-      window.history.pushState({}, '', path);
-      window.location.href = path;
+      navigate(path, { replace: true });
     }
   };
 
