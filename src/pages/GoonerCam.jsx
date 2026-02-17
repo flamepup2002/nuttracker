@@ -262,15 +262,8 @@ export default function GoonerCam() {
         
         <div className="relative px-6 py-4">
           <div className="flex items-center justify-between mb-6">
-            <button 
-              onClick={() => navigate(createPageUrl('Home'))}
-              className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5" />
-              <span>Back</span>
-            </button>
-            <h1 className="text-lg font-bold flex items-center gap-2">
-              <Video className="w-5 h-5 text-purple-400" />
+            <h1 className="text-2xl font-bold flex items-center gap-2">
+              <Video className="w-6 h-6 text-purple-400" />
               GoonerCam
             </h1>
             <button 

@@ -55,6 +55,30 @@ export default function Layout({ children }) {
     <div className="min-h-screen bg-black">
       <NotificationToast />
       <style>{`
+        @media (prefers-color-scheme: dark) {
+          :root {
+            --background: 0 0% 0%;
+            --foreground: 0 0% 100%;
+            --card: 240 6% 10%;
+            --card-foreground: 0 0% 100%;
+            --popover: 240 6% 10%;
+            --popover-foreground: 0 0% 100%;
+            --primary: ${colors.primary};
+            --primary-foreground: 0 0% 100%;
+            --secondary: 240 5% 15%;
+            --secondary-foreground: 0 0% 100%;
+            --muted: 240 5% 20%;
+            --muted-foreground: 240 5% 65%;
+            --accent: ${colors.accent};
+            --accent-foreground: 0 0% 100%;
+            --destructive: 0 84% 60%;
+            --destructive-foreground: 0 0% 100%;
+            --border: 240 5% 20%;
+            --input: 240 5% 20%;
+            --ring: ${colors.ring};
+          }
+        }
+        
         :root {
           --background: 0 0% 0%;
           --foreground: 0 0% 100%;

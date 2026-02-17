@@ -278,7 +278,15 @@ export default function Settings() {
                       </Tooltip>
                     </TooltipProvider>
                   </Label>
-                  <span className="text-green-400 font-bold">${settings.base_cost}</span>
+                  <Input
+                    type="number"
+                    inputMode="numeric"
+                    value={settings.base_cost}
+                    onChange={(e) => handleChange('base_cost', parseInt(e.target.value) || 1)}
+                    min={1}
+                    max={50}
+                    className="w-20 text-right bg-zinc-800 border-zinc-700 text-green-400 font-bold"
+                  />
                 </div>
                 <Slider
                   value={[settings.base_cost]}

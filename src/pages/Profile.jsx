@@ -173,18 +173,15 @@ export default function Profile() {
       <div className="relative">
         <div className="absolute inset-0 bg-gradient-to-b from-zinc-900/50 to-transparent" />
         <div className="relative px-6 py-4 flex items-center justify-between">
-          <button 
-            onClick={() => navigate(createPageUrl('Home'))}
-            className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            <span>Back</span>
-          </button>
-          <h1 className="text-lg font-bold flex items-center gap-2">
-            <User className="w-5 h-5 text-zinc-400" />
-            Edit Profile
+          <h1 className="text-2xl font-bold flex items-center gap-2">
+            <User className="w-6 h-6 text-purple-400" />
+            Profile
           </h1>
-          <div className="w-16" />
+          <Link to={createPageUrl('ProfileCustomization')}>
+            <Button variant="ghost" size="icon" className="text-zinc-400 hover:text-white">
+              <Sparkles className="w-5 h-5" />
+            </Button>
+          </Link>
         </div>
       </div>
 
@@ -348,6 +345,8 @@ export default function Profile() {
               Phone Number
             </Label>
             <Input
+              type="tel"
+              inputMode="tel"
               value={profile.phone}
               onChange={(e) => handleChange('phone', e.target.value)}
               placeholder="+1 (555) 123-4567"

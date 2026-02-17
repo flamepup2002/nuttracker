@@ -19,6 +19,14 @@ export default function BottomNav() {
 
   const isActive = (path) => location.pathname === path;
 
+  const handleTabClick = (path) => {
+    // If already on this tab, navigate to its root
+    if (isActive(path)) {
+      window.history.pushState({}, '', path);
+      window.location.href = path;
+    }
+  };
+
   const navItems = [
     { path: createPageUrl('Home'), icon: Home, label: 'Home' },
     { path: null, icon: Zap, label: 'Sessions', drawer: true },
@@ -81,6 +89,12 @@ export default function BottomNav() {
               <Link
                 key={item.label}
                 to={item.path}
+                onClick={(e) => {
+                  if (isActive(item.path)) {
+                    e.preventDefault();
+                    handleTabClick(item.path);
+                  }
+                }}
                 className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
                   isActive(item.path)
                     ? 'text-purple-400'
