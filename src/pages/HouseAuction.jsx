@@ -213,9 +213,23 @@ export default function HouseAuction() {
                         </div>
                       )}
                       {listing.highest_bidder_email && (
-                        <p className="text-zinc-400 text-xs mt-2">
-                          Leading bid by: {listing.highest_bidder_email === user?.email ? 'You' : listing.highest_bidder_email}
-                        </p>
+                        <div className="flex items-center gap-1.5 mt-2">
+                          {listing.highest_bidder_email === 'ai.bidder@nuttracker.ai' ? (
+                            <>
+                              <Bot className="w-3.5 h-3.5 text-red-400" />
+                              <p className="text-red-400 text-xs font-medium">AI Dominator is leading</p>
+                              {aiThinking[listing.id] && (
+                                <span className="w-2 h-2 bg-red-400 rounded-full animate-pulse" />
+                              )}
+                            </>
+                          ) : (
+                            <p className="text-zinc-400 text-xs">
+                              Leading bid by: {listing.highest_bidder_email === user?.email ? (
+                                <span className="text-green-400 font-medium">You</span>
+                              ) : listing.highest_bidder_email}
+                            </p>
+                          )}
+                        </div>
                       )}
                     </div>
                     <TrendingUp className="w-5 h-5 text-yellow-400 flex-shrink-0" />
