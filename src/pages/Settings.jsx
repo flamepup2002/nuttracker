@@ -23,6 +23,7 @@ import {
 import StripePaymentSetup from '@/components/StripePaymentSetup';
 import PaymentMethodCard from '@/components/PaymentMethodCard';
 import BluetoothToyConnect from '@/components/BluetoothToyConnect';
+import MobileSelect from '@/components/MobileSelect';
 
 
 export default function Settings() {
@@ -316,13 +317,20 @@ export default function Settings() {
                       </Tooltip>
                     </TooltipProvider>
                   </Label>
-                  <span className="text-green-400 font-bold">{settings.escalation_rate}%/min</span>
+                  <Input
+                    type="number"
+                    inputMode="numeric"
+                    value={settings.escalation_rate}
+                    onChange={(e) => handleChange('escalation_rate', Math.max(1, parseInt(e.target.value) || 1))}
+                    min={1}
+                    className="w-24 text-right bg-zinc-800 border-zinc-700 text-green-400 font-bold"
+                  />
                 </div>
                 <Slider
-                  value={[settings.escalation_rate]}
+                  value={[Math.min(settings.escalation_rate, 500)]}
                   onValueChange={([value]) => handleChange('escalation_rate', value)}
                   min={1}
-                  max={100}
+                  max={500}
                   step={1}
                   className="py-4"
                 />
@@ -332,21 +340,30 @@ export default function Settings() {
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <Label className={`text-zinc-300 flex items-center gap-2 ${hasOutstandingDebt ? 'opacity-50' : ''}`}>
-                    Interest Rate (Daily)
+                    Interest Rate
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger>
                           <Info className="w-4 h-4 text-zinc-500" />
                         </TooltipTrigger>
                         <TooltipContent>
-                          <p>Daily compound interest on unpaid balances</p>
+                          <p>Compound interest on unpaid balances</p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
                   </Label>
-                  <span className={`font-bold ${hasOutstandingDebt ? 'text-red-400' : 'text-green-400'}`}>
-                    {settings.interest_rate}%/day
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="number"
+                      inputMode="decimal"
+                      value={settings.interest_rate}
+                      onChange={(e) => !hasOutstandingDebt && handleChange('interest_rate', Math.max(0, parseFloat(e.target.value) || 0))}
+                      min={0}
+                      disabled={hasOutstandingDebt}
+                      className="w-20 text-right bg-zinc-800 border-zinc-700 text-green-400 font-bold disabled:opacity-50"
+                    />
+                    <span className={`font-bold text-sm ${hasOutstandingDebt ? 'text-red-400' : 'text-green-400'}`}>%</span>
+                  </div>
                 </div>
                 {hasOutstandingDebt && (
                   <motion.div
@@ -361,14 +378,32 @@ export default function Settings() {
                   </motion.div>
                 )}
                 <Slider
-                  value={[settings.interest_rate * 10]}
-                  onValueChange={([value]) => handleChange('interest_rate', value / 10)}
+                  value={[Math.min(settings.interest_rate, 100)]}
+                  onValueChange={([value]) => handleChange('interest_rate', value)}
                   min={0}
                   max={100}
-                  step={1}
+                  step={0.1}
                   className="py-4"
                   disabled={hasOutstandingDebt}
                 />
+                {/* Interest Frequency */}
+                <div className="mt-3">
+                  <Label className={`text-zinc-400 text-xs mb-2 block ${hasOutstandingDebt ? 'opacity-50' : ''}`}>
+                    Compounding Frequency
+                  </Label>
+                  <MobileSelect
+                    value={settings.interest_frequency || 'daily'}
+                    onValueChange={(val) => !hasOutstandingDebt && handleChange('interest_frequency', val)}
+                    options={[
+                      { value: 'hourly', label: 'Hourly' },
+                      { value: 'daily', label: 'Daily' },
+                      { value: 'monthly', label: 'Monthly' },
+                    ]}
+                    title="Select Compounding Frequency"
+                    className={`bg-zinc-800 border-zinc-700 text-white ${hasOutstandingDebt ? 'opacity-50 pointer-events-none' : ''}`}
+                    triggerClassName={`bg-zinc-800 border-zinc-700 text-white ${hasOutstandingDebt ? 'opacity-50 pointer-events-none' : ''}`}
+                  />
+                </div>
               </div>
 
               {/* Cost Preview */}
