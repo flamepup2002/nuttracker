@@ -138,6 +138,10 @@ export default function HouseAuction() {
               Live
             </span>
           </h1>
+          <div className="flex items-center gap-1 text-xs text-red-400 bg-red-900/20 border border-red-500/30 px-2 py-1 rounded-lg">
+            <Bot className="w-3.5 h-3.5" />
+            <span>AI Active</span>
+          </div>
           <div className="w-16" />
         </div>
       </div>
