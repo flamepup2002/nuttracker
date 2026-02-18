@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Home, Gavel, TrendingUp, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Home, Gavel, TrendingUp, AlertTriangle, Bot, Zap } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,6 +16,7 @@ export default function HouseAuction() {
   const [user, setUser] = useState(null);
   const [selectedHouse, setSelectedHouse] = useState(null);
   const [bidAmount, setBidAmount] = useState('');
+  const [aiThinking, setAiThinking] = useState({});
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
@@ -70,12 +71,32 @@ export default function HouseAuction() {
       queryClient.invalidateQueries({ queryKey: ['houseListings'] });
       toast.success('Bid placed successfully!');
       setBidAmount('');
+      // Trigger AI counter-bid after a short delay
+      const listingId = updatedListing?.id || selectedHouse?.id;
+      setTimeout(() => {
+        if (listingId) triggerAiBid(listingId);
+      }, 2000 + Math.random() * 3000);
       setSelectedHouse(null);
     },
     onError: (error) => {
       toast.error(error.message || 'Failed to place bid');
     },
   });
+
+  const triggerAiBid = async (listingId) => {
+    setAiThinking(prev => ({ ...prev, [listingId]: true }));
+    try {
+      const response = await base44.functions.invoke('aiBidOnHouse', { listingId });
+      if (response.data.success) {
+        toast.error(`🤖 AI Dominator outbid you! $${response.data.newBid.toLocaleString()}`, { duration: 4000 });
+        queryClient.invalidateQueries({ queryKey: ['houseListings'] });
+      }
+    } catch (e) {
+      // silently fail
+    } finally {
+      setAiThinking(prev => ({ ...prev, [listingId]: false }));
+    }
+  };
 
   const handlePlaceBid = () => {
     if (!selectedHouse) {
