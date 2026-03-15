@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import ContractCustomizer from '@/components/ContractCustomizer';
 import SignaturePad from '@/components/SignaturePad';
-import { PRISON_CONTRACTS } from '@/components/prisonContracts';
+import { PRISON_CONTRACTS } from '../components/prisonContracts';
 
 const GENERATED_CONTRACTS = [
   {
