@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import { 
   ArrowLeft, FileText, DollarSign, Calendar, AlertTriangle, 
   CheckCircle, XCircle, Clock, CreditCard, Ban, History, Loader, 
-  AlertCircle
+  AlertCircle, Shield
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import {
@@ -34,6 +34,11 @@ export default function MyContracts() {
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [showDisputeDialog, setShowDisputeDialog] = useState(false);
   const [disputeReason, setDisputeReason] = useState('');
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    base44.auth.me().then(setUser).catch(() => {});
+  }, []);
 
   const { data: contracts = [], isLoading } = useQuery({
     queryKey: ['myContracts'],
@@ -97,6 +102,35 @@ export default function MyContracts() {
     },
     onError: (error) => {
       toast.error('Failed to submit dispute: ' + error.message);
+    },
+  });
+
+  const adminCancelMutation = useMutation({
+    mutationFn: async (contractId) => {
+      const contract = contracts.find(c => c.id === contractId);
+      
+      // If has subscription, cancel it
+      if (contract.stripe_subscription_id) {
+        await base44.functions.invoke('cancelContractSubscription', {
+          subscriptionId: contract.stripe_subscription_id
+        });
+      }
+      
+      // Mark contract as admin cancelled
+      return base44.entities.DebtContract.update(contractId, {
+        is_accepted: false,
+        cancelled_at: new Date().toISOString(),
+        cancelled_by_admin: true,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['myContracts'] });
+      toast.success('Contract cancelled by admin');
+      setShowCancelDialog(false);
+      setSelectedContract(null);
+    },
+    onError: (error) => {
+      toast.error('Failed to cancel contract: ' + error.message);
     },
   });
 
@@ -367,7 +401,21 @@ export default function MyContracts() {
                       <AlertTriangle className="w-4 h-4 mr-2" />
                       Dispute
                     </Button>
-                    {contract.stripe_subscription_id && (
+                    {user?.role === 'admin' && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setSelectedContract(contract);
+                          setShowCancelDialog(true);
+                        }}
+                        className="flex-1 border-zinc-700 text-purple-400 hover:bg-purple-900/20"
+                      >
+                        <Shield className="w-4 h-4 mr-2" />
+                        Admin Cancel
+                      </Button>
+                    )}
+                    {contract.stripe_subscription_id && user?.role !== 'admin' && (
                       <Button
                         variant="outline"
                         size="sm"
@@ -393,18 +441,26 @@ export default function MyContracts() {
       <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
         <AlertDialogContent className="bg-zinc-900 border-zinc-800">
           <AlertDialogTitle className="text-white flex items-center gap-2">
-            <XCircle className="w-5 h-5 text-red-500" />
-            Cancel Contract
+            {user?.role === 'admin' ? <Shield className="w-5 h-5 text-purple-500" /> : <XCircle className="w-5 h-5 text-red-500" />}
+            {user?.role === 'admin' ? 'Admin Cancel Contract' : 'Cancel Contract'}
           </AlertDialogTitle>
           {selectedContract && (
             <AlertDialogDescription className="space-y-4 text-zinc-300">
               <p>Are you sure you want to cancel "{selectedContract.title}"?</p>
-              <div className="bg-red-900/30 border border-red-600/50 rounded-lg p-3">
-                <p className="text-red-400 text-xs">
-                  ⚠️ This will cancel your recurring subscription and end this contract. 
-                  You may still be liable for penalties according to the terms.
-                </p>
-              </div>
+              {user?.role === 'admin' ? (
+                <div className="bg-purple-900/30 border border-purple-600/50 rounded-lg p-3">
+                  <p className="text-purple-400 text-xs">
+                    🛡️ Admin Override: This will immediately cancel the contract and subscription for the user without penalties.
+                  </p>
+                </div>
+              ) : (
+                <div className="bg-red-900/30 border border-red-600/50 rounded-lg p-3">
+                  <p className="text-red-400 text-xs">
+                    ⚠️ This will cancel your recurring subscription and end this contract. 
+                    You may still be liable for penalties according to the terms.
+                  </p>
+                </div>
+              )}
             </AlertDialogDescription>
           )}
           <div className="flex gap-3">
@@ -412,11 +468,11 @@ export default function MyContracts() {
               Keep Contract
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => selectedContract && cancelMutation.mutate(selectedContract.id)}
-              disabled={cancelMutation.isPending}
+              onClick={() => selectedContract && (user?.role === 'admin' ? adminCancelMutation : cancelMutation).mutate(selectedContract.id)}
+              disabled={cancelMutation.isPending || adminCancelMutation.isPending}
               className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white"
             >
-              {cancelMutation.isPending ? 'Cancelling...' : 'Yes, Cancel'}
+              {(cancelMutation.isPending || adminCancelMutation.isPending) ? 'Cancelling...' : 'Yes, Cancel'}
             </AlertDialogAction>
           </div>
         </AlertDialogContent>
