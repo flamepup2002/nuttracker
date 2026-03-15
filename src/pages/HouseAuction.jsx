@@ -106,8 +106,13 @@ export default function HouseAuction() {
 
     const amount = parseFloat(bidAmount);
     
+    if (!amount || isNaN(amount)) {
+      toast.error('Please enter a valid bid amount');
+      return;
+    }
+    
     if (amount <= selectedHouse.current_bid) {
-      toast.error(`Bid must be higher than $${selectedHouse.current_bid}`);
+      toast.error(`Bid must be higher than $${selectedHouse.current_bid.toLocaleString()}`);
       return;
     }
 

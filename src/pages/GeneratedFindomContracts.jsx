@@ -1151,7 +1151,7 @@ export default function GeneratedFindomContracts() {
         duration_months: contract.duration,
         total_obligation: total,
         terms: contract.terms,
-        is_accepted: false, // Will be set to true after payment
+        is_accepted: true,
         next_payment_due: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
         penalty_percentage: contract.penalty_percentage,
         custom_penalty_clause: contract.custom_penalty_clause,

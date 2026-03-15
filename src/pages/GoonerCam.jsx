@@ -474,9 +474,20 @@ export default function GoonerCam() {
               <Video className="w-12 h-12 text-zinc-700 mx-auto mb-3" />
               <h3 className="text-white font-bold text-xl mb-2">No Live Broadcasts</h3>
               <p className="text-zinc-400 text-sm mb-4">
-                No one is broadcasting right now, but you can still goon to AI
+                Be the first to start broadcasting
               </p>
             </div>
+
+            {/* Start Your Own Broadcast */}
+            {settings?.broadcast_enabled && (
+              <div className="max-w-2xl mx-auto">
+                <div className="flex items-center gap-2 mb-4">
+                  <Video className="w-5 h-5 text-pink-400" />
+                  <h2 className="text-white font-bold text-lg">Start Your Broadcast</h2>
+                </div>
+                <StreamBroadcaster />
+              </div>
+            )}
 
             {/* AI GoonerCam */}
             <div className="max-w-2xl mx-auto">

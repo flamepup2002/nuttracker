@@ -69,11 +69,20 @@ export default function AIContractDrafter() {
   });
 
   const handleGenerate = () => {
-    if (!requirements.trim()) {
-      toast.error('Please describe your contract requirements');
+    if (!intensity) {
+      toast.error('Please select an intensity level');
       return;
     }
-    generateMutation.mutate(requirements);
+    
+    // Construct prompt from all inputs
+    const prompt = [
+      requirements.trim(),
+      keywords.length > 0 ? `Include these themes: ${keywords.join(', ')}` : ''
+    ].filter(Boolean).join('. ');
+    
+    const finalPrompt = prompt || `Generate a ${intensity} intensity findom contract`;
+    
+    generateMutation.mutate(finalPrompt);
   };
 
   const handleAccept = () => {
