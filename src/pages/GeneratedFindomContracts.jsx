@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import ContractCustomizer from '@/components/ContractCustomizer';
 import SignaturePad from '@/components/SignaturePad';
+import PRISON_CONTRACTS from '@/data/prisonContracts.json';
 
 const GENERATED_CONTRACTS = [
   {
@@ -1131,7 +1132,9 @@ export default function GeneratedFindomContracts() {
     },
   });
 
-  const filteredContracts = GENERATED_CONTRACTS.filter(contract => {
+  const allContracts = [...GENERATED_CONTRACTS, ...PRISON_CONTRACTS];
+
+  const filteredContracts = allContracts.filter(contract => {
     if (contract.extreme_mode_only) {
       return settings?.extreme_mode === true;
     }
