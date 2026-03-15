@@ -6,7 +6,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   ArrowLeft, DollarSign, Settings2, CreditCard, 
-  Bluetooth, Save, Info, AlertTriangle, Plus, Video, Sparkles
+  Bluetooth, Save, Info, AlertTriangle, Plus, Video, Sparkles, Gavel
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -109,6 +109,8 @@ export default function Settings() {
     ai_dangerous_encouragements: false,
     goon_captions_enabled: false,
     active_aura: null,
+    ai_auction_risk_tolerance: 'aggressive',
+    ai_auction_max_bid_multiplier: 3,
     });
 
   useEffect(() => {
@@ -126,6 +128,8 @@ export default function Settings() {
        ai_dangerous_encouragements: existingSettings.ai_dangerous_encouragements ?? false,
        goon_captions_enabled: existingSettings.goon_captions_enabled ?? false,
        active_aura: existingSettings.active_aura ?? null,
+       ai_auction_risk_tolerance: existingSettings.ai_auction_risk_tolerance ?? 'aggressive',
+       ai_auction_max_bid_multiplier: existingSettings.ai_auction_max_bid_multiplier ?? 3,
        });
    }
   }, [existingSettings]);
@@ -640,6 +644,88 @@ export default function Settings() {
             </motion.div>
           )}
         </motion.div>
+
+        {/* AI Auction Settings */}
+        {settings?.extreme_mode && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.35 }}
+            className="bg-zinc-900/50 rounded-2xl border border-zinc-800 p-6"
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-600 to-orange-600 flex items-center justify-center">
+                <Gavel className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h2 className="text-white font-bold">AI Auction Dominator</h2>
+                <p className="text-zinc-500 text-sm">Configure AI bidding behavior</p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <Label className="text-zinc-400 text-sm mb-2">AI Risk Tolerance</Label>
+                <MobileSelect
+                  value={settings.ai_auction_risk_tolerance}
+                  onValueChange={(value) => handleChange('ai_auction_risk_tolerance', value)}
+                  options={[
+                    { value: 'conservative', label: 'Conservative - 5-10% increments' },
+                    { value: 'moderate', label: 'Moderate - 10-15% increments' },
+                    { value: 'aggressive', label: 'Aggressive - 15-25% increments' },
+                    { value: 'ruthless', label: 'Ruthless - 25-40% increments' }
+                  ]}
+                  placeholder="Select AI aggression"
+                  title="AI Risk Tolerance"
+                  className="bg-zinc-800 border-zinc-700 text-white"
+                  triggerClassName="bg-zinc-800 border-zinc-700 text-white"
+                />
+                <p className="text-zinc-600 text-xs mt-1">
+                  Controls how aggressively AI outbids others
+                </p>
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <Label className="text-zinc-300 flex items-center gap-2">
+                    Max Bid Multiplier
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Info className="w-4 h-4 text-zinc-500" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>AI won't bid beyond this multiple of initial listing value</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </Label>
+                  <Input
+                    type="number"
+                    inputMode="decimal"
+                    value={settings.ai_auction_max_bid_multiplier}
+                    onChange={(e) => handleChange('ai_auction_max_bid_multiplier', Math.max(1, parseFloat(e.target.value) || 1))}
+                    min={1}
+                    max={10}
+                    step={0.5}
+                    className="w-20 text-right bg-zinc-800 border-zinc-700 text-yellow-400 font-bold"
+                  />
+                </div>
+                <Slider
+                  value={[settings.ai_auction_max_bid_multiplier]}
+                  onValueChange={([value]) => handleChange('ai_auction_max_bid_multiplier', value)}
+                  min={1}
+                  max={10}
+                  step={0.5}
+                  className="py-4"
+                />
+                <p className="text-zinc-600 text-xs">
+                  AI will stop bidding at {settings.ai_auction_max_bid_multiplier}x the initial price
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        )}
 
         {/* AI Dangerous Encouragements */}
         <motion.div
