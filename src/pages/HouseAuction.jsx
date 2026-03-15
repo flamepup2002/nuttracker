@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Home, Gavel, TrendingUp, AlertTriangle, Bot, Zap } from 'lucide-react';
+import { ArrowLeft, Home, Gavel, TrendingUp, AlertTriangle, Bot, Zap, Lock, CheckCircle, Clock } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -179,9 +179,21 @@ export default function HouseAuction() {
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-3">
-                        <Home className="w-4 h-4 text-orange-400" />
-                        <p className="text-white font-bold">{listing.location || 'Property'}</p>
+                      <div className="flex items-center gap-2 mb-3 flex-wrap">
+                       <Home className="w-4 h-4 text-orange-400" />
+                       <p className="text-white font-bold">{listing.location || 'Property'}</p>
+                       {listing.reserve_price && !listing.reserve_met && (
+                         <div className="flex items-center gap-1 text-xs text-orange-400 bg-orange-900/20 border border-orange-500/30 px-2 py-0.5 rounded-lg">
+                           <Lock className="w-3 h-3" />
+                           <span>Reserve ${listing.reserve_price.toLocaleString()}</span>
+                         </div>
+                       )}
+                       {listing.reserve_met && (
+                         <div className="flex items-center gap-1 text-xs text-green-400 bg-green-900/20 border border-green-500/30 px-2 py-0.5 rounded-lg">
+                           <CheckCircle className="w-3 h-3" />
+                           <span>Reserve Met</span>
+                         </div>
+                       )}
                       </div>
                       <div className="grid grid-cols-2 gap-4 text-sm mb-3">
                         <div>
@@ -209,13 +221,19 @@ export default function HouseAuction() {
                             </div>
                           )}
                           {listing.square_footage && (
-                            <div className="flex items-center gap-1 text-zinc-400">
-                              <span>📐</span>
-                              <span>{listing.square_footage.toLocaleString()} sq ft</span>
-                            </div>
+                           <div className="flex items-center gap-1 text-zinc-400">
+                             <span>📐</span>
+                             <span>{listing.square_footage.toLocaleString()} sq ft</span>
+                           </div>
                           )}
-                        </div>
-                      )}
+                          {listing.ends_at && (
+                           <div className="flex items-center gap-1 text-yellow-400">
+                             <Clock className="w-3 h-3" />
+                             <span>Ends {new Date(listing.ends_at).toLocaleDateString()}</span>
+                           </div>
+                          )}
+                          </div>
+                          )}
                       {listing.highest_bidder_email && (
                         <div className="flex items-center gap-1.5 mt-2">
                           {listing.highest_bidder_email === 'ai.bidder@nuttracker.ai' ? (
