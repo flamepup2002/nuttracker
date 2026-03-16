@@ -482,6 +482,15 @@ export default function MyContracts() {
                     🛡️ Admin Override: This will immediately cancel the contract and subscription for the user without penalties.
                   </p>
                 </div>
+              ) : selectedContract?.cancellation_irrevocable ? (
+                <div className="bg-red-900/50 border-2 border-red-500 rounded-lg p-3">
+                  <p className="text-red-300 text-xs font-bold">
+                    🔒 WARNING: You waived your cancellation rights on this contract. 
+                    Proceeding will NOT cancel the contract — instead, a penalty of 
+                    <span className="text-white"> ${(selectedContract.monthly_payment * 3).toFixed(0)} </span>
+                    (3 months payment) will be added to your total obligation.
+                  </p>
+                </div>
               ) : (
                 <div className="bg-red-900/30 border border-red-600/50 rounded-lg p-3">
                   <p className="text-red-400 text-xs">

@@ -258,6 +258,37 @@ export default function Settings() {
                     onCheckedChange={(checked) => handleChange('extreme_mode', checked)}
                   />
                 </div>
+
+                {/* Irrevocable Contracts Toggle */}
+                {settings.extreme_mode && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                  >
+                    <div className="bg-red-950/40 border-2 border-red-600/60 rounded-xl p-4">
+                      <div className="flex items-start gap-3 mb-3">
+                        <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <p className="text-red-300 font-bold text-sm">IRREVOCABLE CONTRACTS</p>
+                          <p className="text-red-400/70 text-xs mt-1">
+                            When enabled, new contracts you accept will have cancellation rights permanently waived. 
+                            Any attempt to cancel will instead trigger a <span className="font-bold text-red-300">3-month penalty charge</span> added to your debt. This cannot be undone per contract.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between p-3 bg-black/30 rounded-lg">
+                        <div>
+                          <p className="text-white font-medium text-sm">Waive Cancellation Rights</p>
+                          <p className="text-red-500 text-xs mt-0.5">New contracts become irrevocable</p>
+                        </div>
+                        <Switch
+                          checked={settings.irrevocable_contracts}
+                          onCheckedChange={(checked) => handleChange('irrevocable_contracts', checked)}
+                        />
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
               {/* Warning */}
               <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-xl p-4 flex items-start gap-3">
                 <AlertTriangle className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
