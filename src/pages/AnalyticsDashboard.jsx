@@ -12,7 +12,9 @@ const COLORS = ['#ec4899', '#8b5cf6', '#3b82f6', '#10b981', '#f59e0b'];
 
 export default function AnalyticsDashboard() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [user, setUser] = useState(null);
+  const [lastUpdated, setLastUpdated] = useState(new Date());
 
   // Check admin access
   React.useEffect(() => {
@@ -24,19 +26,41 @@ export default function AnalyticsDashboard() {
     });
   }, [navigate]);
 
+  // Real-time subscriptions
+  useEffect(() => {
+    const unsubs = [
+      base44.entities.UserAnalytics.subscribe(() => {
+        queryClient.invalidateQueries({ queryKey: ['allAnalytics'] });
+        setLastUpdated(new Date());
+      }),
+      base44.entities.BullyTask.subscribe(() => {
+        queryClient.invalidateQueries({ queryKey: ['allTasks'] });
+        setLastUpdated(new Date());
+      }),
+      base44.entities.User.subscribe(() => {
+        queryClient.invalidateQueries({ queryKey: ['allUsers'] });
+        setLastUpdated(new Date());
+      }),
+    ];
+    return () => unsubs.forEach(u => u());
+  }, [queryClient]);
+
   const { data: allAnalytics = [] } = useQuery({
     queryKey: ['allAnalytics'],
     queryFn: () => base44.entities.UserAnalytics.list('-created_date', 5000),
+    refetchInterval: 30000,
   });
 
   const { data: allUsers = [] } = useQuery({
     queryKey: ['allUsers'],
     queryFn: () => base44.entities.User.list(),
+    refetchInterval: 30000,
   });
 
   const { data: allTasks = [] } = useQuery({
     queryKey: ['allTasks'],
     queryFn: () => base44.entities.BullyTask.list('-created_date', 5000),
+    refetchInterval: 30000,
   });
 
   // Analytics calculations
@@ -97,10 +121,16 @@ export default function AnalyticsDashboard() {
           <ArrowLeft className="w-5 h-5" />
           Back
         </button>
-        <h1 className="text-3xl font-bold flex items-center gap-2">
-          <BarChart3 className="w-8 h-8 text-purple-400" />
-          Analytics Dashboard
-        </h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold flex items-center gap-2">
+            <BarChart3 className="w-8 h-8 text-purple-400" />
+            Analytics Dashboard
+          </h1>
+          <div className="flex items-center gap-2 text-xs text-green-400">
+            <Radio className="w-3 h-3 animate-pulse" />
+            <span>Live · {lastUpdated.toLocaleTimeString()}</span>
+          </div>
+        </div>
       </div>
 
       <div className="p-6 space-y-6">
