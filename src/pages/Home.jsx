@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import StatsCard from '@/components/StatsCard';
 import OrgasmQuickLog from '@/components/OrgasmQuickLog';
+import DebtEncouragementAI from '@/components/DebtEncouragementAI';
 
 export default function Home() {
   const queryClient = useQueryClient();
