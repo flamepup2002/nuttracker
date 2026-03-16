@@ -111,6 +111,7 @@ export default function Settings() {
     active_aura: null,
     ai_auction_risk_tolerance: 'aggressive',
     ai_auction_max_bid_multiplier: 3,
+    irrevocable_contracts: false,
     });
 
   useEffect(() => {
@@ -130,6 +131,7 @@ export default function Settings() {
        active_aura: existingSettings.active_aura ?? null,
        ai_auction_risk_tolerance: existingSettings.ai_auction_risk_tolerance ?? 'aggressive',
        ai_auction_max_bid_multiplier: existingSettings.ai_auction_max_bid_multiplier ?? 3,
+       irrevocable_contracts: existingSettings.irrevocable_contracts ?? false,
        });
    }
   }, [existingSettings]);
