@@ -101,6 +101,10 @@ export default function Layout({ children }) {
           --ring: ${colors.ring};
         }
         
+        html {
+          font-size: 80%;
+        }
+        
         body {
           background: black;
           -webkit-tap-highlight-color: transparent;
