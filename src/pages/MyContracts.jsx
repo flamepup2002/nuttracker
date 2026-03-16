@@ -53,6 +53,17 @@ export default function MyContracts() {
   const cancelMutation = useMutation({
     mutationFn: async (contractId) => {
       const contract = contracts.find(c => c.id === contractId);
+
+      // If contract is irrevocable, apply penalty instead of cancelling
+      if (contract.cancellation_irrevocable) {
+        const penaltyAmount = contract.monthly_payment * 3; // 3-month penalty
+        await base44.entities.DebtContract.update(contractId, {
+          cancellation_penalty_triggered: true,
+          cancellation_penalty_amount: (contract.cancellation_penalty_amount || 0) + penaltyAmount,
+          total_obligation: (contract.total_obligation || 0) + penaltyAmount,
+        });
+        throw new Error(`IRREVOCABLE|${penaltyAmount}`);
+      }
       
       // If has subscription, cancel it
       if (contract.stripe_subscription_id) {
@@ -74,7 +85,14 @@ export default function MyContracts() {
       setSelectedContract(null);
     },
     onError: (error) => {
-      toast.error('Failed to cancel contract: ' + error.message);
+      queryClient.invalidateQueries({ queryKey: ['myContracts'] });
+      if (error.message.startsWith('IRREVOCABLE|')) {
+        const penalty = error.message.split('|')[1];
+        setShowCancelDialog(false);
+        toast.error(`🔒 Cancellation DENIED. You waived your right to cancel. A penalty of $${penalty} has been added to your debt.`, { duration: 6000 });
+      } else {
+        toast.error('Failed to cancel contract: ' + error.message);
+      }
     },
   });
 
@@ -360,6 +378,17 @@ export default function MyContracts() {
                       <AlertTriangle className="w-4 h-4 text-yellow-400" />
                       <p className="text-yellow-300 text-xs">
                         Dispute pending review
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Irrevocable Banner */}
+                  {contract.cancellation_irrevocable && (
+                    <div className="bg-red-900/30 border border-red-500/50 rounded-lg p-3 mb-4 flex items-center gap-2">
+                      <Ban className="w-4 h-4 text-red-400 flex-shrink-0" />
+                      <p className="text-red-300 text-xs font-bold">
+                        IRREVOCABLE — You have waived your right to cancel. Attempting to cancel will trigger a 3-month penalty charge.
+                        {contract.cancellation_penalty_amount > 0 && ` ($${contract.cancellation_penalty_amount} in penalties already accumulated)`}
                       </p>
                     </div>
                   )}
