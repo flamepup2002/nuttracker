@@ -270,18 +270,21 @@ export default function Home() {
             </motion.div>
           </Link>
 
-          <Link to={createPageUrl('AICoach')}>
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-purple-600/50 to-pink-600/50 border border-purple-500/30"
-            >
-              <Sparkles className="w-8 h-8 text-white mb-3" />
-              <p className="text-white font-bold text-lg">AI Coach</p>
-              <p className="text-white/70 text-sm">Get personalized tips</p>
-              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
-            </motion.div>
-          </Link>
+          <div className="grid grid-cols-1 gap-4">
+            <Link to={createPageUrl('AICoach')}>
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-purple-600/50 to-pink-600/50 border border-purple-500/30"
+              >
+                <Sparkles className="w-8 h-8 text-white mb-3" />
+                <p className="text-white font-bold text-lg">AI Coach</p>
+                <p className="text-white/70 text-sm">Get personalized tips</p>
+                <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+              </motion.div>
+            </Link>
+            <DebtEncouragementAI />
+          </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4 mt-4">
