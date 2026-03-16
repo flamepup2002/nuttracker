@@ -5,7 +5,7 @@ import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { ArrowLeft, Sparkles, FileText, Loader2, Edit, Save, Plus, X } from 'lucide-react';
+import { ArrowLeft, Sparkles, FileText, Loader2, Edit, Save, Plus, X, CheckCircle } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -85,10 +85,42 @@ export default function AIContractDrafter() {
     generateMutation.mutate(finalPrompt);
   };
 
+  const acceptMutation = useMutation({
+    mutationFn: async (contract) => {
+      const now = new Date();
+      const nextPaymentDue = new Date(now);
+      nextPaymentDue.setMonth(nextPaymentDue.getMonth() + 1);
+
+      return base44.entities.DebtContract.create({
+        title: contract.title,
+        description: contract.description,
+        intensity_level: contract.intensity_level,
+        monthly_payment: contract.monthly_payment,
+        duration_months: contract.duration_months || 0,
+        total_obligation: contract.monthly_payment * (contract.duration_months || 0),
+        penalty_percentage: contract.penalty_percentage || 10,
+        interest_rate: contract.interest_rate || 0,
+        compound_frequency: contract.compound_frequency || 'none',
+        collateral_type: contract.collateral_type || 'none',
+        terms: contract.terms || [],
+        is_accepted: true,
+        accepted_at: now.toISOString(),
+        next_payment_due: nextPaymentDue.toISOString(),
+        amount_paid: 0,
+        dispute_status: 'none',
+      });
+    },
+    onSuccess: () => {
+      toast.success('Contract accepted and added to My Contracts!');
+      navigate(createPageUrl('MyContracts'));
+    },
+    onError: (error) => {
+      toast.error('Failed to accept contract: ' + error.message);
+    },
+  });
+
   const handleAccept = () => {
-    navigate(createPageUrl('GeneratedFindomContracts'), {
-      state: { customContract: editedContract || generatedContract }
-    });
+    acceptMutation.mutate(editedContract || generatedContract);
   };
 
   const handleEditToggle = () => {
