@@ -1145,8 +1145,13 @@ export default function GeneratedFindomContracts() {
     mutationFn: async (contract) => {
       const total = contract.monthly * (contract.duration || 1);
       
+      // Get current settings for irrevocable flag
+      const settingsList = await base44.entities.UserSettings.list();
+      const currentSettings = settingsList[0] || {};
+
       // Create the contract first with customizations
       const newContract = await base44.entities.DebtContract.create({
+        cancellation_irrevocable: !!(currentSettings.irrevocable_contracts && currentSettings.extreme_mode),
         title: contract.title,
         description: contract.description,
         intensity_level: contract.intensity,
