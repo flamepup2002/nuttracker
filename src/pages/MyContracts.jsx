@@ -98,12 +98,17 @@ export default function MyContracts() {
 
   const disputeMutation = useMutation({
     mutationFn: async ({ contractId, reason }) => {
-      // Send dispute notification
-      await base44.functions.invoke('submitContractDispute', {
-        contractId,
-        reason,
+      const contract = contracts.find(c => c.id === contractId);
+      // Save dispute to UserFeedback so admin can see it
+      await base44.entities.UserFeedback.create({
+        feedback_type: 'other',
+        category: 'account',
+        rating: 1,
+        message: reason,
+        page_reported: 'contract_dispute',
+        contact_info: `${contract?.title || contractId}|${JSON.stringify({ contractId })}`,
+        status: 'new',
       });
-      
       // Mark contract as disputed
       return base44.entities.DebtContract.update(contractId, {
         dispute_status: 'pending',
@@ -113,7 +118,7 @@ export default function MyContracts() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['myContracts'] });
-      toast.success('Dispute submitted for review');
+      toast.success('Dispute submitted to admin for review');
       setShowDisputeDialog(false);
       setSelectedContract(null);
       setDisputeReason('');
@@ -123,27 +128,54 @@ export default function MyContracts() {
     },
   });
 
-  const adminCancelMutation = useMutation({
-    mutationFn: async (contractId) => {
-      const contract = contracts.find(c => c.id === contractId);
-      
-      // If has subscription, cancel it
-      if (contract.stripe_subscription_id) {
-        await base44.functions.invoke('cancelContractSubscription', {
-          subscriptionId: contract.stripe_subscription_id
-        });
-      }
-      
-      // Mark contract as admin cancelled
-      return base44.entities.DebtContract.update(contractId, {
-        is_accepted: false,
-        cancelled_at: new Date().toISOString(),
-        cancelled_by_admin: true,
+  // User submits a cancel REQUEST (for non-admin users with irrevocable or any contract)
+  const requestCancelMutation = useMutation({
+    mutationFn: async (contract) => {
+      return base44.entities.UserFeedback.create({
+        feedback_type: 'other',
+        category: 'account',
+        rating: 1,
+        message: `User requests admin to cancel contract: "${contract.title}". Irrevocable: ${contract.cancellation_irrevocable ? 'YES' : 'No'}.`,
+        page_reported: 'cancel_request',
+        contact_info: `${contract.title}|${JSON.stringify({ contractId: contract.id, irrevocable: contract.cancellation_irrevocable, monthlyPayment: contract.monthly_payment })}`,
+        status: 'new',
       });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['myContracts'] });
-      toast.success('Contract cancelled by admin');
+      toast.success('Cancel request submitted to admin for review');
+      setShowCancelDialog(false);
+      setSelectedContract(null);
+    },
+    onError: (error) => toast.error('Failed to submit request: ' + error.message),
+  });
+
+  const adminCancelMutation = useMutation({
+    mutationFn: async (contractId) => {
+      const contract = contracts.find(c => c.id === contractId);
+      // Apply irrevocable penalty even for admin cancel
+      const updates = {
+        is_accepted: false,
+        cancelled_at: new Date().toISOString(),
+        cancelled_by_admin: true,
+        cancel_status: 'cancelled',
+      };
+      if (contract.cancellation_irrevocable) {
+        const penalty = contract.monthly_payment * 3;
+        updates.cancellation_penalty_triggered = true;
+        updates.cancellation_penalty_amount = (contract.cancellation_penalty_amount || 0) + penalty;
+        updates.total_obligation = (contract.total_obligation || 0) + penalty;
+      }
+      return base44.entities.DebtContract.update(contractId, updates);
+    },
+    onSuccess: (_, contractId) => {
+      queryClient.invalidateQueries({ queryKey: ['myContracts'] });
+      const contract = contracts.find(c => c.id === contractId);
+      if (contract?.cancellation_irrevocable) {
+        toast.warning(`Contract cancelled. Irrevocable penalty of $${(contract.monthly_payment * 3).toFixed(0)} has been applied.`);
+      } else {
+        toast.success('Contract marked as cancelled');
+      }
       setShowCancelDialog(false);
       setSelectedContract(null);
     },

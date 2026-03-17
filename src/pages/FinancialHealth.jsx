@@ -242,15 +242,15 @@ export default function FinancialHealth() {
         {/* KPI Cards */}
         <div className="grid grid-cols-2 gap-3">
           {[
-            { label: 'Total Debt', value: `$${totalDebt.toLocaleString('en-US', { maximumFractionDigits: 0 })}`, icon: AlertTriangle, color: 'text-red-400' },
-            { label: 'Monthly Obligation', value: `$${monthlyObligation.toLocaleString()}`, icon: DollarSign, color: 'text-yellow-400' },
-            { label: 'Total Paid', value: `$${totalPaid.toLocaleString('en-US', { maximumFractionDigits: 0 })}`, icon: CheckCircle, color: 'text-green-400' },
-            { label: 'Active Contracts', value: activeContracts.length, icon: Activity, color: 'text-blue-400' },
-          ].map(({ label, value, icon: Icon, color }) => (
+            { label: 'Total Debt', value: `$${totalDebt.toLocaleString('en-US', { maximumFractionDigits: 0 })}`, IconComp: AlertTriangle, color: 'text-red-400' },
+            { label: 'Monthly Obligation', value: `$${monthlyObligation.toLocaleString()}`, IconComp: DollarSign, color: 'text-yellow-400' },
+            { label: 'Total Paid', value: `$${totalPaid.toLocaleString('en-US', { maximumFractionDigits: 0 })}`, IconComp: CheckCircle, color: 'text-green-400' },
+            { label: 'Active Contracts', value: activeContracts.length, IconComp: Activity, color: 'text-blue-400' },
+          ].map(({ label, value, IconComp, color }) => (
             <motion.div key={label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
               className="bg-zinc-900 border border-zinc-800 rounded-xl p-4"
             >
-              <icon.__ className={`w-5 h-5 ${color} mb-2`} />
+              <IconComp className={`w-5 h-5 ${color} mb-2`} />
               <p className={`text-xl font-bold ${color}`}>{value}</p>
               <p className="text-zinc-500 text-xs">{label}</p>
             </motion.div>
