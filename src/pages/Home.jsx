@@ -302,18 +302,32 @@ export default function Home() {
               </motion.div>
             </Link>
             {user?.role === 'admin' && (
-              <Link to={createPageUrl('AnalyticsDashboard')}>
-                <motion.div
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-indigo-600 to-purple-700 h-full"
-                >
-                  <BarChart3 className="w-8 h-8 text-white mb-3" />
-                  <p className="text-white font-bold text-lg">Admin</p>
-                  <p className="text-white/70 text-sm">Full analytics</p>
-                  <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
-                </motion.div>
-              </Link>
+            <Link to={createPageUrl('AnalyticsDashboard')}>
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-indigo-600 to-purple-700 h-full"
+              >
+                <BarChart3 className="w-8 h-8 text-white mb-3" />
+                <p className="text-white font-bold text-lg">Admin</p>
+                <p className="text-white/70 text-sm">Full analytics</p>
+                <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+              </motion.div>
+            </Link>
+            )}
+            {user?.role === 'admin' && (
+            <Link to="/AdminContractRequests">
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-red-700 to-purple-800 h-full"
+              >
+                <FileText className="w-8 h-8 text-white mb-3" />
+                <p className="text-white font-bold text-lg">Contract Requests</p>
+                <p className="text-white/70 text-sm">Disputes & cancels</p>
+                <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+              </motion.div>
+            </Link>
             )}
           </div>
 
