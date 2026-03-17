@@ -43,28 +43,49 @@ export default function AIContractDrafter() {
 
   const generateMutation = useMutation({
     mutationFn: async (reqs) => {
-      const response = await base44.functions.invoke('generateCustomContract', {
-        requirements: reqs,
-        intensity: intensity,
-        keywords: keywords
-      });
-      return response.data;
-    },
-    onSuccess: (data) => {
-      if (data.success) {
-        setGeneratedContract(data.contract);
-        setEditedContract(data.contract);
-        if (data.financialScore) {
-          toast.success(`Contract generated! Terms based on your score: ${data.financialScore}`);
-        } else {
-          toast.success('Contract generated!');
+      const contract = await base44.integrations.Core.InvokeLLM({
+        prompt: `You are a findom contract generator. Generate a financial domination contract with the following requirements:
+- Intensity level: ${intensity}
+- Additional requirements: ${reqs}
+
+Return a JSON contract object with these exact fields:
+- title: string (creative contract name)
+- description: string (1-2 sentence description)
+- intensity_level: "${intensity}"
+- monthly_payment: number (in dollars, appropriate for ${intensity} intensity)
+- duration_months: number (0 for permanent/indefinite)
+- penalty_percentage: number (5-50 depending on intensity)
+- interest_rate: number (0-20, higher for intense/extreme)
+- compound_frequency: one of "none", "daily", "weekly", "monthly", "quarterly"
+- collateral_type: one of "none", "house", "car", "savings", "retirement_accounts", "crypto", "jewelry", "electronics", "all_assets"
+- terms: array of 5-10 strings describing specific contract obligations and penalties
+
+Make the contract match the ${intensity} intensity level appropriately. Mild = light terms/low payments. Extreme = severe terms, high payments, harsh penalties.`,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            title: { type: "string" },
+            description: { type: "string" },
+            intensity_level: { type: "string" },
+            monthly_payment: { type: "number" },
+            duration_months: { type: "number" },
+            penalty_percentage: { type: "number" },
+            interest_rate: { type: "number" },
+            compound_frequency: { type: "string" },
+            collateral_type: { type: "string" },
+            terms: { type: "array", items: { type: "string" } }
+          }
         }
-      } else {
-        toast.error('Failed to generate contract');
-      }
+      });
+      return contract;
+    },
+    onSuccess: (contract) => {
+      setGeneratedContract(contract);
+      setEditedContract(contract);
+      toast.success('Contract generated!');
     },
     onError: (error) => {
-      toast.error('Error: ' + error.message);
+      toast.error('Error generating contract: ' + error.message);
     },
   });
 
