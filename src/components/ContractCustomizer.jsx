@@ -27,6 +27,13 @@ const COMPOUND_OPTIONS = [
   { value: 'quarterly', label: 'Quarterly' }
 ];
 
+const PAYMENT_FREQUENCY_OPTIONS = [
+  { value: 'monthly', label: 'Monthly (Standard)', risk: 'Standard' },
+  { value: 'weekly', label: 'Weekly (4x/month)', risk: 'Medium' },
+  { value: 'biweekly', label: 'Bi-Weekly (2x/month)', risk: 'Medium' },
+  { value: 'daily', label: 'Daily (!)', risk: 'High' },
+];
+
 export default function ContractCustomizer({ contract, onCustomize, onCancel }) {
   const [customization, setCustomization] = useState({
     penalty_percentage: contract.penalty_percentage || 50,
@@ -35,6 +42,7 @@ export default function ContractCustomizer({ contract, onCustomize, onCancel }) 
     collateral_details: '',
     interest_rate: 0,
     compound_frequency: 'none',
+    payment_frequency: 'monthly',
   });
 
   const handleSubmit = () => {
@@ -204,6 +212,38 @@ export default function ContractCustomizer({ contract, onCustomize, onCancel }) 
                 <div className="bg-yellow-900/30 border border-yellow-600/50 rounded-lg p-3">
                   <p className="text-yellow-400 text-xs">
                     💡 {customization.interest_rate}% interest compounding {customization.compound_frequency} will significantly increase your debt over time
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Payment Frequency */}
+            <div className="bg-zinc-800/50 rounded-xl p-4 space-y-4">
+              <div className="flex items-center gap-2 mb-2">
+                <DollarSign className="w-5 h-5 text-blue-400" />
+                <h3 className="text-white font-semibold">Payment Frequency</h3>
+                <span className="text-xs text-red-400 bg-red-900/30 px-2 py-0.5 rounded-full">At Your Own Risk</span>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {PAYMENT_FREQUENCY_OPTIONS.map(opt => (
+                  <button
+                    key={opt.value}
+                    onClick={() => setCustomization({ ...customization, payment_frequency: opt.value })}
+                    className={`p-3 rounded-lg border text-left transition-all ${
+                      customization.payment_frequency === opt.value
+                        ? 'border-purple-500 bg-purple-900/30 text-white'
+                        : 'border-zinc-700 bg-zinc-900/50 text-zinc-400 hover:border-zinc-600'
+                    }`}
+                  >
+                    <p className="font-semibold text-sm">{opt.label}</p>
+                    <p className="text-xs text-zinc-500">{opt.risk} Risk</p>
+                  </button>
+                ))}
+              </div>
+              {customization.payment_frequency !== 'monthly' && (
+                <div className="bg-orange-900/30 border border-orange-600/50 rounded-lg p-3">
+                  <p className="text-orange-300 text-xs font-bold">
+                    ⚠️ Non-monthly frequency increases your payment burden. Missed payments trigger immediate penalties per the contract terms. Choose carefully.
                   </p>
                 </div>
               )}
