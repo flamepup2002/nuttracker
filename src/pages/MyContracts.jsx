@@ -463,30 +463,23 @@ export default function MyContracts() {
                     </div>
                   )}
 
+                  {/* Overdue Penalty Notice */}
+                  {(() => {
+                    const isOverdue = contract.next_payment_due && new Date(contract.next_payment_due) < new Date();
+                    if (!isOverdue || !contract.penalty_percentage) return null;
+                    const penaltyAmt = ((contract.monthly_payment || 0) * (contract.penalty_percentage / 100));
+                    return (
+                      <div className="bg-red-900/30 border border-red-600/50 rounded-lg p-3 mb-4 flex items-start gap-2">
+                        <AlertTriangle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
+                        <p className="text-red-300 text-xs font-bold">
+                          OVERDUE — A penalty of ${penaltyAmt.toFixed(2)} ({contract.penalty_percentage}%) has been added to your balance. Pay immediately to stop accruing further charges.
+                        </p>
+                      </div>
+                    );
+                  })()}
+
                   {/* Actions */}
-                  <div className="flex gap-2">
-                    {!contract.stripe_subscription_id && contract.is_accepted && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          setSelectedContract(contract);
-                          // Trigger payment setup
-                          base44.functions.invoke('createContractSubscription', {
-                            contractId: contract.id
-                          }).then(() => {
-                            toast.success('Payment subscription created');
-                            queryClient.invalidateQueries({ queryKey: ['myContracts'] });
-                          }).catch((err) => {
-                            toast.error('Failed to setup payment: ' + err.message);
-                          });
-                        }}
-                        className="flex-1 border-green-600/50 text-green-400 hover:bg-green-900/20"
-                      >
-                        <CreditCard className="w-4 h-4 mr-2" />
-                        Setup Payment
-                      </Button>
-                    )}
+                  <div className="flex gap-2 flex-wrap">
                     <Button
                       variant="outline"
                       size="sm"
@@ -500,7 +493,7 @@ export default function MyContracts() {
                       <AlertTriangle className="w-4 h-4 mr-2" />
                       Dispute
                     </Button>
-                    {user?.role === 'admin' && (
+                    {user?.role === 'admin' ? (
                       <Button
                         variant="outline"
                         size="sm"
@@ -508,24 +501,21 @@ export default function MyContracts() {
                           setSelectedContract(contract);
                           setShowCancelDialog(true);
                         }}
-                        className="flex-1 border-zinc-700 text-purple-400 hover:bg-purple-900/20"
+                        className="flex-1 border-purple-700 text-purple-400 hover:bg-purple-900/20"
                       >
                         <Shield className="w-4 h-4 mr-2" />
-                        Admin Cancel
+                        Cancel
                       </Button>
-                    )}
-                    {contract.stripe_subscription_id && user?.role !== 'admin' && (
+                    ) : (
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => {
-                          setSelectedContract(contract);
-                          setShowCancelDialog(true);
-                        }}
+                        onClick={() => requestCancelMutation.mutate(contract)}
+                        disabled={requestCancelMutation.isPending}
                         className="flex-1 border-zinc-700 text-red-400 hover:bg-red-900/20"
                       >
                         <XCircle className="w-4 h-4 mr-2" />
-                        Cancel
+                        Request Cancel
                       </Button>
                     )}
                   </div>
@@ -536,51 +526,38 @@ export default function MyContracts() {
         )}
       </div>
 
-      {/* Cancel Confirmation Dialog */}
+      {/* Admin Cancel Confirmation Dialog */}
       <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
         <AlertDialogContent className="bg-zinc-900 border-zinc-800">
           <AlertDialogTitle className="text-white flex items-center gap-2">
-            {user?.role === 'admin' ? <Shield className="w-5 h-5 text-purple-500" /> : <XCircle className="w-5 h-5 text-red-500" />}
-            {user?.role === 'admin' ? 'Admin Cancel Contract' : 'Cancel Contract'}
+            <Shield className="w-5 h-5 text-purple-500" /> Admin Cancel Contract
           </AlertDialogTitle>
           {selectedContract && (
             <AlertDialogDescription className="space-y-4 text-zinc-300">
-              <p>Are you sure you want to cancel "{selectedContract.title}"?</p>
-              {user?.role === 'admin' ? (
-                <div className="bg-purple-900/30 border border-purple-600/50 rounded-lg p-3">
-                  <p className="text-purple-400 text-xs">
-                    🛡️ Admin Override: This will immediately cancel the contract and subscription for the user without penalties.
-                  </p>
-                </div>
-              ) : selectedContract?.cancellation_irrevocable ? (
+              <p>Cancelling "{selectedContract.title}" — this will be marked as <span className="text-red-400 font-bold">CANCELLED</span>.</p>
+              {selectedContract.cancellation_irrevocable ? (
                 <div className="bg-red-900/50 border-2 border-red-500 rounded-lg p-3">
                   <p className="text-red-300 text-xs font-bold">
-                    🔒 WARNING: You waived your cancellation rights on this contract. 
-                    Proceeding will NOT cancel the contract — instead, a penalty of 
-                    <span className="text-white"> ${(selectedContract.monthly_payment * 3).toFixed(0)} </span>
-                    (3 months payment) will be added to your total obligation.
+                    ⚠️ IRREVOCABLE CONTRACT — Even admin cancellation triggers a {3}-month penalty of ${(selectedContract.monthly_payment * 3).toFixed(0)} on the user's balance.
                   </p>
                 </div>
               ) : (
-                <div className="bg-red-900/30 border border-red-600/50 rounded-lg p-3">
-                  <p className="text-red-400 text-xs">
-                    ⚠️ This will cancel your recurring subscription and end this contract. 
-                    You may still be liable for penalties according to the terms.
+                <div className="bg-purple-900/30 border border-purple-600/50 rounded-lg p-3">
+                  <p className="text-purple-400 text-xs">
+                    🛡️ Contract will be permanently marked as cancelled. No further billing.
                   </p>
                 </div>
               )}
             </AlertDialogDescription>
           )}
           <div className="flex gap-3">
-            <AlertDialogCancel className="bg-zinc-800 text-white border-zinc-700 hover:bg-zinc-700">
-              Keep Contract
-            </AlertDialogCancel>
+            <AlertDialogCancel className="bg-zinc-800 text-white border-zinc-700 hover:bg-zinc-700">Keep Contract</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => selectedContract && (user?.role === 'admin' ? adminCancelMutation : cancelMutation).mutate(selectedContract.id)}
-              disabled={cancelMutation.isPending || adminCancelMutation.isPending}
+              onClick={() => selectedContract && adminCancelMutation.mutate(selectedContract.id)}
+              disabled={adminCancelMutation.isPending}
               className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white"
             >
-              {(cancelMutation.isPending || adminCancelMutation.isPending) ? 'Cancelling...' : 'Yes, Cancel'}
+              {adminCancelMutation.isPending ? 'Cancelling...' : 'Mark as Cancelled'}
             </AlertDialogAction>
           </div>
         </AlertDialogContent>

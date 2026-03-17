@@ -58,6 +58,7 @@ const AuthenticatedApp = () => {
           }
         />
       ))}
+      <Route path="/AdminContractRequests" element={<LayoutWrapper currentPageName="AdminContractRequests"><AdminContractRequestsPage /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
