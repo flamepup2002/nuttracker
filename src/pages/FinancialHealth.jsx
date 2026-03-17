@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -250,7 +250,7 @@ export default function FinancialHealth() {
             <motion.div key={label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
               className="bg-zinc-900 border border-zinc-800 rounded-xl p-4"
             >
-              <Icon className={`w-5 h-5 ${color} mb-2`} />
+              <icon.__ className={`w-5 h-5 ${color} mb-2`} />
               <p className={`text-xl font-bold ${color}`}>{value}</p>
               <p className="text-zinc-500 text-xs">{label}</p>
             </motion.div>
