@@ -214,6 +214,44 @@ export default function MyContracts() {
        </div>
 
       <div className="px-6 pb-24 space-y-6 pt-6">
+        {/* Accumulated Penalties */}
+        {(() => {
+          const totalPenalties = contracts.reduce((sum, c) => sum + (c.cancellation_penalty_amount || 0), 0);
+          const contractsWithPenalties = contracts.filter(c => c.cancellation_penalty_triggered);
+          if (totalPenalties === 0) return null;
+          return (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-red-950/40 border-2 border-red-500/60 rounded-2xl p-5"
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <Ban className="w-5 h-5 text-red-400 flex-shrink-0" />
+                <h3 className="text-red-300 font-bold">Accumulated Penalties</h3>
+              </div>
+              <p className="text-red-400/80 text-xs mb-4">
+                Penalties incurred from attempting to cancel irrevocable contracts
+              </p>
+              <div className="grid grid-cols-2 gap-3 mb-3">
+                <div className="bg-black/30 rounded-lg p-3">
+                  <p className="text-zinc-500 text-xs">Total Penalties</p>
+                  <p className="text-red-300 font-bold text-xl">${totalPenalties.toFixed(2)}</p>
+                </div>
+                <div className="bg-black/30 rounded-lg p-3">
+                  <p className="text-zinc-500 text-xs">Contracts Affected</p>
+                  <p className="text-red-300 font-bold text-xl">{contractsWithPenalties.length}</p>
+                </div>
+              </div>
+              {contractsWithPenalties.map(c => (
+                <div key={c.id} className="bg-red-900/20 border border-red-700/40 rounded-lg p-3 mb-2 flex items-center justify-between">
+                  <span className="text-zinc-300 text-sm">{c.title}</span>
+                  <span className="text-red-300 font-bold text-sm">+${(c.cancellation_penalty_amount || 0).toFixed(2)}</span>
+                </div>
+              ))}
+            </motion.div>
+          );
+        })()}
+
         {/* Summary Stats */}
         <div className="grid grid-cols-3 gap-4">
           <motion.div

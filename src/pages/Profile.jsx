@@ -46,10 +46,13 @@ export default function Profile() {
   const [customGender, setCustomGender] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
-  // Fetch activity stats
+  // Fetch activity stats — only for current user's own data
   const { data: contracts = [] } = useQuery({
     queryKey: ['contracts'],
-    queryFn: () => base44.entities.DebtContract.list(),
+    queryFn: async () => {
+      const me = await base44.auth.me();
+      return base44.entities.DebtContract.filter({ created_by: me.email });
+    },
   });
 
   const { data: payments = [] } = useQuery({
