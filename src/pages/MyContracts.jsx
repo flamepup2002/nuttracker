@@ -40,10 +40,12 @@ export default function MyContracts() {
     base44.auth.me().then(setUser).catch(() => {});
   }, []);
 
-  const { data: contracts = [], isLoading } = useQuery({
+  const { data: allContracts = [], isLoading } = useQuery({
     queryKey: ['myContracts'],
     queryFn: () => base44.entities.DebtContract.list('-created_date', 200),
   });
+  // Show accepted contracts + any that were admin-cancelled
+  const contracts = allContracts.filter(c => c.is_accepted || c.cancelled_by_admin || c.cancel_status === 'cancelled');
 
   const { data: payments = [] } = useQuery({
     queryKey: ['contractPayments'],
