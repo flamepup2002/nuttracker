@@ -42,7 +42,7 @@ export default function MyContracts() {
 
   const { data: contracts = [], isLoading } = useQuery({
     queryKey: ['myContracts'],
-    queryFn: () => base44.entities.DebtContract.filter({ is_accepted: true }, '-created_date'),
+    queryFn: () => base44.entities.DebtContract.list('-created_date', 200),
   });
 
   const { data: payments = [] } = useQuery({
