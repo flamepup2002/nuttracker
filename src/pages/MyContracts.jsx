@@ -413,6 +413,28 @@ export default function MyContracts() {
                     </div>
                   </div>
 
+                  {/* Customization Details */}
+                  {(contract.collateral_type && contract.collateral_type !== 'none') || contract.interest_rate > 0 || (contract.penalty_percentage && contract.penalty_percentage !== 5) || contract.payment_frequency ? (
+                    <div className="bg-zinc-800/30 border border-zinc-700/50 rounded-lg p-3 mb-4 space-y-1.5">
+                      <p className="text-zinc-500 text-xs font-semibold uppercase tracking-wide mb-2">Customizations</p>
+                      {contract.collateral_type && contract.collateral_type !== 'none' && (
+                        <p className="text-xs text-orange-300 flex gap-2"><span className="text-zinc-500">Collateral:</span> {contract.collateral_type.replace('_', ' ')}{contract.collateral_details ? ` — ${contract.collateral_details}` : ''}</p>
+                      )}
+                      {contract.interest_rate > 0 && (
+                        <p className="text-xs text-yellow-300 flex gap-2"><span className="text-zinc-500">Interest:</span> {contract.interest_rate}% {contract.compound_frequency !== 'none' ? `(${contract.compound_frequency} compounding)` : ''}</p>
+                      )}
+                      {contract.penalty_percentage && contract.penalty_percentage !== 5 && (
+                        <p className="text-xs text-red-300 flex gap-2"><span className="text-zinc-500">Late Penalty:</span> {contract.penalty_percentage}%</p>
+                      )}
+                      {contract.payment_frequency && contract.payment_frequency !== 'monthly' && (
+                        <p className="text-xs text-purple-300 flex gap-2"><span className="text-zinc-500">Payment Freq:</span> {contract.payment_frequency}</p>
+                      )}
+                      {contract.custom_penalty_clause && (
+                        <p className="text-xs text-zinc-400 flex gap-2"><span className="text-zinc-500">Custom Clause:</span> {contract.custom_penalty_clause}</p>
+                      )}
+                    </div>
+                  ) : null}
+
                   {/* Payment History */}
                   {contractPayments.length > 0 && (
                     <div className="mb-4">
