@@ -33,6 +33,8 @@ export default function MyContracts() {
   const [selectedContract, setSelectedContract] = useState(null);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [showDisputeDialog, setShowDisputeDialog] = useState(false);
+  const [showDateDialog, setShowDateDialog] = useState(false);
+  const [newPaymentDate, setNewPaymentDate] = useState('');
   const [disputeReason, setDisputeReason] = useState('');
   const [user, setUser] = useState(null);
 
