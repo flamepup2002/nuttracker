@@ -201,10 +201,13 @@ export default function MyContracts() {
   };
 
   const getPaymentStatus = (contract) => {
+    if (contract.cancelled_by_admin || contract.cancel_status === 'cancelled') {
+      return { status: 'cancelled', color: 'text-red-500', icon: XCircle, label: 'Cancelled by Admin' };
+    }
     const nextDate = contract.next_payment_due ? new Date(contract.next_payment_due) : null;
     const today = new Date();
     
-    if (!nextDate) return { status: 'completed', color: 'text-green-400', icon: CheckCircle, label: 'Paid' };
+    if (!nextDate) return { status: 'active', color: 'text-green-400', icon: CheckCircle, label: 'Active' };
     if (nextDate < today) return { status: 'overdue', color: 'text-red-400', icon: AlertTriangle, label: 'Overdue' };
     if ((nextDate - today) / (1000 * 60 * 60 * 24) <= 7) return { status: 'due_soon', color: 'text-yellow-400', icon: Clock, label: 'Due Soon' };
     return { status: 'active', color: 'text-green-400', icon: CheckCircle, label: 'Active' };
