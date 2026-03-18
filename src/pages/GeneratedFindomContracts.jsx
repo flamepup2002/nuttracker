@@ -1167,8 +1167,10 @@ export default function GeneratedFindomContracts() {
         collateral_details: contract.collateral_details,
         interest_rate: contract.interest_rate,
         compound_frequency: contract.compound_frequency,
+        payment_frequency: contract.payment_frequency || 'monthly',
         signature_data: signatureData,
         signed_at: new Date().toISOString(),
+        accepted_at: new Date().toISOString(),
         });
 
       // Process payment (recurring for perpetual/long contracts, one-time for short)
