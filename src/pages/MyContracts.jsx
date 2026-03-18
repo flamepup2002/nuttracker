@@ -526,61 +526,51 @@ export default function MyContracts() {
 
                   {/* Actions */}
                   {!(contract.cancelled_by_admin || contract.cancel_status === 'cancelled') && (
-                  <div className="flex gap-2 flex-wrap" onClick={(e) => e.stopPropagation()}>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setSelectedContract(contract);
-                        setShowDisputeDialog(true);
-                      }}
-                      className="flex-1 border-zinc-700 text-yellow-400 hover:bg-yellow-900/20"
-                      disabled={contract.dispute_status === 'pending'}
-                    >
-                      <AlertTriangle className="w-4 h-4 mr-2" />
-                      Dispute
-                    </Button>
-                    {user?.role === 'admin' ? (
-                      <>
+                    <div className="flex gap-2 flex-wrap">
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => {
-                          setSelectedContract(contract);
-                          setNewPaymentDate(contract.next_payment_due ? contract.next_payment_due.split('T')[0] : '');
-                          setShowDateDialog(true);
-                        }}
-                        className="flex-1 border-blue-700 text-blue-400 hover:bg-blue-900/20"
+                        onClick={() => { setSelectedContract(contract); setShowDisputeDialog(true); }}
+                        className="flex-1 border-zinc-700 text-yellow-400 hover:bg-yellow-900/20"
+                        disabled={contract.dispute_status === 'pending'}
                       >
-                        <Calendar className="w-4 h-4 mr-2" />
-                        Change Date
+                        <AlertTriangle className="w-4 h-4 mr-2" />
+                        Dispute
                       </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          setSelectedContract(contract);
-                          setShowCancelDialog(true);
-                        }}
-                        className="flex-1 border-purple-700 text-purple-400 hover:bg-purple-900/20"
-                      >
-                        <Shield className="w-4 h-4 mr-2" />
-                        Cancel
-                      </Button>
-                      </>
-                    ) : (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => requestCancelMutation.mutate(contract)}
-                        disabled={requestCancelMutation.isPending}
-                        className="flex-1 border-zinc-700 text-red-400 hover:bg-red-900/20"
-                      >
-                        <XCircle className="w-4 h-4 mr-2" />
-                        Request Cancel
-                      </Button>
-                    )}
-                  </div>
+                      {user?.role === 'admin' ? (
+                        <>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => { setSelectedContract(contract); setNewPaymentDate(contract.next_payment_due ? contract.next_payment_due.split('T')[0] : ''); setShowDateDialog(true); }}
+                            className="flex-1 border-blue-700 text-blue-400 hover:bg-blue-900/20"
+                          >
+                            <Calendar className="w-4 h-4 mr-2" />
+                            Change Date
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => { setSelectedContract(contract); setShowCancelDialog(true); }}
+                            className="flex-1 border-purple-700 text-purple-400 hover:bg-purple-900/20"
+                          >
+                            <Shield className="w-4 h-4 mr-2" />
+                            Cancel
+                          </Button>
+                        </>
+                      ) : (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => requestCancelMutation.mutate(contract)}
+                          disabled={requestCancelMutation.isPending}
+                          className="flex-1 border-zinc-700 text-red-400 hover:bg-red-900/20"
+                        >
+                          <XCircle className="w-4 h-4 mr-2" />
+                          Request Cancel
+                        </Button>
+                      )}
+                    </div>
                   )}
                 </motion.div>
               );
