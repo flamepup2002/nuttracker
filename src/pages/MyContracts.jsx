@@ -154,6 +154,22 @@ export default function MyContracts() {
     onError: (error) => toast.error('Failed to submit request: ' + error.message),
   });
 
+  const changePaymentDateMutation = useMutation({
+    mutationFn: async ({ contractId, newDate }) => {
+      return base44.entities.DebtContract.update(contractId, {
+        next_payment_due: new Date(newDate).toISOString(),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['myContracts'] });
+      toast.success('Payment date updated');
+      setShowDateDialog(false);
+      setSelectedContract(null);
+      setNewPaymentDate('');
+    },
+    onError: (error) => toast.error('Failed to update date: ' + error.message),
+  });
+
   const adminCancelMutation = useMutation({
     mutationFn: async (contractId) => {
       const contract = contracts.find(c => c.id === contractId);
