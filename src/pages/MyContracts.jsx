@@ -513,7 +513,19 @@ export default function MyContracts() {
                     );
                   })()}
 
+                  {/* Admin-cancelled banner */}
+                  {(contract.cancelled_by_admin || contract.cancel_status === 'cancelled') && (
+                    <div className="bg-red-950/60 border border-red-500 rounded-lg p-3 mb-4 flex items-center gap-2">
+                      <XCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
+                      <p className="text-red-300 text-xs font-bold">
+                        CONTRACT CANCELLED — This contract was cancelled by an administrator.
+                        {contract.cancelled_at ? ` Cancelled on ${new Date(contract.cancelled_at).toLocaleDateString()}.` : ''}
+                      </p>
+                    </div>
+                  )}
+
                   {/* Actions */}
+                  {!(contract.cancelled_by_admin || contract.cancel_status === 'cancelled') && (
                   <div className="flex gap-2 flex-wrap">
                     <Button
                       variant="outline"
@@ -529,6 +541,20 @@ export default function MyContracts() {
                       Dispute
                     </Button>
                     {user?.role === 'admin' ? (
+                      <>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setSelectedContract(contract);
+                          setNewPaymentDate(contract.next_payment_due ? contract.next_payment_due.split('T')[0] : '');
+                          setShowDateDialog(true);
+                        }}
+                        className="flex-1 border-blue-700 text-blue-400 hover:bg-blue-900/20"
+                      >
+                        <Calendar className="w-4 h-4 mr-2" />
+                        Change Date
+                      </Button>
                       <Button
                         variant="outline"
                         size="sm"
@@ -541,6 +567,7 @@ export default function MyContracts() {
                         <Shield className="w-4 h-4 mr-2" />
                         Cancel
                       </Button>
+                      </>
                     ) : (
                       <Button
                         variant="outline"
