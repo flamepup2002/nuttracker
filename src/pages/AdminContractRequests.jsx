@@ -232,6 +232,13 @@ export default function AdminContractRequests() {
                     <Textarea value={adminNote} onChange={(e) => setAdminNote(e.target.value)}
                       placeholder="Add a resolution note..." className="bg-zinc-800 border-zinc-700 text-white min-h-20" />
                   </div>
+                  {selectedItem.cancellation_irrevocable && selectedItem.intensity_level === 'extreme' && (
+                    <div className="bg-red-950/60 border border-red-500 rounded-lg p-3">
+                      <p className="text-red-300 text-xs font-bold">
+                        ⚠️ FULL EXTREME MODE — Rejecting this dispute will trigger ALL penalties: late fee ({selectedItem.penalty_percentage}%) + 3-month cancellation penalty = <span className="text-white">${(((selectedItem.monthly_payment || 0) * ((selectedItem.penalty_percentage || 50) / 100)) + (selectedItem.monthly_payment || 0) * 3).toFixed(2)}</span> added to user's debt.
+                      </p>
+                    </div>
+                  )}
                   <div className="flex gap-3">
                     <Button onClick={() => resolveDisputeMutation.mutate({ contractId: selectedItem.id, resolution: 'rejected', note: adminNote })}
                       disabled={resolveDisputeMutation.isPending}
