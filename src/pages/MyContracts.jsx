@@ -626,6 +626,39 @@ export default function MyContracts() {
         </AlertDialogContent>
       </AlertDialog>
 
+      {/* Admin Change Payment Date Dialog */}
+      <AlertDialog open={showDateDialog} onOpenChange={setShowDateDialog}>
+        <AlertDialogContent className="bg-zinc-900 border-zinc-800">
+          <AlertDialogTitle className="text-white flex items-center gap-2">
+            <Calendar className="w-5 h-5 text-blue-400" /> Change Payment Date
+          </AlertDialogTitle>
+          {selectedContract && (
+            <AlertDialogDescription className="space-y-4 text-zinc-300">
+              <p>Update next payment date for <span className="text-white font-bold">"{selectedContract.title}"</span></p>
+              <div>
+                <p className="text-zinc-400 text-xs mb-2">Current due date: <span className="text-white">{selectedContract.next_payment_due ? new Date(selectedContract.next_payment_due).toLocaleDateString() : 'Not set'}</span></p>
+                <input
+                  type="date"
+                  value={newPaymentDate}
+                  onChange={(e) => setNewPaymentDate(e.target.value)}
+                  className="w-full bg-zinc-800 border border-zinc-700 rounded-lg p-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </AlertDialogDescription>
+          )}
+          <div className="flex gap-3">
+            <AlertDialogCancel className="bg-zinc-800 text-white border-zinc-700 hover:bg-zinc-700">Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => selectedContract && changePaymentDateMutation.mutate({ contractId: selectedContract.id, newDate: newPaymentDate })}
+              disabled={changePaymentDateMutation.isPending || !newPaymentDate}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              {changePaymentDateMutation.isPending ? 'Saving...' : 'Update Date'}
+            </AlertDialogAction>
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {/* Dispute Dialog */}
       <AlertDialog open={showDisputeDialog} onOpenChange={setShowDisputeDialog}>
         <AlertDialogContent className="bg-zinc-900 border-zinc-800">
