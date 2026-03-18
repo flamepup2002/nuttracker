@@ -581,6 +581,7 @@ export default function MyContracts() {
                       </Button>
                     )}
                   </div>
+                  )}
                 </motion.div>
               );
             })}
