@@ -526,7 +526,7 @@ export default function MyContracts() {
 
                   {/* Actions */}
                   {!(contract.cancelled_by_admin || contract.cancel_status === 'cancelled') && (
-                  <div className="flex gap-2 flex-wrap">
+                  <div className="flex gap-2 flex-wrap" onClick={(e) => e.stopPropagation()}>
                     <Button
                       variant="outline"
                       size="sm"
