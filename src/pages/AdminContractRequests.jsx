@@ -44,14 +44,42 @@ export default function AdminContractRequests() {
 
   const resolveDisputeMutation = useMutation({
     mutationFn: async ({ contractId, resolution, note }) => {
-      return base44.entities.DebtContract.update(contractId, {
-        dispute_status: resolution, // 'resolved' or 'rejected'
+      const contract = disputes.find(c => c.id === contractId);
+
+      const updates = {
+        dispute_status: resolution,
         admin_notes: note,
-      });
+      };
+
+      // If rejected AND user has all extreme settings enabled, trigger ALL contract penalties
+      if (resolution === 'rejected' && contract) {
+        // Check if user's settings have all extreme flags on by looking at the contract's own extreme indicators
+        // We apply penalties if contract is extreme intensity AND irrevocable (proxy for full extreme mode)
+        const isFullExtremeMode = contract.cancellation_irrevocable && contract.intensity_level === 'extreme';
+
+        if (isFullExtremeMode) {
+          const latePenalty = (contract.monthly_payment || 0) * ((contract.penalty_percentage || 50) / 100);
+          const cancellationPenalty = (contract.monthly_payment || 0) * 3;
+          const totalNewPenalty = latePenalty + cancellationPenalty;
+
+          updates.cancellation_penalty_triggered = true;
+          updates.cancellation_penalty_amount = (contract.cancellation_penalty_amount || 0) + totalNewPenalty;
+          updates.total_obligation = (contract.total_obligation || 0) + totalNewPenalty;
+          updates.dispute_rejected_penalty = totalNewPenalty;
+        }
+      }
+
+      return base44.entities.DebtContract.update(contractId, updates);
     },
-    onSuccess: () => {
+    onSuccess: (_, vars) => {
       queryClient.invalidateQueries({ queryKey: ['adminDisputes'] });
-      toast.success('Dispute resolved');
+      const contract = disputes.find(c => c.id === vars.contractId);
+      const isFullExtremeMode = contract?.cancellation_irrevocable && contract?.intensity_level === 'extreme';
+      if (vars.resolution === 'rejected' && isFullExtremeMode) {
+        toast.warning('Dispute rejected — all contract penalties triggered on user\'s account');
+      } else {
+        toast.success(vars.resolution === 'resolved' ? 'Dispute resolved' : 'Dispute rejected');
+      }
       setSelectedItem(null);
       setAdminNote('');
     },
