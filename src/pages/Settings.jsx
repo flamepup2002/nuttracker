@@ -878,6 +878,41 @@ export default function Settings() {
           </motion.div>
         )}
 
+        {/* Default Currency */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.65 }}
+          className="bg-zinc-900/50 rounded-2xl border border-zinc-800 p-6"
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-500 to-amber-600 flex items-center justify-center">
+              <DollarSign className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h2 className="text-white font-bold">Default Currency</h2>
+              <p className="text-zinc-500 text-sm">Used for displaying debt amounts</p>
+            </div>
+          </div>
+          <MobileSelect
+            value={settings.default_currency || 'USD'}
+            onValueChange={(val) => handleChange('default_currency', val)}
+            options={[
+              { value: 'USD', label: '🇺🇸 USD — US Dollar ($)' },
+              { value: 'CAD', label: '🇨🇦 CAD — Canadian Dollar ($)' },
+              { value: 'GBP', label: '🇬🇧 GBP — British Pound (£)' },
+              { value: 'EUR', label: '🇪🇺 EUR — Euro (€)' },
+              { value: 'AUD', label: '🇦🇺 AUD — Australian Dollar ($)' },
+              { value: 'JPY', label: '🇯🇵 JPY — Japanese Yen (¥)' },
+              { value: 'CHF', label: '🇨🇭 CHF — Swiss Franc (Fr)' },
+              { value: 'NZD', label: '🇳🇿 NZD — New Zealand Dollar ($)' },
+            ]}
+            title="Select Default Currency"
+            className="bg-zinc-800 border-zinc-700 text-white"
+            triggerClassName="bg-zinc-800 border-zinc-700 text-white"
+          />
+        </motion.div>
+
         {/* Save Button */}
         {hasChanges && (
           <motion.div
