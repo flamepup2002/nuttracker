@@ -86,6 +86,20 @@ export default function FindomDebt() {
   }, [sessions, settings, payments, contracts]);
 
   const getCurrency = () => {
+    // Use saved currency preference from settings if available
+    if (settings?.default_currency) {
+      const CURRENCY_MAP = {
+        'USD': { code: 'USD', symbol: '$', name: 'United States Dollar' },
+        'CAD': { code: 'CAD', symbol: '$', name: 'Canadian Dollar' },
+        'GBP': { code: 'GBP', symbol: '£', name: 'British Pound' },
+        'EUR': { code: 'EUR', symbol: '€', name: 'Euro' },
+        'AUD': { code: 'AUD', symbol: '$', name: 'Australian Dollar' },
+        'JPY': { code: 'JPY', symbol: '¥', name: 'Japanese Yen' },
+        'CHF': { code: 'CHF', symbol: 'Fr', name: 'Swiss Franc' },
+        'NZD': { code: 'NZD', symbol: '$', name: 'New Zealand Dollar' },
+      };
+      return CURRENCY_MAP[settings.default_currency] || CURRENCY_MAP['USD'];
+    }
     const countryCode = user?.country || 'US';
     return COUNTRY_CURRENCY[countryCode] || COUNTRY_CURRENCY.default;
   };
