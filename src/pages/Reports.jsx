@@ -63,11 +63,15 @@ export default function Reports() {
       .reduce((sum, p) => sum + p.amount, 0);
 
     const totalDebt = filteredData.contracts
-      .filter(c => c.is_accepted && !c.cancelled_at)
-      .reduce((sum, c) => sum + (c.total_obligation - c.amount_paid), 0);
+      .filter(c => c.is_accepted)
+      .reduce((sum, c) => {
+        const remaining = (c.total_obligation || 0) - (c.amount_paid || 0);
+        return sum + Math.max(0, remaining);
+      }, 0);
 
-    const activeContracts = filteredData.contracts.filter(c => c.is_accepted && !c.cancelled_at);
-    const completedContracts = filteredData.contracts.filter(c => c.cancelled_at && c.amount_paid >= c.total_obligation);
+    const activeContracts = filteredData.contracts.filter(c => c.is_accepted && !c.cancelled_at && !(c.cancelled_by_admin || c.cancel_status === 'cancelled'));
+    const cancelledContracts = filteredData.contracts.filter(c => c.cancelled_by_admin || c.cancel_status === 'cancelled');
+    const completedContracts = filteredData.contracts.filter(c => c.cancelled_at && c.amount_paid >= (c.total_obligation || 0) && !c.cancelled_by_admin);
 
     // Group by intensity
     const contractsByIntensity = filteredData.contracts.reduce((acc, c) => {
