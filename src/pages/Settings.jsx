@@ -133,6 +133,7 @@ export default function Settings() {
        ai_auction_risk_tolerance: existingSettings.ai_auction_risk_tolerance ?? 'aggressive',
        ai_auction_max_bid_multiplier: existingSettings.ai_auction_max_bid_multiplier ?? 3,
        irrevocable_contracts: existingSettings.irrevocable_contracts ?? false,
+       default_currency: existingSettings.default_currency ?? 'USD',
        });
    }
   }, [existingSettings]);
