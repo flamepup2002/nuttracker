@@ -240,6 +240,42 @@ export default function FindomDebt() {
               </motion.div>
             )}
 
+            {/* Unpaid Contract Debt */}
+            {contracts.filter(c => {
+              const remaining = Math.max(0, (c.total_obligation || 0) - (c.amount_paid || 0));
+              return c.next_payment_due && new Date(c.next_payment_due) < new Date() && remaining > 0;
+            }).length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.25 }}
+                className="bg-red-900/20 border border-red-600/40 rounded-2xl p-5"
+              >
+                <h2 className="text-white font-bold mb-3 flex items-center gap-2">
+                  <AlertTriangle className="w-5 h-5 text-red-400" />
+                  Unpaid Contract Obligations
+                </h2>
+                <div className="space-y-2">
+                  {contracts.filter(c => {
+                    const remaining = Math.max(0, (c.total_obligation || 0) - (c.amount_paid || 0));
+                    return c.next_payment_due && new Date(c.next_payment_due) < new Date() && remaining > 0;
+                  }).map(contract => {
+                    const remaining = Math.max(0, (contract.total_obligation || 0) - (contract.amount_paid || 0));
+                    const daysOverdue = Math.floor((new Date() - new Date(contract.next_payment_due)) / (1000 * 60 * 60 * 24));
+                    return (
+                      <div key={contract.id} className="bg-zinc-800/50 rounded-lg p-3 flex items-center justify-between">
+                        <div>
+                          <p className="text-white text-sm font-medium">{contract.title}</p>
+                          <p className="text-red-400 text-xs">{daysOverdue} day{daysOverdue !== 1 ? 's' : ''} overdue</p>
+                        </div>
+                        <span className="text-red-400 font-bold">{currency.symbol}{remaining.toFixed(2)}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            )}
+
             {/* Info Banner */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
