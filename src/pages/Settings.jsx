@@ -112,6 +112,7 @@ export default function Settings() {
     ai_auction_risk_tolerance: 'aggressive',
     ai_auction_max_bid_multiplier: 3,
     irrevocable_contracts: false,
+    default_currency: 'USD',
     });
 
   useEffect(() => {
