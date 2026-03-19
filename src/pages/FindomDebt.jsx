@@ -44,22 +44,34 @@ export default function FindomDebt() {
     queryFn: () => base44.entities.Payment.list('-created_date', 100),
   });
 
+  const { data: contracts = [] } = useQuery({
+    queryKey: ['myContractsDebt'],
+    queryFn: () => base44.entities.DebtContract.filter({ is_accepted: true }, '-created_date'),
+  });
+
   // Calculate debt with interest
   useEffect(() => {
     if (!sessions || !settings) return;
 
     let totalDebt = 0;
     const now = new Date();
-    const dailyInterestRate = settings.interest_rate / 100;
+    const dailyInterestRate = (settings.interest_rate || 0) / 100;
 
     sessions.forEach(session => {
       if (session.is_findom && session.total_cost) {
         const createdDate = new Date(session.created_date);
         const daysElapsed = (now - createdDate) / (1000 * 60 * 60 * 24);
-        
-        // Compound interest formula: P(1 + r)^t
         const debtWithInterest = session.total_cost * Math.pow(1 + dailyInterestRate, daysElapsed);
         totalDebt += debtWithInterest;
+      }
+    });
+
+    // Add unpaid contract debt (contracts that are overdue or have remaining balance)
+    contracts.forEach(contract => {
+      const remaining = Math.max(0, (contract.total_obligation || 0) - (contract.amount_paid || 0));
+      const isOverdue = contract.next_payment_due && new Date(contract.next_payment_due) < now;
+      if (isOverdue && remaining > 0) {
+        totalDebt += remaining;
       }
     });
 
@@ -71,7 +83,7 @@ export default function FindomDebt() {
     });
 
     setCalculatedDebt(Math.max(0, totalDebt));
-  }, [sessions, settings, payments]);
+  }, [sessions, settings, payments, contracts]);
 
   const getCurrency = () => {
     const countryCode = user?.country || 'US';
