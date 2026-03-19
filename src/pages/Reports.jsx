@@ -470,23 +470,38 @@ export default function Reports() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredData.contracts.slice(0, 10).map((contract) => (
-                    <tr key={contract.id} className="border-b border-zinc-800/50">
-                      <td className="py-3 text-white text-sm">{contract.title}</td>
+                  {filteredData.contracts.slice(0, 10).map((contract) => {
+                    const isCancelled = contract.cancelled_by_admin || contract.cancel_status === 'cancelled';
+                    const isActive = contract.is_accepted && !isCancelled && !contract.cancelled_at;
+                    const remaining = Math.max(0, (contract.total_obligation || 0) - (contract.amount_paid || 0));
+                    return (
+                    <tr key={contract.id} className={`border-b border-zinc-800/50 ${isCancelled ? 'bg-red-950/10' : ''}`}>
+                      <td className="py-3 text-sm">
+                        <span className={isCancelled ? 'text-red-400 line-through' : 'text-white'}>{contract.title}</span>
+                        {isCancelled && <span className="ml-2 text-xs text-red-500 font-bold no-underline" style={{textDecoration:'none'}}>CANCELLED</span>}
+                      </td>
                       <td className="py-3 text-purple-400 font-bold text-sm">${contract.monthly_payment}</td>
-                      <td className="py-3 text-zinc-400 text-sm">${contract.total_obligation}</td>
+                      <td className="py-3 text-sm">
+                        <span className={isCancelled && remaining > 0 ? 'text-red-400 font-bold' : 'text-zinc-400'}>
+                          ${contract.total_obligation}
+                        </span>
+                        {isCancelled && remaining > 0 && (
+                          <span className="block text-red-500 text-xs">+${remaining.toFixed(0)} unpaid</span>
+                        )}
+                      </td>
                       <td className="py-3">
-                        <span className={`text-xs px-2 py-1 rounded-full ${
-                          contract.is_accepted && !contract.cancelled_at ? 'bg-green-900/30 text-green-400' :
+                        <span className={`text-xs px-2 py-1 rounded-full font-bold ${
+                          isCancelled ? 'bg-red-900/40 text-red-400 border border-red-700/40' :
+                          isActive ? 'bg-green-900/30 text-green-400' :
                           contract.cancelled_at ? 'bg-zinc-800 text-zinc-500' :
                           'bg-yellow-900/30 text-yellow-400'
                         }`}>
-                          {contract.is_accepted && !contract.cancelled_at ? 'Active' :
-                           contract.cancelled_at ? 'Completed' : 'Pending'}
+                          {isCancelled ? 'Cancelled' : isActive ? 'Active' : contract.cancelled_at ? 'Completed' : 'Pending'}
                         </span>
                       </td>
                     </tr>
-                  ))}
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
