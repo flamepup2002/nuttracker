@@ -452,23 +452,26 @@ export default function Settings() {
                   <div>
                     <p className="text-zinc-500 text-xs">5 min</p>
                     <p className="text-white font-bold">
-                      ${(settings.base_cost * Math.pow(1 + settings.escalation_rate / 100, 5) * Math.pow(1 + settings.interest_rate / 100, 5)).toFixed(2)}
+                      {'$'}{(settings.base_cost * Math.pow(1 + settings.escalation_rate / 100, 5) * Math.pow(1 + settings.interest_rate / 100, 5)).toFixed(2)}
                     </p>
                   </div>
                   <div>
                     <p className="text-zinc-500 text-xs">15 min</p>
                     <p className="text-white font-bold">
-                      ${(settings.base_cost * Math.pow(1 + settings.escalation_rate / 100, 15) * Math.pow(1 + settings.interest_rate / 100, 15)).toFixed(2)}
+                      {'$'}{(settings.base_cost * Math.pow(1 + settings.escalation_rate / 100, 15) * Math.pow(1 + settings.interest_rate / 100, 15)).toFixed(2)}
                     </p>
                   </div>
                   <div>
                     <p className="text-zinc-500 text-xs">30 min</p>
                     <p className="text-white font-bold">
-                      ${(settings.base_cost * Math.pow(1 + settings.escalation_rate / 100, 30) * Math.pow(1 + settings.interest_rate / 100, 30)).toFixed(2)}
+                      {'$'}{(settings.base_cost * Math.pow(1 + settings.escalation_rate / 100, 30) * Math.pow(1 + settings.interest_rate / 100, 30)).toFixed(2)}
                     </p>
                   </div>
                 </div>
               </div>
+              </motion.div>
+              )}
+
               </motion.div>
               )}
 
