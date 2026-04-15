@@ -472,9 +472,6 @@ export default function Settings() {
               </motion.div>
               )}
 
-              </motion.div>
-              )}
-
               {/* Payment Method */}
         {settings.findom_enabled && (
           <motion.div
