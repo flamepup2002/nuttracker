@@ -96,10 +96,13 @@ export default function AdminContractRequests() {
           cancel_status: 'cancelled',
         };
         if (irrevocable) {
+          // Fetch current contract to preserve existing penalty amounts
+          const existing = await base44.entities.DebtContract.filter({ id: contractId }, '-created_date', 1);
+          const current = existing[0] || {};
           const penalty = monthlyPayment * 3;
           updates.cancellation_penalty_triggered = true;
-          updates.cancellation_penalty_amount = penalty;
-          updates.total_obligation = (updates.total_obligation || 0) + penalty;
+          updates.cancellation_penalty_amount = (current.cancellation_penalty_amount || 0) + penalty;
+          updates.total_obligation = (current.total_obligation || 0) + penalty;
         }
         await base44.entities.DebtContract.update(contractId, updates);
       }
