@@ -21,12 +21,19 @@ export default function Penalties() {
   const navigate = useNavigate();
   const [tab, setTab] = useState('money');
 
-  const { data: contracts = [], isLoading } = useQuery({
+  const { data: allContracts = [], isLoading } = useQuery({
     queryKey: ['myContractsAll'],
-    queryFn: () => base44.entities.DebtContract.filter({ is_accepted: true }, '-created_date'),
+    queryFn: () => base44.entities.DebtContract.list('-created_date', 200),
   });
 
-  // Money penalties — include ALL contracts (even cancelled)
+  // Include active contracts + cancelled contracts that still have outstanding penalties (irrevocable)
+  const contracts = allContracts.filter(c =>
+    c.is_accepted ||
+    c.cancelled_by_admin ||
+    c.cancel_status === 'cancelled' && c.cancellation_penalty_triggered
+  );
+
+  // Money penalties — include irrevocable cancelled contracts too
   const contractsWithCancelPenalty = contracts.filter(c => c.cancellation_penalty_triggered);
   const overdueContracts = contracts.filter(c =>
     c.next_payment_due && new Date(c.next_payment_due) < new Date() && c.penalty_percentage &&
@@ -36,8 +43,13 @@ export default function Penalties() {
   const totalOverduePenalties = overdueContracts.reduce((sum, c) => sum + ((c.monthly_payment || 0) * ((c.penalty_percentage || 0) / 100)), 0);
   const grandTotal = totalCancellationPenalties + totalOverduePenalties;
 
-  // Extreme/prison penalties
-  const prisonContracts = contracts.filter(c => hasPrisonTerms(c));
+  // Extreme/prison penalties — include cancelled irrevocable contracts too
+  const prisonContracts = allContracts.filter(c =>
+    hasPrisonTerms(c) && (
+      c.is_accepted ||
+      (c.cancellation_irrevocable && (c.cancelled_by_admin || c.cancel_status === 'cancelled'))
+    )
+  );
 
   return (
     <div className="min-h-screen bg-black text-white">
