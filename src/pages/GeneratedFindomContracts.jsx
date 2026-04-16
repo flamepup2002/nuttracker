@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
@@ -1123,6 +1124,11 @@ export default function GeneratedFindomContracts() {
   const [customizingContract, setCustomizingContract] = useState(null);
   const [signatureData, setSignatureData] = useState(null);
   const [showTermsModal, setShowTermsModal] = useState(false);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    base44.auth.me().then(setUser).catch(() => {});
+  }, []);
 
   const { data: settings } = useQuery({
     queryKey: ['userSettings'],
@@ -1184,6 +1190,31 @@ export default function GeneratedFindomContracts() {
         // Delete contract if payment failed
         await base44.entities.DebtContract.delete(newContract.id);
         throw new Error(paymentResult.data.error);
+      }
+
+      // Send confirmation email
+      if (user?.email) {
+        const termsText = (contract.terms || []).map((t, i) => `${i + 1}. ${t}`).join('\n');
+        const nextPaymentDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString();
+        await base44.integrations.Core.SendEmail({
+          to: user.email,
+          subject: `⚠️ Contract Accepted: ${contract.title}`,
+          body: `You have accepted the following binding contract:\n\n` +
+            `CONTRACT: ${contract.title}\n` +
+            `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
+            `${contract.description}\n\n` +
+            `FINANCIAL TERMS:\n` +
+            `• Monthly Payment: $${contract.monthly}\n` +
+            `• Duration: ${contract.duration ? `${contract.duration} months` : 'Permanent / Indefinite'}\n` +
+            `• Total Obligation: $${total}\n` +
+            `• Next Payment Due: ${nextPaymentDate}\n` +
+            `• Penalty for Late Payment: ${contract.penalty_percentage || 5}%\n` +
+            `• Interest Rate: ${contract.interest_rate > 0 ? `${contract.interest_rate}%` : 'None'}\n` +
+            `• Collateral: ${contract.collateral_type && contract.collateral_type !== 'none' ? contract.collateral_type.replace(/_/g, ' ') : 'None'}\n\n` +
+            `CONTRACT TERMS:\n${termsText}\n\n` +
+            `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+            `⚠️ WARNING: This contract is legally binding. All terms are enforceable. Accepted on ${new Date().toLocaleString()}.`,
+        });
       }
 
       return { contract: newContract, payment: paymentResult.data };
