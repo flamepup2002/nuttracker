@@ -177,11 +177,12 @@ export default function MyContracts() {
       nextMonth.setMonth(nextMonth.getMonth() + 1);
       return base44.entities.DebtContract.update(contract.id, {
         next_payment_due: nextMonth.toISOString(),
+        monthly_payment: (contract.monthly_payment || 0) * 2,
       });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['myContracts'] });
-      toast.success('Payment deferred to next month');
+      toast.success('Payment deferred — next month\'s amount has been doubled');
     },
     onError: (error) => toast.error('Failed to defer payment: ' + error.message),
   });
