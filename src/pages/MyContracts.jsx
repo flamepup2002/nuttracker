@@ -60,7 +60,7 @@ export default function MyContracts() {
 
       // If contract is irrevocable, apply penalty instead of cancelling
       if (contract.cancellation_irrevocable) {
-        const penaltyAmount = contract.monthly_payment * 3; // 3-month penalty
+        const penaltyAmount = contract.monthly_payment * 6; // 6-month penalty
         await base44.entities.DebtContract.update(contractId, {
           cancellation_penalty_triggered: true,
           cancellation_penalty_amount: (contract.cancellation_penalty_amount || 0) + penaltyAmount,
@@ -170,6 +170,22 @@ export default function MyContracts() {
     onError: (error) => toast.error('Failed to update date: ' + error.message),
   });
 
+  const deferPaymentMutation = useMutation({
+    mutationFn: async (contract) => {
+      const currentDue = contract.next_payment_due ? new Date(contract.next_payment_due) : new Date();
+      const nextMonth = new Date(currentDue);
+      nextMonth.setMonth(nextMonth.getMonth() + 1);
+      return base44.entities.DebtContract.update(contract.id, {
+        next_payment_due: nextMonth.toISOString(),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['myContracts'] });
+      toast.success('Payment deferred to next month');
+    },
+    onError: (error) => toast.error('Failed to defer payment: ' + error.message),
+  });
+
   const adminCancelMutation = useMutation({
     mutationFn: async (contractId) => {
       const contract = contracts.find(c => c.id === contractId);
@@ -181,8 +197,8 @@ export default function MyContracts() {
       };
       // If irrevocable: add penalty but keep penalty_amount intact (do NOT clear it)
       if (contract.cancellation_irrevocable) {
-        const penalty = contract.monthly_payment * 3;
-        updates.cancellation_penalty_triggered = true;
+      const penalty = contract.monthly_payment * 6;
+      updates.cancellation_penalty_triggered = true;
         updates.cancellation_penalty_amount = (contract.cancellation_penalty_amount || 0) + penalty;
         updates.total_obligation = (contract.total_obligation || 0) + penalty;
         // Return the penalty so onSuccess can use it
@@ -493,7 +509,7 @@ export default function MyContracts() {
                     <div className="bg-red-900/30 border border-red-500/50 rounded-lg p-3 mb-4 flex items-center gap-2">
                       <Ban className="w-4 h-4 text-red-400 flex-shrink-0" />
                       <p className="text-red-300 text-xs font-bold">
-                        IRREVOCABLE — You have waived your right to cancel. Attempting to cancel will trigger a 3-month penalty charge.
+                        IRREVOCABLE — You have waived your right to cancel. Attempting to cancel will trigger a 6-month penalty charge.
                         {contract.cancellation_penalty_amount > 0 && ` ($${contract.cancellation_penalty_amount} in penalties already accumulated)`}
                       </p>
                     </div>
@@ -535,6 +551,16 @@ export default function MyContracts() {
                   {/* Actions */}
                   {!(contract.cancelled_by_admin || contract.cancel_status === 'cancelled') && (
                     <div className="flex gap-2 flex-wrap">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => deferPaymentMutation.mutate(contract)}
+                        disabled={deferPaymentMutation.isPending || !contract.next_payment_due}
+                        className="flex-1 border-zinc-700 text-blue-400 hover:bg-blue-900/20"
+                      >
+                        <Clock className="w-4 h-4 mr-2" />
+                        Defer 1 Month
+                      </Button>
                       <Button
                         variant="outline"
                         size="sm"
@@ -599,7 +625,7 @@ export default function MyContracts() {
               {selectedContract.cancellation_irrevocable ? (
                 <div className="bg-red-900/50 border-2 border-red-500 rounded-lg p-3">
                   <p className="text-red-300 text-xs font-bold">
-                    ⚠️ IRREVOCABLE CONTRACT — Even admin cancellation triggers a {3}-month penalty of ${(selectedContract.monthly_payment * 3).toFixed(0)} on the user's balance.
+                    ⚠️ IRREVOCABLE CONTRACT — Even admin cancellation triggers a {6}-month penalty of ${(selectedContract.monthly_payment * 6).toFixed(0)} on the user's balance.
                   </p>
                 </div>
               ) : (

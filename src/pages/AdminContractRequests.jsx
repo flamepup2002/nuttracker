@@ -59,7 +59,7 @@ export default function AdminContractRequests() {
 
         if (isFullExtremeMode) {
           const latePenalty = (contract.monthly_payment || 0) * ((contract.penalty_percentage || 50) / 100);
-          const cancellationPenalty = (contract.monthly_payment || 0) * 3;
+          const cancellationPenalty = (contract.monthly_payment || 0) * 6;
           const totalNewPenalty = latePenalty + cancellationPenalty;
 
           updates.cancellation_penalty_triggered = true;
@@ -99,7 +99,7 @@ export default function AdminContractRequests() {
           // Fetch current contract to preserve existing penalty amounts
           const existing = await base44.entities.DebtContract.filter({ id: contractId }, '-created_date', 1);
           const current = existing[0] || {};
-          const penalty = monthlyPayment * 3;
+          const penalty = monthlyPayment * 6;
           updates.cancellation_penalty_triggered = true;
           updates.cancellation_penalty_amount = (current.cancellation_penalty_amount || 0) + penalty;
           updates.total_obligation = (current.total_obligation || 0) + penalty;
@@ -238,7 +238,7 @@ export default function AdminContractRequests() {
                   {selectedItem.cancellation_irrevocable && selectedItem.intensity_level === 'extreme' && (
                     <div className="bg-red-950/60 border border-red-500 rounded-lg p-3">
                       <p className="text-red-300 text-xs font-bold">
-                        ⚠️ FULL EXTREME MODE — Rejecting this dispute will trigger ALL penalties: late fee ({selectedItem.penalty_percentage}%) + 3-month cancellation penalty = <span className="text-white">${(((selectedItem.monthly_payment || 0) * ((selectedItem.penalty_percentage || 50) / 100)) + (selectedItem.monthly_payment || 0) * 3).toFixed(2)}</span> added to user's debt.
+                        ⚠️ FULL EXTREME MODE — Rejecting this dispute will trigger ALL penalties: late fee ({selectedItem.penalty_percentage}%) + 6-month cancellation penalty = <span className="text-white">${(((selectedItem.monthly_payment || 0) * ((selectedItem.penalty_percentage || 50) / 100)) + (selectedItem.monthly_payment || 0) * 6).toFixed(2)}</span> added to user's debt.
                       </p>
                     </div>
                   )}
@@ -266,7 +266,7 @@ export default function AdminContractRequests() {
                     <p className="text-zinc-300 text-sm">{selectedItem.message}</p>
                     {selectedItem.admin_notes?.includes('irrevocable') && (
                       <div className="mt-3 bg-red-900/30 border border-red-600/50 rounded-lg p-3">
-                        <p className="text-red-300 text-xs font-bold">⚠️ IRREVOCABLE CONTRACT — Approving will still trigger the 3-month penalty</p>
+                        <p className="text-red-300 text-xs font-bold">⚠️ IRREVOCABLE CONTRACT — Approving will still trigger the 6-month penalty</p>
                       </div>
                     )}
                   </div>
