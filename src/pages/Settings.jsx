@@ -113,6 +113,7 @@ export default function Settings() {
     ai_auction_max_bid_multiplier: 3,
     irrevocable_contracts: false,
     default_currency: 'USD',
+    heart_rate_threshold: 100,
     });
 
   useEffect(() => {
@@ -134,6 +135,7 @@ export default function Settings() {
        ai_auction_max_bid_multiplier: existingSettings.ai_auction_max_bid_multiplier ?? 3,
        irrevocable_contracts: existingSettings.irrevocable_contracts ?? false,
        default_currency: existingSettings.default_currency ?? 'USD',
+       heart_rate_threshold: existingSettings.heart_rate_threshold ?? 100,
        });
    }
   }, [existingSettings]);
@@ -873,6 +875,49 @@ export default function Settings() {
                 Connect during a session using the Heart Rate Monitor panel
               </p>
             </div>
+
+            {settings.findom_enabled && (
+              <div className="mt-4 bg-red-900/20 border border-red-500/30 rounded-xl p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <Label className="text-zinc-300 flex items-center gap-2">
+                    HR Debt Boost Threshold
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Info className="w-4 h-4 text-zinc-500" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>When your BPM exceeds this, findom debt accumulates faster (+2% per BPM over threshold)</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </Label>
+                  <div className="flex items-center gap-1">
+                    <Input
+                      type="number"
+                      inputMode="numeric"
+                      value={settings.heart_rate_threshold}
+                      onChange={(e) => handleChange('heart_rate_threshold', Math.max(50, Math.min(200, parseInt(e.target.value) || 100)))}
+                      min={50}
+                      max={200}
+                      className="w-20 text-right bg-zinc-800 border-zinc-700 text-red-400 font-bold"
+                    />
+                    <span className="text-red-400 font-bold text-sm">BPM</span>
+                  </div>
+                </div>
+                <Slider
+                  value={[settings.heart_rate_threshold]}
+                  onValueChange={([value]) => handleChange('heart_rate_threshold', value)}
+                  min={50}
+                  max={200}
+                  step={5}
+                  className="py-2"
+                />
+                <p className="text-zinc-500 text-xs mt-1">
+                  Above {settings.heart_rate_threshold} BPM → cost multiplier increases (+2% per extra BPM)
+                </p>
+              </div>
+            )}
           </motion.div>
         )}
 

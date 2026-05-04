@@ -50,16 +50,26 @@ export default function FindomSession() {
     },
   });
 
-  // Calculate escalating cost based on duration with compound interest
+  // Calculate escalating cost based on duration with compound interest + heart rate boost
   useEffect(() => {
     if (isActive && settings) {
       const minutes = duration / 60;
       const escalationMultiplier = Math.pow(1 + settings.escalation_rate / 100, minutes);
       const interestMultiplier = Math.pow(1 + (settings.interest_rate || 0) / 100, minutes);
-      const escalatedCost = settings.base_cost * escalationMultiplier * interestMultiplier;
+      let escalatedCost = settings.base_cost * escalationMultiplier * interestMultiplier;
+
+      // Heart rate boost: if HR exceeds threshold, multiply cost
+      const hrThreshold = settings.heart_rate_threshold || 100;
+      if (heartRate && heartRate > hrThreshold) {
+        const excessBpm = heartRate - hrThreshold;
+        // +2% per BPM over threshold
+        const hrMultiplier = 1 + (excessBpm * 0.02);
+        escalatedCost *= hrMultiplier;
+      }
+
       setCurrentCost(escalatedCost);
     }
-  }, [duration, isActive, settings]);
+  }, [duration, isActive, settings, heartRate]);
 
   // Auto-finish session on page unload if session is active
   useEffect(() => {
@@ -385,7 +395,13 @@ export default function FindomSession() {
             <div>
               <p className="text-yellow-400 font-medium text-sm">Escalating Costs Active</p>
               <p className="text-yellow-500/70 text-xs mt-1">
-                Cost per orgasm increases by {settings.escalation_rate}%/min{settings.interest_rate > 0 ? ` with ${settings.interest_rate}% daily interest on unpaid balances` : ''}. No cap - cost escalates indefinitely!
+                Cost increases by {settings.escalation_rate}%/min{settings.interest_rate > 0 ? ` with ${settings.interest_rate}% daily interest` : ''}. No cap!
+                {heartRate && heartRate > (settings.heart_rate_threshold || 100) && (
+                  <span className="text-red-400 font-bold"> ❤️ HR BOOST ACTIVE: +{((heartRate - (settings.heart_rate_threshold || 100)) * 2).toFixed(0)}% multiplier!</span>
+                )}
+                {!heartRate && settings.heart_rate_threshold && (
+                  <span> Connect heart monitor for HR boost at {settings.heart_rate_threshold} BPM.</span>
+                )}
               </p>
             </div>
           </motion.div>

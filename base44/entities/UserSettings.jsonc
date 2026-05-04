@@ -1,0 +1,146 @@
+{
+  "name": "UserSettings",
+  "type": "object",
+  "properties": {
+    "findom_enabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "base_cost": {
+      "type": "number",
+      "default": 5,
+      "description": "Base cost per orgasm in findom mode"
+    },
+    "escalation_rate": {
+      "type": "number",
+      "default": 10,
+      "description": "Percentage increase per minute"
+    },
+    "interest_rate": {
+      "type": "number",
+      "default": 0,
+      "description": "Compound interest rate on unpaid balances"
+    },
+    "interest_frequency": {
+      "type": "string",
+      "enum": [
+        "hourly",
+        "daily",
+        "monthly"
+      ],
+      "default": "daily"
+    },
+    "heart_rate_threshold": {
+      "type": "number",
+      "default": 100,
+      "description": "BPM threshold above which findom debt speed increases"
+    },
+    "extreme_mode": {
+      "type": "boolean",
+      "default": false
+    },
+    "irrevocable_contracts": {
+      "type": "boolean",
+      "default": false
+    },
+    "heart_monitor_connected": {
+      "type": "boolean",
+      "default": false
+    },
+    "goonercam_enabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "broadcast_enabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "ai_dangerous_encouragements": {
+      "type": "boolean",
+      "default": false
+    },
+    "goon_captions_enabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "goon_censor_enabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "active_aura": {
+      "type": "string"
+    },
+    "goon_fuel_style": {
+      "type": "string",
+      "enum": [
+        "realistic",
+        "anime",
+        "fantasy"
+      ],
+      "default": "realistic"
+    },
+    "goon_fuel_keywords": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "goon_fuel_frequency_limit": {
+      "type": "number",
+      "default": 0
+    },
+    "horny_jail_ai_mood": {
+      "type": "string",
+      "enum": [
+        "merciless",
+        "cruel",
+        "sadistic"
+      ],
+      "default": "cruel"
+    },
+    "ai_auction_risk_tolerance": {
+      "type": "string",
+      "enum": [
+        "conservative",
+        "moderate",
+        "aggressive",
+        "ruthless"
+      ],
+      "default": "aggressive"
+    },
+    "ai_auction_max_bid_multiplier": {
+      "type": "number",
+      "default": 3
+    },
+    "default_currency": {
+      "type": "string",
+      "enum": [
+        "USD",
+        "CAD",
+        "GBP",
+        "EUR",
+        "AUD",
+        "JPY",
+        "CHF",
+        "NZD"
+      ],
+      "default": "USD",
+      "description": "User's preferred display currency"
+    }
+  },
+  "required": [],
+  "rls": {
+    "create": {
+      "created_by": "{{user.email}}"
+    },
+    "read": {
+      "created_by": "{{user.email}}"
+    },
+    "update": {
+      "created_by": "{{user.email}}"
+    },
+    "delete": {
+      "created_by": "{{user.email}}"
+    }
+  }
+}
