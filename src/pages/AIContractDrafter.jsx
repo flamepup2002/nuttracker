@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { ArrowLeft, Sparkles, FileText, Loader2, Edit, Save, Plus, X, CheckCircle, AlertTriangle } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -22,104 +22,186 @@ const EXAMPLE_PROMPTS = [
 function buildContractLocally(prompt, intensityLevel, kws) {
   const lower = prompt.toLowerCase();
 
-  // Extract monthly payment
-  const paymentMatch = prompt.match(/\$\s*(\d+(?:,\d+)?(?:\.\d+)?)/i)
-    || prompt.match(/(\d+(?:,\d+)?(?:\.\d+)?)\s*(?:a month|per month|\/month|monthly)/i);
-  const rawPayment = paymentMatch ? paymentMatch[1].replace(/,/g, '') : null;
-  const defaultPayments = { mild: 50, moderate: 150, intense: 400, extreme: 1000 };
-  const monthlyPayment = rawPayment ? parseFloat(rawPayment) : defaultPayments[intensityLevel];
+  // ── Payment extraction ──────────────────────────────────────────────────
+  let monthlyPayment = null;
 
-  // Extract duration
-  const durationMatch = prompt.match(/(\d+)\s*-?\s*month/i);
-  const isPermanent = lower.includes('permanent') || lower.includes('indefinite');
-  const defaultDurations = { mild: 3, moderate: 6, intense: 12, extreme: 0 };
-  const duration = durationMatch ? parseInt(durationMatch[1]) : (isPermanent ? 0 : defaultDurations[intensityLevel]);
+  const weeklyMatch = prompt.match(/\$\s*(\d+(?:[,.]\d+)?)\s*(?:per\s*week|\/week|a\s*week)/i);
+  if (weeklyMatch) monthlyPayment = parseFloat(weeklyMatch[1].replace(/,/g, '')) * 4.33;
 
-  // Extract interest rate
-  const interestMatch = prompt.match(/(\d+(?:\.\d+)?)\s*%\s*interest/i);
-  const defaultInterest = { mild: 0, moderate: 0, intense: 8, extreme: 15 };
-  const interestRate = interestMatch ? parseFloat(interestMatch[1]) : defaultInterest[intensityLevel];
-
-  // Extract penalty
-  const penaltyMatch = prompt.match(/(\d+(?:\.\d+)?)\s*%\s*(?:penalty|late|fee)/i);
-  const defaultPenalty = { mild: 5, moderate: 10, intense: 20, extreme: 35 };
-  const penaltyPct = penaltyMatch ? parseFloat(penaltyMatch[1]) : defaultPenalty[intensityLevel];
-
-  // Collateral
-  const collateralMap = {
-    house: 'house', home: 'house', car: 'car', vehicle: 'car',
-    savings: 'savings', retirement: 'retirement_accounts', crypto: 'crypto',
-    jewelry: 'jewelry', electronics: 'electronics',
-    'all assets': 'all_assets', everything: 'all_assets'
-  };
-  let collateral = 'none';
-  for (const [key, val] of Object.entries(collateralMap)) {
-    if (lower.includes(key)) { collateral = val; break; }
+  if (!monthlyPayment) {
+    const dailyMatch = prompt.match(/\$\s*(\d+(?:[,.]\d+)?)\s*(?:per\s*day|\/day|a\s*day)/i);
+    if (dailyMatch) monthlyPayment = parseFloat(dailyMatch[1].replace(/,/g, '')) * 30;
   }
 
-  // Compound frequency
-  const compoundFreq = lower.includes('daily') ? 'daily'
-    : lower.includes('weekly') ? 'weekly'
-    : lower.includes('quarterly') ? 'quarterly'
+  if (!monthlyPayment) {
+    const m = prompt.match(/\$\s*(\d+(?:[,.]\d+)?)\s*(?:a\s*month|per\s*month|\/month|monthly)/i)
+      || prompt.match(/(?:a\s*month|per\s*month|\/month|monthly)\s*(?:of\s*)?\$?\s*(\d+(?:[,.]\d+)?)/i);
+    if (m) monthlyPayment = parseFloat((m[1] || m[2]).replace(/,/g, ''));
+  }
+
+  if (!monthlyPayment) {
+    const all = prompt.match(/\$\s*(\d+(?:[,.]\d+)?(?:k)?)/gi);
+    if (all) {
+      const raw = all[all.length - 1].replace(/[\$,\s]/g, '');
+      monthlyPayment = raw.toLowerCase().endsWith('k') ? parseFloat(raw) * 1000 : parseFloat(raw);
+    }
+  }
+
+  if (!monthlyPayment) {
+    monthlyPayment = { mild: 50, moderate: 150, intense: 500, extreme: 1500 }[intensityLevel];
+  }
+  monthlyPayment = Math.round(monthlyPayment * 100) / 100;
+
+  // ── Duration extraction ──────────────────────────────────────────────────
+  let duration = null;
+  const isPermanent = /permanent|indefinite|forever|lifetime|never\s*end/i.test(prompt);
+
+  if (!isPermanent) {
+    const yearMatch = prompt.match(/(\d+)\s*-?\s*year/i);
+    const monthMatch = prompt.match(/(\d+)\s*-?\s*month/i);
+    if (yearMatch) duration = parseInt(yearMatch[1]) * 12;
+    else if (monthMatch) duration = parseInt(monthMatch[1]);
+  }
+
+  if (duration === null) {
+    duration = isPermanent ? 0 : { mild: 3, moderate: 6, intense: 12, extreme: 0 }[intensityLevel];
+  }
+
+  // ── Interest rate ────────────────────────────────────────────────────────
+  let interestRate = 0;
+  const noInterest = /no\s*interest|zero\s*interest|0%\s*interest/i.test(prompt);
+  if (!noInterest) {
+    const im = prompt.match(/(\d+(?:\.\d+)?)\s*%\s*(?:interest|apr|rate)/i)
+      || prompt.match(/interest\s*(?:of|at|rate)?\s*(\d+(?:\.\d+)?)\s*%/i);
+    if (im) interestRate = parseFloat(im[1]);
+    else interestRate = { mild: 0, moderate: 0, intense: 8, extreme: 18 }[intensityLevel];
+  }
+
+  // ── Penalty ──────────────────────────────────────────────────────────────
+  const pm = prompt.match(/(\d+(?:\.\d+)?)\s*%\s*(?:penalty|late\s*fee|late\s*charge)/i)
+    || prompt.match(/penalty\s*(?:of)?\s*(\d+(?:\.\d+)?)\s*%/i);
+  const penaltyPct = pm ? parseFloat(pm[1])
+    : { mild: 5, moderate: 10, intense: 25, extreme: 40 }[intensityLevel];
+
+  // ── Collateral ───────────────────────────────────────────────────────────
+  const collateralMap = [
+    [/\ball\s*assets|everything\b/i, 'all_assets'],
+    [/\bhouse|\bhome|\bproperty|\bmortgage/i, 'house'],
+    [/\bcar|\bvehicle|\bauto/i, 'car'],
+    [/\bretirement|\b401k|\bpension/i, 'retirement_accounts'],
+    [/\bcrypto|\bbitcoin|\bethereum/i, 'crypto'],
+    [/\bjewelry|\bjewellery/i, 'jewelry'],
+    [/\belectronics|\blaptop|\bcomputer/i, 'electronics'],
+    [/\bsavings|\bbank\s*account/i, 'savings'],
+  ];
+  let collateral = 'none';
+  for (const [rx, val] of collateralMap) {
+    if (rx.test(prompt)) { collateral = val; break; }
+  }
+  if (collateral === 'none' && intensityLevel === 'extreme') collateral = 'all_assets';
+
+  // ── Compound frequency ───────────────────────────────────────────────────
+  const compoundFreq = /daily\s*compound/i.test(prompt) ? 'daily'
+    : /weekly\s*compound/i.test(prompt) ? 'weekly'
+    : /quarterly\s*compound/i.test(prompt) ? 'quarterly'
     : interestRate > 0 ? 'monthly' : 'none';
 
-  // Title
-  const intensityLabels = {
-    mild: 'Financial Discipline', moderate: 'Debt Submission',
-    intense: 'Strict Obligation', extreme: 'Total Financial Surrender'
+  // ── Escalation ───────────────────────────────────────────────────────────
+  const hasEscalation = /escalat|increas|doubl|triple|grow/i.test(prompt);
+  const escalationPct = intensityLevel === 'extreme' ? 25 : intensityLevel === 'intense' ? 15 : 10;
+
+  // ── Title ─────────────────────────────────────────────────────────────────
+  const kwTag = kws.length > 0 ? ` — ${kws.slice(0, 2).map(k => k.charAt(0).toUpperCase() + k.slice(1)).join(' & ')}` : '';
+  const titleThemes = {
+    mild: ['Financial Discipline Agreement', 'Gentle Submission Contract', 'Training Debt Contract'],
+    moderate: ['Financial Submission Contract', 'Debt Obligation Agreement', 'Fiscal Control Contract'],
+    intense: ['Strict Debt Enforcement Contract', 'Total Financial Obligation', 'Ironclad Payment Agreement'],
+    extreme: ['Total Financial Surrender Contract', 'Absolute Debt Domination Agreement', 'Permanent Financial Slavery Contract'],
   };
-  const keywordTag = kws.length > 0 ? ` — ${kws[0].charAt(0).toUpperCase() + kws[0].slice(1)}` : '';
-  const title = `${intensityLabels[intensityLevel]} Contract${keywordTag}`;
+  const titlePool = titleThemes[intensityLevel];
+  const title = titlePool[Math.floor(prompt.length % titlePool.length)] + kwTag;
 
-  // Description
-  const descriptions = {
-    mild: 'A beginner-friendly financial commitment establishing basic payment obligations and discipline.',
-    moderate: 'A balanced contract enforcing regular financial submission with meaningful consequences for non-compliance.',
-    intense: 'A strict, enforceable financial agreement with significant penalties and ongoing obligations designed to maintain control.',
-    extreme: 'A total financial surrender agreement with maximum penalties, indefinite obligations, and severe consequences for any breach.'
+  // ── Description ──────────────────────────────────────────────────────────
+  const durationDesc = duration === 0 ? 'an indefinite, permanent obligation'
+    : duration < 6 ? `a ${duration}-month introductory commitment`
+    : duration < 13 ? `a ${duration}-month binding obligation`
+    : `a ${duration}-month long-term financial servitude`;
+  const collateralDesc = collateral !== 'none' ? ` backed by pledged ${collateral.replace(/_/g, ' ')} as collateral` : '';
+  const description = `A ${intensityLevel}-intensity financial domination contract establishing ${durationDesc}${collateralDesc}, ` +
+    `with $${monthlyPayment.toFixed(2)} monthly payments and ${penaltyPct}% late-payment penalties` +
+    (interestRate > 0 ? `, compounded at ${interestRate}% interest` : '') + '.';
+
+  // ── Terms ─────────────────────────────────────────────────────────────────
+  const terms = [];
+
+  terms.push(`The submissive party ("Sub") shall make unconditional monthly tribute payments of $${monthlyPayment.toFixed(2)} USD${duration > 0 ? `, every month for ${duration} consecutive months` : ' every month indefinitely until released'}.`);
+  terms.push('All payments are due on the 1st of each calendar month. Payments received after the 5th are considered late regardless of circumstance.');
+  terms.push(`Any late or missed payment automatically incurs a ${penaltyPct}% penalty charge added to the outstanding balance immediately, without notice or grace period.`);
+
+  if (interestRate > 0) {
+    terms.push(`An annual interest rate of ${interestRate}% (compounded ${compoundFreq}) applies to all outstanding unpaid balances. Interest accrues from the date of first missed payment.`);
+  }
+
+  if (collateral !== 'none') {
+    terms.push(`The Sub irrevocably pledges their ${collateral.replace(/_/g, ' ')} as collateral. In the event of default, the Dominant reserves full rights to initiate liquidation of said collateral to recover outstanding debt.`);
+  }
+
+  if (hasEscalation) {
+    terms.push(`Monthly payment amounts shall escalate by ${escalationPct}% every 3 months automatically. The Sub acknowledges and accepts all future increased payment amounts at the time of signing.`);
+  }
+
+  if (intensityLevel === 'mild') {
+    terms.push('The Sub may request a single payment deferral per contract period with 14 days advance written notice. Such deferral does not eliminate the obligation, merely postpones it.');
+    terms.push('The contract may be reviewed at the halfway point. Any modification requires written agreement from both parties.');
+  }
+
+  if (intensityLevel === 'moderate') {
+    terms.push('Two consecutive missed payments trigger an automatic penalty surcharge of 50% of the monthly amount, added immediately to total debt.');
+    terms.push('The Dominant retains the right to increase monthly payments by up to 15% quarterly with 48 hours written notice. Sub waives right to dispute such increases.');
+    terms.push('The Sub must provide monthly financial status reports confirming ability to pay.');
+  }
+
+  if (intensityLevel === 'intense') {
+    terms.push('Three consecutive missed payments constitute a material breach, triggering immediate collateral seizure proceedings and the total remaining contract balance becoming due within 30 days.');
+    terms.push('The Dominant may impose additional tribute demands, tasks, or financial penalties at any time. Sub is obligated to comply within 72 hours.');
+    terms.push('Sub waives all rights to dispute, negotiate, or modify payment amounts once the contract is signed.');
+    terms.push('The total remaining balance of the contract becomes immediately payable in full upon any cancellation attempt.');
+  }
+
+  if (intensityLevel === 'extreme') {
+    terms.push('This contract is IRREVOCABLE. Any attempt to cancel, dispute, or escape obligations results in a 6-month lump-sum penalty (6x monthly payment) becoming due within 24 hours.');
+    terms.push('The Dominant has absolute and unilateral authority to restructure, increase, or extend all terms at will with 24 hours notice. Sub has no recourse.');
+    terms.push('Non-compliance triggers the immediate initiation of public disclosure protocols, asset seizure, and forwarding of debt records to designated enforcement parties.');
+    terms.push('The Sub permanently and irrevocably waives all cancellation rights, dispute rights, and consumer protections applicable to this agreement at the moment of signature.');
+    terms.push('Sub agrees to provide unrestricted access to financial account statements monthly as proof of compliance and solvency.');
+  }
+
+  const kwTermMap = {
+    humiliation: 'The Sub acknowledges that all financial obligations herein are a reflection of their inherent inferiority and accepts public documentation of all defaults as humiliation.',
+    'wealth transfer': 'The fundamental purpose of this contract is the systematic and ongoing transfer of wealth from the Sub to the Dominant, accepted unconditionally.',
+    chastity: 'Payment compliance is directly tied to chastity protocol compliance. Any chastity violation incurs an additional $50 tribute due within 24 hours.',
+    blackmail: "The Sub agrees that evidence of this contract and all payment records may be disclosed at the Dominant's discretion upon breach of any term.",
+    worship: 'Each payment is an act of devotion and worship. The Sub affirms their dedication through every tribute made.',
+    slavery: "The Sub enters this contract as a financial slave, surrendering all financial autonomy for the contract's duration.",
+    tribute: 'All payments herein are tributes, given freely and joyfully as expressions of submission. The Sub renounces all future claims to refunds.',
+    debt: 'The Sub acknowledges that their natural state is one of financial debt and obligation to the Dominant, accepting this as a core identity.',
   };
+  for (const kw of kws) {
+    const match = Object.entries(kwTermMap).find(([k]) => kw.toLowerCase().includes(k));
+    if (match) terms.push(match[1]);
+    else terms.push(`The Sub accepts all obligations related to "${kw}" as a binding term of this contract.`);
+  }
 
-  // Base terms
-  const baseTerms = [
-    `The submissive party agrees to make monthly payments of $${monthlyPayment.toFixed(2)}${duration > 0 ? ` for ${duration} months` : ' indefinitely'}.`,
-    `Any missed or late payment incurs a ${penaltyPct}% penalty automatically added to the outstanding balance.`,
-    interestRate > 0
-      ? `An interest rate of ${interestRate}% compounded ${compoundFreq} applies to all unpaid balances.`
-      : 'No interest applies when payments are made on time.',
-    collateral !== 'none'
-      ? `The submissive pledges their ${collateral.replace(/_/g, ' ')} as collateral against the total obligation.`
-      : 'No physical collateral is required; the obligation is financial only.',
-    'This contract is binding from the moment of acceptance and cannot be revoked unilaterally.',
-    'All disputes must be submitted in writing and are subject to the dominant party\'s discretion.',
-  ];
+  if (prompt.trim().length > 30) {
+    terms.push(`Additional custom terms as specified by the parties: "${prompt.substring(0, 180)}${prompt.length > 180 ? '...' : '"'}`);
+  }
 
-  const intensityTerms = {
-    mild: ['The submissive may request a payment review after 30 days of compliance.'],
-    moderate: [
-      'Failure to pay for two consecutive months results in an automatic 50% penalty surcharge.',
-      'The dominant retains the right to increase monthly payments by up to 10% per quarter.'
-    ],
-    intense: [
-      'Three consecutive missed payments trigger immediate collateral liquidation procedures.',
-      'The dominant may assign additional financial tasks or tribute demands at any time.',
-      'All financial accounts must be reported monthly to demonstrate compliance.'
-    ],
-    extreme: [
-      'Any cancellation attempt results in a 3-month lump sum penalty due immediately.',
-      'The dominant has full authority to restructure terms at will with 24-hour notice.',
-      'Non-payment triggers public disclosure procedures and full asset seizure protocols.',
-      'The submissive waives all cancellation rights permanently upon signing.'
-    ]
-  };
-
-  const kwTerms = kws.map(kw => `The contract incorporates ${kw} as a core theme and obligation.`);
-  const extraFromPrompt = prompt.trim().length > 20
-    ? [`Custom terms as specified: ${prompt.substring(0, 150)}${prompt.length > 150 ? '...' : ''}`]
-    : [];
+  terms.push('This contract becomes legally binding upon electronic acceptance, signature, or verbal agreement. No wet signature is required.');
+  terms.push("This contract supersedes all prior agreements between the parties. All disputes are subject exclusively to the Dominant's final judgment.");
 
   return {
     title,
-    description: descriptions[intensityLevel],
+    description,
     intensity_level: intensityLevel,
     monthly_payment: monthlyPayment,
     duration_months: duration,
@@ -127,7 +209,7 @@ function buildContractLocally(prompt, intensityLevel, kws) {
     interest_rate: interestRate,
     compound_frequency: compoundFreq,
     collateral_type: collateral,
-    terms: [...baseTerms, ...intensityTerms[intensityLevel], ...kwTerms, ...extraFromPrompt]
+    terms,
   };
 }
 
@@ -213,15 +295,9 @@ export default function AIContractDrafter() {
     generateMutation.mutate(prompt || `Generate a ${intensity} intensity findom contract`);
   };
 
-  const handleAccept = () => {
-    acceptMutation.mutate(editedContract || generatedContract);
-  };
-
+  const handleAccept = () => acceptMutation.mutate(editedContract || generatedContract);
   const handleEditToggle = () => setIsEditing(!isEditing);
-
-  const updateEditedField = (field, value) => {
-    setEditedContract({ ...editedContract, [field]: value });
-  };
+  const updateEditedField = (field, value) => setEditedContract({ ...editedContract, [field]: value });
 
   const updateTerm = (index, value) => {
     const newTerms = [...editedContract.terms];
@@ -229,59 +305,34 @@ export default function AIContractDrafter() {
     setEditedContract({ ...editedContract, terms: newTerms });
   };
 
-  const addTerm = () => {
-    setEditedContract({ ...editedContract, terms: [...editedContract.terms, 'New term'] });
-  };
-
-  const removeTerm = (index) => {
-    setEditedContract({ ...editedContract, terms: editedContract.terms.filter((_, i) => i !== index) });
-  };
+  const addTerm = () => setEditedContract({ ...editedContract, terms: [...editedContract.terms, 'New term'] });
+  const removeTerm = (index) => setEditedContract({ ...editedContract, terms: editedContract.terms.filter((_, i) => i !== index) });
 
   return (
     <div className="min-h-screen bg-black text-white">
-      {/* Header */}
       <div className="relative border-b border-zinc-800">
         <div className="absolute inset-0 bg-gradient-to-r from-purple-900/10 to-transparent" />
         <div className="relative px-6 py-4 flex items-center justify-between">
-          <button
-            onClick={() => navigate(createPageUrl('Home'))}
-            className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            Back
+          <button onClick={() => navigate(createPageUrl('Home'))} className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors">
+            <ArrowLeft className="w-5 h-5" />Back
           </button>
           <h1 className="text-lg font-bold flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-purple-500" />
-            AI Contract Drafter
+            <Sparkles className="w-5 h-5 text-purple-500" />AI Contract Drafter
           </h1>
           <div className="w-12" />
         </div>
       </div>
 
       <div className="px-6 pb-24 space-y-6 pt-6">
-        {/* Input Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6"
-        >
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
           <h2 className="text-white font-bold text-lg mb-4">Design Your Contract</h2>
-
           <div className="space-y-4">
-            {/* Intensity Level */}
             <div>
               <Label className="text-zinc-400 text-sm">Intensity Level</Label>
               <div className="grid grid-cols-4 gap-2 mt-2">
                 {['mild', 'moderate', 'intense', 'extreme'].map((level) => (
-                  <button
-                    key={level}
-                    onClick={() => setIntensity(level)}
-                    className={`py-2 px-3 rounded-lg font-semibold text-sm transition-all ${
-                      intensity === level
-                        ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
-                        : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
-                    }`}
-                  >
+                  <button key={level} onClick={() => setIntensity(level)}
+                    className={`py-2 px-3 rounded-lg font-semibold text-sm transition-all ${intensity === level ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'}`}>
                     {level.charAt(0).toUpperCase() + level.slice(1)}
                   </button>
                 ))}
@@ -294,99 +345,64 @@ export default function AIContractDrafter() {
               </p>
             </div>
 
-            {/* Custom Keywords */}
             <div>
               <Label className="text-zinc-400 text-sm">Custom Keywords & Themes</Label>
               <div className="flex gap-2 mt-2">
-                <Input
-                  value={customKeywords}
-                  onChange={(e) => setCustomKeywords(e.target.value)}
+                <Input value={customKeywords} onChange={(e) => setCustomKeywords(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && addKeyword()}
                   placeholder="e.g., humiliation, wealth transfer, chastity..."
-                  className="bg-zinc-800 border-zinc-700 text-white flex-1"
-                />
-                <Button onClick={addKeyword} variant="outline" className="border-purple-500/50 text-purple-400">
-                  Add
-                </Button>
+                  className="bg-zinc-800 border-zinc-700 text-white flex-1" />
+                <Button onClick={addKeyword} variant="outline" className="border-purple-500/50 text-purple-400">Add</Button>
               </div>
               {keywords.length > 0 && (
                 <div className="flex flex-wrap gap-2 mt-3">
                   {keywords.map((keyword, idx) => (
                     <div key={idx} className="bg-purple-900/30 border border-purple-600/50 rounded-full px-3 py-1 flex items-center gap-2">
                       <span className="text-sm text-purple-300">{keyword}</span>
-                      <button onClick={() => removeKeyword(idx)} className="text-purple-400 hover:text-purple-300">
-                        <X className="w-3 h-3" />
-                      </button>
+                      <button onClick={() => removeKeyword(idx)} className="text-purple-400 hover:text-purple-300"><X className="w-3 h-3" /></button>
                     </div>
                   ))}
                 </div>
               )}
             </div>
 
-            {/* Requirements */}
             <div>
               <Label className="text-zinc-400 text-sm">Additional Requirements (optional)</Label>
-              <Textarea
-                value={requirements}
-                onChange={(e) => setRequirements(e.target.value)}
+              <Textarea value={requirements} onChange={(e) => setRequirements(e.target.value)}
                 placeholder="Describe specific terms: duration, payment amount, special conditions, collateral, penalties, etc."
-                className="bg-zinc-800 border-zinc-700 text-white mt-2 min-h-[100px]"
-              />
+                className="bg-zinc-800 border-zinc-700 text-white mt-2 min-h-[100px]" />
             </div>
 
-            {/* Warning */}
             <div className="bg-red-950/50 border-2 border-red-500/60 rounded-xl p-4 flex items-start gap-3">
               <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
               <div>
                 <p className="text-red-300 font-bold text-sm">⚠️ ALL CONTRACTS ARE LEGALLY BINDING</p>
-                <p className="text-red-400/80 text-xs mt-1">
-                  Any contract you generate and accept is fully enforceable. By accepting, you agree to all obligations unconditionally.
-                </p>
+                <p className="text-red-400/80 text-xs mt-1">Any contract you generate and accept is fully enforceable. By accepting, you agree to all obligations unconditionally.</p>
               </div>
             </div>
 
-            <Button
-              onClick={handleGenerate}
-              disabled={generateMutation.isPending}
-              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-            >
-              {generateMutation.isPending ? (
-                <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Generating...</>
-              ) : (
-                <><Sparkles className="w-4 h-4 mr-2" />Generate Contract</>
-              )}
+            <Button onClick={handleGenerate} disabled={generateMutation.isPending}
+              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
+              {generateMutation.isPending ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Generating...</> : <><Sparkles className="w-4 h-4 mr-2" />Generate Contract</>}
             </Button>
           </div>
         </motion.div>
 
-        {/* Example Prompts */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6"
-        >
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
           <h3 className="text-white font-bold mb-3">Example Prompts</h3>
           <div className="space-y-2">
             {EXAMPLE_PROMPTS.map((prompt, idx) => (
-              <button
-                key={idx}
-                onClick={() => setRequirements(prompt)}
-                className="w-full text-left bg-zinc-800/50 hover:bg-zinc-800 rounded-lg p-3 text-sm text-zinc-300 transition-colors"
-              >
+              <button key={idx} onClick={() => setRequirements(prompt)}
+                className="w-full text-left bg-zinc-800/50 hover:bg-zinc-800 rounded-lg p-3 text-sm text-zinc-300 transition-colors">
                 "{prompt}"
               </button>
             ))}
           </div>
         </motion.div>
 
-        {/* Generated Contract */}
         {generatedContract && editedContract && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-gradient-to-br from-purple-900/30 to-pink-900/30 border-2 border-purple-500/50 rounded-2xl p-6"
-          >
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+            className="bg-gradient-to-br from-purple-900/30 to-pink-900/30 border-2 border-purple-500/50 rounded-2xl p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <FileText className="w-6 h-6 text-purple-400" />
@@ -405,49 +421,28 @@ export default function AIContractDrafter() {
                     <h3 className="text-white font-bold text-xl mb-2">{editedContract.title}</h3>
                     <p className="text-zinc-300 text-sm">{editedContract.description}</p>
                   </div>
-
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-zinc-900/50 rounded-lg p-3">
-                      <p className="text-zinc-500 text-xs">Monthly Payment</p>
-                      <p className="text-white font-bold">${editedContract.monthly_payment}</p>
-                    </div>
-                    <div className="bg-zinc-900/50 rounded-lg p-3">
-                      <p className="text-zinc-500 text-xs">Duration</p>
-                      <p className="text-white font-bold">{editedContract.duration_months ? `${editedContract.duration_months}m` : 'Permanent'}</p>
-                    </div>
-                    <div className="bg-zinc-900/50 rounded-lg p-3">
-                      <p className="text-zinc-500 text-xs">Intensity</p>
-                      <p className="text-white font-bold capitalize">{editedContract.intensity_level}</p>
-                    </div>
-                    <div className="bg-zinc-900/50 rounded-lg p-3">
-                      <p className="text-zinc-500 text-xs">Penalty</p>
-                      <p className="text-white font-bold">{editedContract.penalty_percentage}%</p>
-                    </div>
+                    <div className="bg-zinc-900/50 rounded-lg p-3"><p className="text-zinc-500 text-xs">Monthly Payment</p><p className="text-white font-bold">${editedContract.monthly_payment}</p></div>
+                    <div className="bg-zinc-900/50 rounded-lg p-3"><p className="text-zinc-500 text-xs">Duration</p><p className="text-white font-bold">{editedContract.duration_months ? `${editedContract.duration_months}m` : 'Permanent'}</p></div>
+                    <div className="bg-zinc-900/50 rounded-lg p-3"><p className="text-zinc-500 text-xs">Intensity</p><p className="text-white font-bold capitalize">{editedContract.intensity_level}</p></div>
+                    <div className="bg-zinc-900/50 rounded-lg p-3"><p className="text-zinc-500 text-xs">Penalty</p><p className="text-white font-bold">{editedContract.penalty_percentage}%</p></div>
                   </div>
-
                   {editedContract.interest_rate > 0 && (
                     <div className="bg-orange-900/30 border border-orange-600/30 rounded-lg p-3">
-                      <p className="text-orange-400 text-sm font-bold">
-                        {editedContract.interest_rate}% Interest Rate ({editedContract.compound_frequency} compounding)
-                      </p>
+                      <p className="text-orange-400 text-sm font-bold">{editedContract.interest_rate}% Interest Rate ({editedContract.compound_frequency} compounding)</p>
                     </div>
                   )}
-
                   {editedContract.collateral_type && editedContract.collateral_type !== 'none' && (
                     <div className="bg-red-900/30 border border-red-600/30 rounded-lg p-3">
-                      <p className="text-red-400 text-sm font-bold">
-                        Collateral Required: {editedContract.collateral_type.replace(/_/g, ' ')}
-                      </p>
+                      <p className="text-red-400 text-sm font-bold">Collateral Required: {editedContract.collateral_type.replace(/_/g, ' ')}</p>
                     </div>
                   )}
-
                   <div>
                     <p className="text-zinc-400 text-sm font-medium mb-2">Contract Terms:</p>
                     <ul className="space-y-1">
                       {editedContract.terms.map((term, idx) => (
                         <li key={idx} className="text-zinc-300 text-sm flex items-start gap-2">
-                          <span className="text-purple-400">•</span>
-                          <span>{term}</span>
+                          <span className="text-purple-400">•</span><span>{term}</span>
                         </li>
                       ))}
                     </ul>
@@ -465,7 +460,6 @@ export default function AIContractDrafter() {
                       <Textarea value={editedContract.description} onChange={(e) => updateEditedField('description', e.target.value)} className="bg-zinc-800 border-zinc-700 text-white mt-1" />
                     </div>
                   </div>
-
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <Label className="text-zinc-400 text-xs">Monthly Payment ($)</Label>
@@ -502,7 +496,6 @@ export default function AIContractDrafter() {
                       </div>
                     </div>
                   </div>
-
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <Label className="text-zinc-400 text-xs">Contract Terms</Label>
@@ -514,9 +507,7 @@ export default function AIContractDrafter() {
                       {editedContract.terms.map((term, idx) => (
                         <div key={idx} className="flex gap-2">
                           <Input value={term} onChange={(e) => updateTerm(idx, e.target.value)} className="bg-zinc-800 border-zinc-700 text-white flex-1" />
-                          <Button type="button" size="icon" variant="ghost" onClick={() => removeTerm(idx)} className="text-red-400 hover:text-red-300">
-                            <X className="w-4 h-4" />
-                          </Button>
+                          <Button type="button" size="icon" variant="ghost" onClick={() => removeTerm(idx)} className="text-red-400 hover:text-red-300"><X className="w-4 h-4" /></Button>
                         </div>
                       ))}
                     </div>
@@ -525,23 +516,12 @@ export default function AIContractDrafter() {
               )}
 
               <div className="flex gap-3 pt-4">
-                <Button
-                  variant="outline"
-                  onClick={() => { setGeneratedContract(null); setEditedContract(null); setIsEditing(false); }}
-                  className="flex-1 border-zinc-700"
-                >
+                <Button variant="outline" onClick={() => { setGeneratedContract(null); setEditedContract(null); setIsEditing(false); }} className="flex-1 border-zinc-700">
                   Generate New
                 </Button>
-                <Button
-                  onClick={handleAccept}
-                  disabled={acceptMutation.isPending}
-                  className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-                >
-                  {acceptMutation.isPending ? (
-                    <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Saving...</>
-                  ) : (
-                    <><CheckCircle className="w-4 h-4 mr-2" />Accept Contract</>
-                  )}
+                <Button onClick={handleAccept} disabled={acceptMutation.isPending}
+                  className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
+                  {acceptMutation.isPending ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Saving...</> : <><CheckCircle className="w-4 h-4 mr-2" />Accept Contract</>}
                 </Button>
               </div>
             </div>
