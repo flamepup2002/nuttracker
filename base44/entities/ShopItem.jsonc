@@ -1,0 +1,66 @@
+{
+  "name": "ShopItem",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Item name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Item description"
+    },
+    "price": {
+      "type": "number",
+      "description": "Cost in coins"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "cosmetic",
+        "feature",
+        "premium",
+        "limited"
+      ],
+      "description": "Item category"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Lucide icon name"
+    },
+    "color": {
+      "type": "string",
+      "description": "Gradient color class"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether item is available for purchase"
+    }
+  },
+  "required": [
+    "name",
+    "price",
+    "category",
+    "icon",
+    "color"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": true,
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

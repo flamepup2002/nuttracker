@@ -1,0 +1,116 @@
+{
+  "name": "UserAchievement",
+  "type": "object",
+  "properties": {
+    "achievement_id": {
+      "type": "string",
+      "description": "Unique achievement identifier"
+    },
+    "achievement_name": {
+      "type": "string",
+      "description": "Display name of the achievement"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "subscription",
+        "findom",
+        "goon",
+        "bully_ai",
+        "engagement"
+      ],
+      "description": "Achievement category"
+    },
+    "description": {
+      "type": "string",
+      "description": "What this achievement is for"
+    },
+    "icon_url": {
+      "type": "string",
+      "description": "Badge/icon image URL"
+    },
+    "rarity": {
+      "type": "string",
+      "enum": [
+        "common",
+        "uncommon",
+        "rare",
+        "epic",
+        "legendary"
+      ],
+      "default": "common",
+      "description": "Achievement rarity level"
+    },
+    "unlocked_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the achievement was unlocked"
+    },
+    "is_showcased": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this is displayed on user profile"
+    },
+    "reward_type": {
+      "type": "string",
+      "enum": [
+        "coins",
+        "theme",
+        "badge",
+        "title",
+        "aura",
+        "custom"
+      ],
+      "description": "Type of reward granted"
+    },
+    "reward_value": {
+      "type": "number",
+      "default": 0,
+      "description": "Numeric value of reward (coins amount, etc)"
+    },
+    "reward_data": {
+      "type": "object",
+      "description": "Additional reward data (theme colors, badge details, etc)"
+    },
+    "reward_claimed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the reward has been claimed"
+    },
+    "claimed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the reward was claimed"
+    }
+  },
+  "required": [
+    "achievement_id",
+    "achievement_name",
+    "category"
+  ],
+  "rls": {
+    "create": {
+      "created_by": "{{user.email}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "created_by": "{{user.email}}"
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

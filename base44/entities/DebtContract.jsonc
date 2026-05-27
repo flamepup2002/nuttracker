@@ -1,0 +1,249 @@
+{
+  "name": "DebtContract",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Contract title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Contract terms and details"
+    },
+    "intensity_level": {
+      "type": "string",
+      "enum": [
+        "mild",
+        "moderate",
+        "intense",
+        "extreme"
+      ],
+      "description": "Contract intensity level"
+    },
+    "monthly_payment": {
+      "type": "number",
+      "description": "Monthly payment obligation"
+    },
+    "duration_months": {
+      "type": "number",
+      "description": "Contract duration in months"
+    },
+    "total_obligation": {
+      "type": "number",
+      "description": "Total amount owed over contract period"
+    },
+    "penalty_percentage": {
+      "type": "number",
+      "default": 5,
+      "description": "Penalty percentage for late payments"
+    },
+    "custom_penalty_clause": {
+      "type": "string",
+      "description": "Custom penalty terms defined by user"
+    },
+    "collateral_type": {
+      "type": "string",
+      "enum": [
+        "none",
+        "house",
+        "car",
+        "savings",
+        "retirement_accounts",
+        "crypto",
+        "jewelry",
+        "electronics",
+        "all_assets"
+      ],
+      "default": "none",
+      "description": "Type of collateral pledged"
+    },
+    "collateral_details": {
+      "type": "string",
+      "description": "Detailed description of collateral"
+    },
+    "interest_rate": {
+      "type": "number",
+      "default": 0,
+      "description": "Annual interest rate percentage on unpaid balance"
+    },
+    "compound_frequency": {
+      "type": "string",
+      "enum": [
+        "none",
+        "daily",
+        "weekly",
+        "monthly",
+        "quarterly"
+      ],
+      "default": "none",
+      "description": "How often interest compounds"
+    },
+    "payment_frequency": {
+      "type": "string",
+      "enum": [
+        "monthly",
+        "weekly",
+        "biweekly",
+        "daily"
+      ],
+      "default": "monthly",
+      "description": "How often payments are due"
+    },
+    "terms": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of contract terms and conditions"
+    },
+    "is_accepted": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether user has accepted contract"
+    },
+    "accepted_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When contract was accepted"
+    },
+    "cancelled_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When contract was cancelled"
+    },
+    "cancelled_by_admin": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this contract was cancelled by an admin"
+    },
+    "cancel_status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "cancelled"
+      ],
+      "default": "active",
+      "description": "Cancellation status"
+    },
+    "next_payment_due": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When next payment is due"
+    },
+    "amount_paid": {
+      "type": "number",
+      "default": 0,
+      "description": "Amount already paid towards contract"
+    },
+    "stripe_subscription_id": {
+      "type": "string",
+      "description": "Stripe subscription ID for recurring payments"
+    },
+    "stripe_payment_intent_id": {
+      "type": "string",
+      "description": "Stripe payment intent ID for one-time payments"
+    },
+    "dispute_status": {
+      "type": "string",
+      "enum": [
+        "none",
+        "pending",
+        "resolved",
+        "rejected"
+      ],
+      "default": "none",
+      "description": "Current dispute status"
+    },
+    "dispute_reason": {
+      "type": "string",
+      "description": "Reason for dispute"
+    },
+    "disputed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When dispute was filed"
+    },
+    "dispute_rejected_penalty": {
+      "type": "number",
+      "default": 0,
+      "description": "Penalty amount added when dispute was rejected"
+    },
+    "signature_data": {
+      "type": "string",
+      "description": "Base64 encoded signature image"
+    },
+    "signed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When contract was digitally signed"
+    },
+    "in_liquidation": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether collateral is being liquidated"
+    },
+    "liquidation_started_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When liquidation process started"
+    },
+    "liquidation_completed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When liquidation was completed"
+    },
+    "cancellation_irrevocable": {
+      "type": "boolean",
+      "default": false,
+      "description": "User has waived their right to cancel"
+    },
+    "cancellation_penalty_triggered": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether a cancellation attempt penalty has been applied"
+    },
+    "cancellation_penalty_amount": {
+      "type": "number",
+      "default": 0,
+      "description": "Total penalties accumulated from cancellation attempts"
+    }
+  },
+  "required": [
+    "title",
+    "monthly_payment",
+    "duration_months",
+    "intensity_level"
+  ],
+  "rls": {
+    "create": {
+      "created_by": "{{user.email}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "created_by": "{{user.email}}"
+    }
+  }
+}

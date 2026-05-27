@@ -1,0 +1,77 @@
+{
+  "name": "PremiumSessionType",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Session type name"
+    },
+    "description": {
+      "type": "string",
+      "description": "What the session includes"
+    },
+    "base_price": {
+      "type": "number",
+      "description": "Base price in dollars"
+    },
+    "duration_minutes": {
+      "type": "number",
+      "description": "Recommended session duration"
+    },
+    "features": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of included features"
+    },
+    "intensity_level": {
+      "type": "string",
+      "enum": [
+        "mild",
+        "moderate",
+        "intense",
+        "extreme"
+      ],
+      "default": "moderate",
+      "description": "Session intensity"
+    },
+    "discount_for_subscribers": {
+      "type": "number",
+      "default": 0,
+      "description": "Percentage discount for subscribers"
+    },
+    "is_available": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether session type is available"
+    },
+    "popularity_score": {
+      "type": "number",
+      "default": 0,
+      "description": "How popular this session is"
+    }
+  },
+  "required": [
+    "name",
+    "base_price"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": true,
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

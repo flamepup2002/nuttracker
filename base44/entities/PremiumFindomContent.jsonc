@@ -1,0 +1,82 @@
+{
+  "name": "PremiumFindomContent",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Content title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed description"
+    },
+    "content_type": {
+      "type": "string",
+      "enum": [
+        "audio",
+        "video",
+        "guide",
+        "custom_session"
+      ],
+      "description": "Type of content"
+    },
+    "price": {
+      "type": "number",
+      "description": "Price in USD"
+    },
+    "duration_minutes": {
+      "type": "number",
+      "description": "Duration in minutes (for audio/video)"
+    },
+    "intensity_level": {
+      "type": "string",
+      "enum": [
+        "mild",
+        "moderate",
+        "intense",
+        "extreme"
+      ],
+      "description": "Intensity rating"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Content tags"
+    },
+    "thumbnail_url": {
+      "type": "string",
+      "description": "Thumbnail image URL"
+    },
+    "is_available": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether content is available for purchase"
+    }
+  },
+  "required": [
+    "title",
+    "price",
+    "content_type",
+    "intensity_level"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": true,
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

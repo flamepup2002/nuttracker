@@ -1,0 +1,72 @@
+{
+  "name": "UserAsset",
+  "type": "object",
+  "properties": {
+    "asset_type": {
+      "type": "string",
+      "enum": [
+        "car",
+        "house",
+        "jewelry",
+        "electronics",
+        "crypto",
+        "savings",
+        "retirement_accounts",
+        "other"
+      ],
+      "description": "Type of asset"
+    },
+    "name": {
+      "type": "string",
+      "description": "Asset name or title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed description of the asset"
+    },
+    "estimated_value": {
+      "type": "number",
+      "description": "Current estimated value in dollars"
+    },
+    "purchase_date": {
+      "type": "string",
+      "format": "date",
+      "description": "When the asset was acquired"
+    },
+    "image_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "URLs to asset images"
+    },
+    "is_pledged_as_collateral": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this asset is currently pledged as collateral"
+    },
+    "pledged_to_contract_id": {
+      "type": "string",
+      "description": "ID of contract this asset is pledged to"
+    }
+  },
+  "required": [
+    "asset_type",
+    "name",
+    "estimated_value"
+  ],
+  "rls": {
+    "create": {
+      "created_by": "{{user.email}}"
+    },
+    "read": {
+      "created_by": "{{user.email}}"
+    },
+    "update": {
+      "created_by": "{{user.email}}"
+    },
+    "delete": {
+      "created_by": "{{user.email}}"
+    }
+  }
+}

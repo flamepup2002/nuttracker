@@ -1,0 +1,73 @@
+{
+  "name": "RecurringPaymentPlan",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the payment plan"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Amount per cycle in dollars"
+    },
+    "frequency": {
+      "type": "string",
+      "enum": [
+        "daily",
+        "weekly",
+        "biweekly",
+        "monthly"
+      ],
+      "description": "How often the payment occurs"
+    },
+    "description": {
+      "type": "string",
+      "description": "What the plan provides"
+    },
+    "benefits": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of benefits included"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether subscription is active"
+    },
+    "stripe_subscription_id": {
+      "type": "string",
+      "description": "Stripe subscription ID"
+    },
+    "next_billing_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the next billing occurs"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When subscription started"
+    }
+  },
+  "required": [
+    "name",
+    "amount",
+    "frequency"
+  ],
+  "rls": {
+    "create": {
+      "created_by": "{{user.email}}"
+    },
+    "read": {
+      "created_by": "{{user.email}}"
+    },
+    "update": {
+      "created_by": "{{user.email}}"
+    },
+    "delete": {
+      "created_by": "{{user.email}}"
+    }
+  }
+}

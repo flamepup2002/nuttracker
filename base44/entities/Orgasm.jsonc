@@ -1,0 +1,55 @@
+{
+  "name": "Orgasm",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "cumshot",
+        "ruined",
+        "denied",
+        "cashgasm"
+      ],
+      "description": "Type of orgasm"
+    },
+    "session_id": {
+      "type": "string",
+      "description": "Associated session ID if any"
+    },
+    "is_findom": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this had a findom cost"
+    },
+    "cost": {
+      "type": "number",
+      "default": 0,
+      "description": "Cost charged for this orgasm"
+    },
+    "heart_rate_at_time": {
+      "type": "number",
+      "description": "Heart rate when logged"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional notes"
+    }
+  },
+  "required": [
+    "type"
+  ],
+  "rls": {
+    "create": {
+      "created_by": "{{user.email}}"
+    },
+    "read": {
+      "created_by": "{{user.email}}"
+    },
+    "update": {
+      "created_by": "{{user.email}}"
+    },
+    "delete": {
+      "created_by": "{{user.email}}"
+    }
+  }
+}

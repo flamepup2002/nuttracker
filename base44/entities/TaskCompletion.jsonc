@@ -1,0 +1,77 @@
+{
+  "name": "TaskCompletion",
+  "type": "object",
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "description": "Reference to the BullyTask"
+    },
+    "task_description": {
+      "type": "string",
+      "description": "The task description for reference"
+    },
+    "user_report": {
+      "type": "string",
+      "description": "User's report of completing the task"
+    },
+    "proof_images": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Image URLs proving completion"
+    },
+    "submitted_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When completion was reported"
+    },
+    "ai_feedback": {
+      "type": "string",
+      "description": "AI's feedback on the completed task"
+    },
+    "coins_awarded": {
+      "type": "number",
+      "default": 0,
+      "description": "Coins given for completion"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending_review",
+        "approved",
+        "rejected"
+      ],
+      "default": "pending_review",
+      "description": "Approval status"
+    }
+  },
+  "required": [
+    "task_id",
+    "task_description",
+    "user_report"
+  ],
+  "rls": {
+    "create": {
+      "created_by": "{{user.email}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "created_by": "{{user.email}}"
+    },
+    "delete": {
+      "created_by": "{{user.email}}"
+    }
+  }
+}

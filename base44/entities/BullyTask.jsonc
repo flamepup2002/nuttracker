@@ -1,0 +1,82 @@
+{
+  "name": "BullyTask",
+  "type": "object",
+  "properties": {
+    "task_description": {
+      "type": "string",
+      "description": "The task assigned by Bully AI"
+    },
+    "assigned_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the task was assigned"
+    },
+    "due_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the task should be completed"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "submitted",
+        "completed",
+        "failed"
+      ],
+      "default": "pending",
+      "description": "Task completion status"
+    },
+    "difficulty": {
+      "type": "string",
+      "enum": [
+        "easy",
+        "medium",
+        "hard",
+        "extreme"
+      ],
+      "default": "medium",
+      "description": "Task difficulty level"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "goon",
+        "findom",
+        "workout",
+        "humiliation",
+        "denial",
+        "submission"
+      ],
+      "description": "Task category"
+    },
+    "reward_coins": {
+      "type": "number",
+      "default": 0,
+      "description": "Coins rewarded for completion"
+    },
+    "completion_proof_required": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether task requires proof of completion"
+    }
+  },
+  "required": [
+    "task_description",
+    "assigned_at"
+  ],
+  "rls": {
+    "create": {
+      "created_by": "{{user.email}}"
+    },
+    "read": {
+      "created_by": "{{user.email}}"
+    },
+    "update": {
+      "created_by": "{{user.email}}"
+    },
+    "delete": {
+      "created_by": "{{user.email}}"
+    }
+  }
+}

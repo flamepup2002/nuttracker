@@ -1,0 +1,76 @@
+{
+  "name": "TributeGoal",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the tribute goal"
+    },
+    "target_amount": {
+      "type": "number",
+      "description": "Target amount in dollars or coins"
+    },
+    "current_amount": {
+      "type": "number",
+      "default": 0,
+      "description": "Current accumulated amount"
+    },
+    "currency": {
+      "type": "string",
+      "enum": [
+        "usd",
+        "coins"
+      ],
+      "default": "usd",
+      "description": "Currency type for the goal"
+    },
+    "description": {
+      "type": "string",
+      "description": "What the tribute goal is for"
+    },
+    "deadline": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the goal should be completed"
+    },
+    "priority_level": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "extreme"
+      ],
+      "default": "medium",
+      "description": "Priority level affects AI suggestions"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether goal is currently active"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the goal was completed"
+    }
+  },
+  "required": [
+    "name",
+    "target_amount"
+  ],
+  "rls": {
+    "create": {
+      "created_by": "{{user.email}}"
+    },
+    "read": {
+      "created_by": "{{user.email}}"
+    },
+    "update": {
+      "created_by": "{{user.email}}"
+    },
+    "delete": {
+      "created_by": "{{user.email}}"
+    }
+  }
+}

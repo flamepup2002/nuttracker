@@ -1,0 +1,144 @@
+{
+  "name": "User",
+  "type": "object",
+  "properties": {
+    "bio": {
+      "type": "string",
+      "description": "User biography"
+    },
+    "gender": {
+      "type": "string",
+      "description": "User's gender identity"
+    },
+    "sexual_preference": {
+      "type": "string",
+      "enum": [
+        "straight",
+        "gay",
+        "lesbian",
+        "bisexual",
+        "pansexual",
+        "asexual",
+        "other",
+        "prefer_not_to_say"
+      ],
+      "description": "User's sexual orientation"
+    },
+    "address": {
+      "type": "string",
+      "description": "User's home address"
+    },
+    "birth_date": {
+      "type": "string",
+      "format": "date",
+      "description": "User's date of birth"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Phone number"
+    },
+    "country": {
+      "type": "string",
+      "description": "User's country"
+    },
+    "bank_account_holder": {
+      "type": "string",
+      "description": "Name on the bank account"
+    },
+    "bank_account_number": {
+      "type": "string",
+      "description": "Bank account number (encrypted)"
+    },
+    "bank_routing_number": {
+      "type": "string",
+      "description": "Bank routing number (encrypted)"
+    },
+    "bank_account_type": {
+      "type": "string",
+      "enum": [
+        "checking",
+        "savings"
+      ],
+      "description": "Type of bank account"
+    },
+    "stripe_bank_account_token": {
+      "type": "string",
+      "description": "Stripe tokenized bank account"
+    },
+    "findom_intensity_preference": {
+      "type": "string",
+      "enum": [
+        "mild",
+        "moderate",
+        "intense",
+        "extreme"
+      ],
+      "description": "Preferred findom intensity level"
+    },
+    "active_theme": {
+      "type": "string",
+      "description": "Currently active theme color scheme"
+    },
+    "unlocked_themes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of unlocked theme names"
+    },
+    "profile_title": {
+      "type": "string",
+      "description": "Custom profile title earned from achievements"
+    },
+    "unlocked_titles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of unlocked profile titles"
+    },
+    "active_aura": {
+      "type": "string",
+      "description": "Currently active profile aura effect"
+    },
+    "unlocked_auras": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of unlocked aura effects"
+    },
+    "ssn_sin": {
+      "type": "string",
+      "description": "Social Security Number (SSN) or Social Insurance Number (SIN) - stored encrypted"
+    },
+    "annual_income": {
+      "type": "number",
+      "description": "Annual income in USD for financial health calculations"
+    },
+    "monthly_expenses": {
+      "type": "number",
+      "description": "Estimated monthly living expenses"
+    },
+    "credit_score": {
+      "type": "number",
+      "description": "Self-reported credit score (300-850)"
+    },
+    "employment_status": {
+      "type": "string",
+      "enum": [
+        "employed",
+        "self_employed",
+        "unemployed",
+        "student",
+        "retired"
+      ],
+      "description": "Current employment status"
+    },
+    "net_worth": {
+      "type": "number",
+      "description": "Self-reported net worth in USD"
+    }
+  },
+  "required": []
+}

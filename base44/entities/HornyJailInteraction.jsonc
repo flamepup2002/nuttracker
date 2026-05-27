@@ -1,0 +1,70 @@
+{
+  "name": "HornyJailInteraction",
+  "type": "object",
+  "properties": {
+    "session_id": {
+      "type": "string",
+      "description": "Associated horny jail session ID"
+    },
+    "user_message": {
+      "type": "string",
+      "description": "What the user said to the AI"
+    },
+    "ai_response": {
+      "type": "string",
+      "description": "What the AI responded"
+    },
+    "ai_mood": {
+      "type": "string",
+      "enum": [
+        "merciless",
+        "cruel",
+        "sadistic"
+      ],
+      "description": "AI mood level during interaction"
+    },
+    "time_remaining_at_interaction": {
+      "type": "number",
+      "description": "Minutes remaining when interaction occurred"
+    },
+    "was_permanently_locked": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether user was permanently locked during this interaction"
+    },
+    "ai_action_taken": {
+      "type": "string",
+      "enum": [
+        "none",
+        "extended_time",
+        "mocked",
+        "threatened"
+      ],
+      "description": "What action the AI took during this interaction"
+    },
+    "time_extended_minutes": {
+      "type": "number",
+      "default": 0,
+      "description": "How many minutes AI added (if any)"
+    }
+  },
+  "required": [
+    "session_id",
+    "user_message",
+    "ai_response"
+  ],
+  "rls": {
+    "create": {
+      "created_by": "{{user.email}}"
+    },
+    "read": {
+      "created_by": "{{user.email}}"
+    },
+    "update": {
+      "created_by": "{{user.email}}"
+    },
+    "delete": {
+      "created_by": "{{user.email}}"
+    }
+  }
+}

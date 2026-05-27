@@ -1,0 +1,51 @@
+{
+  "name": "PremiumPurchase",
+  "type": "object",
+  "properties": {
+    "content_id": {
+      "type": "string",
+      "description": "ID of purchased content"
+    },
+    "content_title": {
+      "type": "string",
+      "description": "Title of purchased content"
+    },
+    "price": {
+      "type": "number",
+      "description": "Price paid in USD"
+    },
+    "stripe_payment_intent_id": {
+      "type": "string",
+      "description": "Stripe Payment Intent ID"
+    },
+    "download_url": {
+      "type": "string",
+      "description": "URL to download/access content"
+    },
+    "access_expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When access expires (if applicable)"
+    }
+  },
+  "required": [
+    "content_id",
+    "content_title",
+    "price",
+    "stripe_payment_intent_id"
+  ],
+  "rls": {
+    "create": {
+      "created_by": "{{user.email}}"
+    },
+    "read": {
+      "created_by": "{{user.email}}"
+    },
+    "update": {
+      "created_by": "{{user.email}}"
+    },
+    "delete": {
+      "created_by": "{{user.email}}"
+    }
+  }
+}

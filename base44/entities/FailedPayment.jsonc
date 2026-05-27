@@ -1,0 +1,67 @@
+{
+  "name": "FailedPayment",
+  "type": "object",
+  "properties": {
+    "contract_id": {
+      "type": "string",
+      "description": "ID of the contract that failed payment"
+    },
+    "stripe_payment_intent_id": {
+      "type": "string",
+      "description": "Stripe payment intent ID"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Amount that failed"
+    },
+    "failure_reason": {
+      "type": "string",
+      "description": "Reason for payment failure"
+    },
+    "retry_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of retry attempts"
+    },
+    "next_retry_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When to retry payment"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending_retry",
+        "retrying",
+        "resolved",
+        "abandoned"
+      ],
+      "default": "pending_retry",
+      "description": "Status of failed payment"
+    },
+    "resolved_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When payment was successfully resolved"
+    }
+  },
+  "required": [
+    "contract_id",
+    "amount",
+    "failure_reason"
+  ],
+  "rls": {
+    "create": {
+      "created_by": "{{user.email}}"
+    },
+    "read": {
+      "created_by": "{{user.email}}"
+    },
+    "update": {
+      "created_by": "{{user.email}}"
+    },
+    "delete": {
+      "created_by": "{{user.email}}"
+    }
+  }
+}

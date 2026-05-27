@@ -1,0 +1,91 @@
+{
+  "name": "AIGuidedSession",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Session title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Session description"
+    },
+    "scenario_type": {
+      "type": "string",
+      "enum": [
+        "worship",
+        "humiliation",
+        "degradation",
+        "denial",
+        "corruption"
+      ],
+      "description": "Type of findom scenario"
+    },
+    "duration_minutes": {
+      "type": "number",
+      "description": "Expected session duration"
+    },
+    "intensity_level": {
+      "type": "string",
+      "enum": [
+        "mild",
+        "moderate",
+        "intense",
+        "extreme"
+      ],
+      "default": "moderate"
+    },
+    "base_cost": {
+      "type": "number",
+      "description": "Base cost to start session"
+    },
+    "current_step": {
+      "type": "number",
+      "default": 0,
+      "description": "Current step in the guided session"
+    },
+    "total_spent": {
+      "type": "number",
+      "default": 0,
+      "description": "Total amount spent so far"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "completed",
+        "abandoned"
+      ],
+      "default": "active"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When session started"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When session was completed"
+    }
+  },
+  "required": [
+    "title",
+    "scenario_type",
+    "base_cost"
+  ],
+  "rls": {
+    "create": {
+      "created_by": "{{user.email}}"
+    },
+    "read": {
+      "created_by": "{{user.email}}"
+    },
+    "update": {
+      "created_by": "{{user.email}}"
+    },
+    "delete": {
+      "created_by": "{{user.email}}"
+    }
+  }
+}

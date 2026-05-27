@@ -1,0 +1,81 @@
+{
+  "name": "FindomChallenge",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Challenge name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Challenge description"
+    },
+    "challenge_type": {
+      "type": "string",
+      "enum": [
+        "daily",
+        "weekly",
+        "custom"
+      ],
+      "description": "Challenge frequency"
+    },
+    "objective": {
+      "type": "string",
+      "description": "What user needs to accomplish"
+    },
+    "target_amount": {
+      "type": "number",
+      "description": "Target amount to spend/tribute"
+    },
+    "reward_coins": {
+      "type": "number",
+      "default": 0,
+      "description": "Coins earned upon completion"
+    },
+    "difficulty": {
+      "type": "string",
+      "enum": [
+        "easy",
+        "medium",
+        "hard",
+        "extreme"
+      ],
+      "default": "medium"
+    },
+    "time_limit_hours": {
+      "type": "number",
+      "description": "Hours to complete challenge"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Challenge banner image"
+    }
+  },
+  "required": [
+    "name",
+    "objective",
+    "target_amount"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": true,
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

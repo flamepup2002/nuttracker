@@ -1,0 +1,58 @@
+{
+  "name": "Payment",
+  "type": "object",
+  "properties": {
+    "session_id": {
+      "type": "string",
+      "description": "Associated session ID"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Amount charged in dollars"
+    },
+    "stripe_payment_intent_id": {
+      "type": "string",
+      "description": "Stripe Payment Intent ID"
+    },
+    "stripe_customer_id": {
+      "type": "string",
+      "description": "Stripe customer ID"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "succeeded",
+        "failed",
+        "refunded"
+      ],
+      "default": "pending"
+    },
+    "error_message": {
+      "type": "string",
+      "description": "Error message if payment failed"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional payment metadata"
+    }
+  },
+  "required": [
+    "amount",
+    "status"
+  ],
+  "rls": {
+    "create": {
+      "created_by": "{{user.email}}"
+    },
+    "read": {
+      "created_by": "{{user.email}}"
+    },
+    "update": {
+      "created_by": "{{user.email}}"
+    },
+    "delete": {
+      "created_by": "{{user.email}}"
+    }
+  }
+}

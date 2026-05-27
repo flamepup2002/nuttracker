@@ -1,0 +1,47 @@
+{
+  "name": "ViewingHistory",
+  "type": "object",
+  "properties": {
+    "session_id": {
+      "type": "string",
+      "description": "ID of the session/broadcast watched"
+    },
+    "broadcaster_email": {
+      "type": "string",
+      "description": "Email of the broadcaster"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags of the content watched"
+    },
+    "watch_duration_seconds": {
+      "type": "number",
+      "description": "How long the user watched"
+    },
+    "completed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether user watched the entire stream"
+    }
+  },
+  "required": [
+    "session_id"
+  ],
+  "rls": {
+    "create": {
+      "created_by": "{{user.email}}"
+    },
+    "read": {
+      "created_by": "{{user.email}}"
+    },
+    "update": {
+      "created_by": "{{user.email}}"
+    },
+    "delete": {
+      "created_by": "{{user.email}}"
+    }
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "name": "UserFeedback",
+  "type": "object",
+  "properties": {
+    "feedback_type": {
+      "type": "string",
+      "enum": [
+        "bug",
+        "feature_request",
+        "suggestion",
+        "compliment",
+        "other"
+      ],
+      "description": "Type of feedback"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "ui_ux",
+        "performance",
+        "features",
+        "content",
+        "account",
+        "other"
+      ],
+      "description": "Feedback category"
+    },
+    "rating": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 5,
+      "description": "Overall app rating (1-5 stars)"
+    },
+    "message": {
+      "type": "string",
+      "description": "Detailed feedback message"
+    },
+    "page_reported": {
+      "type": "string",
+      "description": "Page or feature the feedback is about"
+    },
+    "contact_info": {
+      "type": "string",
+      "description": "Optional contact information (email or other)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "new",
+        "reviewed",
+        "in_progress",
+        "resolved"
+      ],
+      "default": "new",
+      "description": "Admin review status"
+    },
+    "admin_notes": {
+      "type": "string",
+      "description": "Notes added by admin reviewer"
+    }
+  },
+  "required": [
+    "feedback_type",
+    "message",
+    "rating"
+  ],
+  "rls": {
+    "create": {
+      "created_by": "{{user.email}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

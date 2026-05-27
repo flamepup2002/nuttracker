@@ -1,0 +1,70 @@
+{
+  "name": "ChallengeProgress",
+  "type": "object",
+  "properties": {
+    "challenge_id": {
+      "type": "string",
+      "description": "ID of the challenge"
+    },
+    "challenge_name": {
+      "type": "string",
+      "description": "Challenge name for reference"
+    },
+    "current_amount": {
+      "type": "number",
+      "default": 0,
+      "description": "Current amount spent/earned"
+    },
+    "target_amount": {
+      "type": "number",
+      "description": "Target amount to reach"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "completed",
+        "failed"
+      ],
+      "default": "active"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When challenge was started"
+    },
+    "deadline": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When challenge must be completed"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When challenge was completed"
+    },
+    "reward_claimed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether reward has been claimed"
+    }
+  },
+  "required": [
+    "challenge_id",
+    "target_amount"
+  ],
+  "rls": {
+    "create": {
+      "created_by": "{{user.email}}"
+    },
+    "read": {
+      "created_by": "{{user.email}}"
+    },
+    "update": {
+      "created_by": "{{user.email}}"
+    },
+    "delete": {
+      "created_by": "{{user.email}}"
+    }
+  }
+}
