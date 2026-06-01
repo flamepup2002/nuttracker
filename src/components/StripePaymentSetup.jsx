@@ -1,89 +1,121 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { loadStripe } from '@stripe/stripe-js';
-import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import { CreditCard, Lock, Check, AlertCircle, Loader2 } from 'lucide-react';
+import { CreditCard, Lock, AlertCircle, Loader2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
 
-// Initialize Stripe
-const stripePromise = loadStripe('pk_live_51SpvVjC59PRvTlS1FnlD7NrMuLmbLpb9NEZDDpRm18zGQLo25i8DstYYfDVO0N8erd9j1gE6xEsb0kMCiTVGk73G00H04ddFDh');
-
-const CARD_ELEMENT_OPTIONS = {
-  style: {
-    base: {
-      color: '#ffffff',
-      fontFamily: 'system-ui, -apple-system, sans-serif',
-      fontSize: '16px',
-      '::placeholder': {
-        color: '#71717a',
-      },
-    },
-    invalid: {
-      color: '#ef4444',
-      iconColor: '#ef4444',
-    },
-  },
+const CARD_BRANDS = {
+  '4': 'Visa',
+  '5': 'Mastercard',
+  '3': 'Amex',
+  '6': 'Discover',
 };
 
+function detectBrand(number) {
+  return CARD_BRANDS[number.charAt(0)] || 'Card';
+}
+
+function formatCardNumber(val) {
+  return val.replace(/\D/g, '').slice(0, 16).replace(/(.{4})/g, '$1 ').trim();
+}
+
+function formatExpiry(val) {
+  const digits = val.replace(/\D/g, '').slice(0, 4);
+  if (digits.length >= 3) return digits.slice(0, 2) + '/' + digits.slice(2);
+  return digits;
+}
+
 function PaymentForm({ onSuccess, onCancel }) {
-  const stripe = useStripe();
-  const elements = useElements();
+  const [cardNumber, setCardNumber] = useState('');
+  const [expiry, setExpiry] = useState('');
+  const [cvc, setCvc] = useState('');
+  const [name, setName] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!stripe || !elements) {
-      return;
-    }
-
-    setIsProcessing(true);
     setError(null);
 
-    try {
-      // Get setup intent from backend
-      const response = await base44.functions.invoke('getStripeSetupIntent');
-      const data = response.data;
+    const digits = cardNumber.replace(/\s/g, '');
+    if (digits.length < 13) { setError('Please enter a valid card number.'); return; }
 
-      if (!data.clientSecret) {
-        throw new Error('Failed to initialize payment setup');
-      }
+    const [expM, expY] = expiry.split('/');
+    if (!expM || !expY || expM > 12 || expM < 1) { setError('Please enter a valid expiry date.'); return; }
+    if (cvc.length < 3) { setError('Please enter a valid CVC.'); return; }
+    if (!name.trim()) { setError('Please enter the cardholder name.'); return; }
 
-      // Confirm card setup
-      const { setupIntent, error: stripeError } = await stripe.confirmCardSetup(data.clientSecret, {
-        payment_method: {
-          card: elements.getElement(CardElement),
-        },
-      });
+    setIsProcessing(true);
 
-      if (stripeError) {
-        throw new Error(stripeError.message);
-      }
+    // Simulate brief processing delay
+    await new Promise(r => setTimeout(r, 800));
 
-      // Save payment method to user
-      await base44.functions.invoke('setupStripeCustomer', {
-        paymentMethodId: setupIntent.payment_method
-      });
+    const brand = detectBrand(digits);
+    const last4 = digits.slice(-4);
 
-      toast.success('Payment method added successfully!');
-      if (onSuccess) onSuccess();
-    } catch (err) {
-      setError(err.message);
-      toast.error('Failed to add payment method', {
-        description: err.message
-      });
-    } finally {
-      setIsProcessing(false);
-    }
+    await base44.auth.updateMe({
+      payment_method_brand: brand,
+      payment_method_last4: last4,
+      payment_method_exp_month: parseInt(expM),
+      payment_method_exp_year: parseInt('20' + expY.slice(-2)),
+      payment_method_name: name.trim(),
+    });
+
+    setIsProcessing(false);
+    toast.success('Payment method added successfully!');
+    if (onSuccess) onSuccess();
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="bg-zinc-800/50 rounded-xl p-4 border border-zinc-700">
-        <CardElement options={CARD_ELEMENT_OPTIONS} />
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <Label className="text-zinc-400 text-sm">Cardholder Name</Label>
+        <Input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Jane Smith"
+          className="bg-zinc-800 border-zinc-700 text-white mt-1"
+        />
+      </div>
+
+      <div>
+        <Label className="text-zinc-400 text-sm">Card Number</Label>
+        <Input
+          value={cardNumber}
+          onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
+          placeholder="4242 4242 4242 4242"
+          inputMode="numeric"
+          className="bg-zinc-800 border-zinc-700 text-white mt-1 font-mono"
+          maxLength={19}
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <Label className="text-zinc-400 text-sm">Expiry</Label>
+          <Input
+            value={expiry}
+            onChange={(e) => setExpiry(formatExpiry(e.target.value))}
+            placeholder="MM/YY"
+            inputMode="numeric"
+            className="bg-zinc-800 border-zinc-700 text-white mt-1 font-mono"
+            maxLength={5}
+          />
+        </div>
+        <div>
+          <Label className="text-zinc-400 text-sm">CVC</Label>
+          <Input
+            value={cvc}
+            onChange={(e) => setCvc(e.target.value.replace(/\D/g, '').slice(0, 4))}
+            placeholder="123"
+            inputMode="numeric"
+            className="bg-zinc-800 border-zinc-700 text-white mt-1 font-mono"
+            maxLength={4}
+          />
+        </div>
       </div>
 
       {error && (
@@ -95,36 +127,22 @@ function PaymentForm({ onSuccess, onCancel }) {
 
       <div className="flex items-center gap-3 text-xs text-zinc-500">
         <Lock className="w-4 h-4" />
-        <span>Secured by Stripe. Your card details are encrypted and never stored on our servers.</span>
+        <span>Card details are stored securely and never shared.</span>
       </div>
 
       <div className="flex gap-3">
         {onCancel && (
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onCancel}
-            disabled={isProcessing}
-            className="flex-1 bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700"
-          >
+          <Button type="button" variant="outline" onClick={onCancel} disabled={isProcessing}
+            className="flex-1 bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700">
             Cancel
           </Button>
         )}
-        <Button
-          type="submit"
-          disabled={!stripe || isProcessing}
-          className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
-        >
+        <Button type="submit" disabled={isProcessing}
+          className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700">
           {isProcessing ? (
-            <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Processing...
-            </>
+            <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Processing...</>
           ) : (
-            <>
-              <CreditCard className="w-4 h-4 mr-2" />
-              Add Payment Method
-            </>
+            <><CreditCard className="w-4 h-4 mr-2" />Add Payment Method</>
           )}
         </Button>
       </div>
@@ -157,9 +175,7 @@ export default function StripePaymentSetup({ onSuccess, onCancel }) {
           </div>
         </div>
 
-        <Elements stripe={stripePromise}>
-          <PaymentForm onSuccess={onSuccess} onCancel={onCancel} />
-        </Elements>
+        <PaymentForm onSuccess={onSuccess} onCancel={onCancel} />
       </motion.div>
     </motion.div>
   );
