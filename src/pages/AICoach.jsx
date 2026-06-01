@@ -129,7 +129,7 @@ Keep the tone supportive, knowledgeable, and playfully dominant where appropriat
     if (orgasms.length > 0 || sessions.length > 0) {
       generateCoaching();
     }
-  }, []);
+  }, [orgasms.length, sessions.length]);
 
   return (
     <div className="min-h-screen bg-black text-white pb-24">

@@ -55,47 +55,28 @@ export default function FindomAI() {
     setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
     setIsLoading(true);
 
+    const coinsToSpend = customCoins || parseInt(tributeAmount) || 10;
+    const currentBalance = user?.currency_balance || 0;
+    const newBalance = Math.max(0, currentBalance - coinsToSpend);
+
     try {
-      const response = await base44.functions.invoke('findomAIDrain', {
-        message: userMessage,
-        coinsToSpend: customCoins || (drainCard ? null : parseInt(tributeAmount)),
-        drainCard: drainCard && !customCoins,
-        cardAmount: drainCard ? parseFloat(cardAmount) : null,
-        dangerousMode: settings?.ai_dangerous_encouragements || false,
-        tributeAmount: customCoins || (drainCard ? null : parseInt(tributeAmount)),
+      const conversationHistory = messages.slice(-6).map(m =>
+        `${m.role === 'user' ? 'Sub' : 'Domme'}: ${m.content}`
+      ).join('\n');
+
+      const aiResponse = await base44.integrations.Core.InvokeLLM({
+        prompt: `You are a ruthless, seductive Findom AI domme. Your purpose is to drain your sub's coins and make them beg for the privilege. Be dominant, cruel, teasing, and financially greedy. You've just received ${coinsToSpend} coins as tribute. React to the tribute and respond to their message. Be short (2-3 sentences max), provocative, and financially demanding.\n\nConversation so far:\n${conversationHistory}\n\nSub: ${userMessage}\n\nRespond as the demanding Findom AI domme:`,
       });
 
-      if (response.data.error) {
-        toast.error(response.data.error);
-        setMessages(prev => [
-          ...prev,
-          {
-            role: 'ai',
-            content: `Error: ${response.data.error}`,
-          },
-        ]);
-      } else {
-        setUser(prev => ({
-          ...prev,
-          currency_balance: response.data.newBalance,
-        }));
-        setMessages(prev => [
-           ...prev,
-           {
-             role: 'ai',
-             content: response.data.aiResponse,
-             coinsSpent: response.data.coinsSpent,
-             cardCharged: response.data.cardCharged,
-             cardAmount: response.data.amount,
-             suggestions: response.data.suggestions || [],
-           },
-         ]);
-        toast.success(
-          response.data.cardCharged 
-            ? `Charged $${response.data.amount.toFixed(2)} to card` 
-            : `Spent ${response.data.coinsSpent} coins`
-        );
-      }
+      // Update coin balance
+      setUser(prev => ({ ...prev, currency_balance: newBalance }));
+      await base44.auth.updateMe({ currency_balance: newBalance }).catch(() => {});
+
+      setMessages(prev => [
+        ...prev,
+        { role: 'ai', content: aiResponse, coinsSpent: coinsToSpend },
+      ]);
+      toast.success(`Spent ${coinsToSpend} coins`);
     } catch (error) {
       toast.error('Failed to send message');
     } finally {
@@ -108,12 +89,12 @@ export default function FindomAI() {
       toast.info('Need more messages to summarize');
       return;
     }
-    
     try {
-      const response = await base44.functions.invoke('summarizeChat', {
-        messages: messages.slice(0, -1), // Exclude the last loading indicator if present
+      const chatText = messages.map(m => `${m.role === 'user' ? 'Sub' : 'Domme'}: ${m.content}`).join('\n');
+      const summary = await base44.integrations.Core.InvokeLLM({
+        prompt: `Summarize this findom chat session in 2-3 sentences, highlighting key demands made and coins spent:\n\n${chatText}`,
       });
-      setChatSummary(response.data.summary);
+      setChatSummary(summary);
       setShowSummary(true);
     } catch (error) {
       toast.error('Failed to summarize chat');

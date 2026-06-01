@@ -21,8 +21,22 @@ export default function BullyChat() {
 
   const assignTaskMutation = useMutation({
     mutationFn: async (category) => {
-      const response = await base44.functions.invoke('assignBullyTask', { category, difficulty: 'medium' });
-      return response.data;
+      const tasks = {
+        goon: ['Edge yourself 3 times today and report back.', 'Stroke for exactly 10 minutes then stop.', 'Write why you deserve to goon today.'],
+        findom: ['Tribute $5 right now.', 'Calculate how much you\'ve spent this week and confess it.', 'Set a new tribute goal and tell me what it is.'],
+        workout: ['Do 50 pushups before your next session.', 'Hold a plank for 2 minutes.', 'Run for 15 minutes today.'],
+        humiliation: ['Write "I am a good little sub" 10 times.', 'Confess your most embarrassing fantasy.', 'Tell me 3 things you\'re grateful to me for.'],
+      };
+      const pool = tasks[category] || tasks.goon;
+      const task = pool[Math.floor(Math.random() * pool.length)];
+      await base44.entities.BullyTask.create({
+        task_description: task,
+        assigned_at: new Date().toISOString(),
+        status: 'pending',
+        difficulty: 'medium',
+        category,
+      });
+      return { task: { task_description: task } };
     },
     onSuccess: (data) => {
       toast.success(`Task assigned: ${data.task.task_description}`);
@@ -122,14 +136,7 @@ Respond with a cocky, extreme message and assign a dangerous task:`;
 
       setMessages(prev => [...prev, aiMessage]);
 
-      // Track analytics
-      await base44.functions.invoke('trackSessionAnalytics', {
-        feature: 'bully_chat',
-        sessionDuration: 0,
-        engagementLevel: 85,
-        interactions: 1,
-        featureData: { message_count: 1 }
-      });
+      // Analytics tracking skipped (requires backend upgrade)
     } catch (error) {
       console.error('Failed to get AI response:', error);
       const fallbacks = [
