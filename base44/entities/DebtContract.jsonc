@@ -206,6 +206,20 @@
       "type": "number",
       "default": 0,
       "description": "Total penalties accumulated from cancellation attempts"
+    },
+    "criminal_charges_dismissed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether criminal charges have been dismissed by a court judge (admin only)"
+    },
+    "criminal_charges_dismissed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When criminal charges were dismissed"
+    },
+    "criminal_charges_dismissed_note": {
+      "type": "string",
+      "description": "Judge's note when dismissing charges"
     }
   },
   "required": [

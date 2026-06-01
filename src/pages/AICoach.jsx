@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -16,6 +16,7 @@ export default function AICoach() {
   const navigate = useNavigate();
   const [coaching, setCoaching] = useState(null);
   const [loading, setLoading] = useState(false);
+  const hasGenerated = useRef(false);
 
   const { data: orgasms = [] } = useQuery({
     queryKey: ['orgasms'],
@@ -126,10 +127,12 @@ Keep the tone supportive, knowledgeable, and playfully dominant where appropriat
   };
 
   useEffect(() => {
-    if (orgasms.length > 0 || sessions.length > 0) {
+    // Auto-generate once data has loaded (even if empty — coach handles no-data case)
+    if (!hasGenerated.current && !loading) {
+      hasGenerated.current = true;
       generateCoaching();
     }
-  }, [orgasms.length, sessions.length]);
+  }, [orgasms, sessions]);
 
   return (
     <div className="min-h-screen bg-black text-white pb-24">
@@ -294,15 +297,15 @@ Keep the tone supportive, knowledgeable, and playfully dominant where appropriat
         )}
       </AnimatePresence>
 
-      {/* Empty State */}
-      {!loading && !coaching && orgasms.length === 0 && sessions.length === 0 && (
+      {!loading && !coaching && (
         <div className="px-6 pt-12">
           <div className="text-center py-12">
             <Brain className="w-16 h-16 text-zinc-700 mx-auto mb-4" />
-            <h3 className="text-white font-bold text-lg mb-2">No Data Yet</h3>
-            <p className="text-zinc-500 text-sm max-w-xs mx-auto">
-              Start tracking your sessions and orgasms to receive personalized AI coaching
-            </p>
+            <h3 className="text-white font-bold text-lg mb-2">Coaching Not Generated</h3>
+            <p className="text-zinc-500 text-sm max-w-xs mx-auto mb-6">Click below to generate your personalized AI coaching analysis.</p>
+            <Button onClick={generateCoaching} className="bg-gradient-to-r from-purple-600 to-pink-600">
+              Generate Coaching
+            </Button>
           </div>
         </div>
       )}
