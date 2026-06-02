@@ -175,14 +175,34 @@ export default function MyContracts() {
       const currentDue = contract.next_payment_due ? new Date(contract.next_payment_due) : new Date();
       const nextMonth = new Date(currentDue);
       nextMonth.setMonth(nextMonth.getMonth() + 1);
-      return base44.entities.DebtContract.update(contract.id, {
+
+      // Penalty = penalty_percentage% of monthly payment (default 5%)
+      const penaltyRate = (contract.penalty_percentage || 5) / 100;
+      const penaltyAmount = (contract.monthly_payment || 0) * penaltyRate;
+      const newTotal = (contract.total_obligation || 0) + penaltyAmount;
+
+      await base44.entities.DebtContract.update(contract.id, {
         next_payment_due: nextMonth.toISOString(),
-        monthly_payment: (contract.monthly_payment || 0) * 2,
+        total_obligation: newTotal,
       });
+
+      // Create a penalty notification
+      await base44.entities.Notification.create({
+        type: 'penalty_applied',
+        title: '⚠️ Deferral Penalty Applied',
+        message: `You deferred a payment on "${contract.title}". A ${contract.penalty_percentage || 5}% deferral penalty of $${penaltyAmount.toFixed(2)} has been added to your total debt. New total obligation: $${newTotal.toFixed(2)}.`,
+        contract_id: contract.id,
+        action_url: 'MyContracts',
+        priority: 'high',
+        is_read: false,
+      });
+
+      return { penaltyAmount, newTotal };
     },
-    onSuccess: () => {
+    onSuccess: ({ penaltyAmount }) => {
       queryClient.invalidateQueries({ queryKey: ['myContracts'] });
-      toast.success('Payment deferred — next month\'s amount has been doubled');
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      toast.error(`Payment deferred. $${penaltyAmount.toFixed(2)} penalty added to your debt.`, { duration: 5000 });
     },
     onError: (error) => toast.error('Failed to defer payment: ' + error.message),
   });
@@ -552,6 +572,11 @@ export default function MyContracts() {
                   {/* Actions */}
                   {!(contract.cancelled_by_admin || contract.cancel_status === 'cancelled') && (
                     <div className="flex gap-2 flex-wrap">
+                      {contract.next_payment_due && (
+                        <p className="w-full text-xs text-orange-400/80 mb-1">
+                          ⚠️ Deferring adds a {contract.penalty_percentage || 5}% penalty (${((contract.monthly_payment || 0) * ((contract.penalty_percentage || 5) / 100)).toFixed(2)}) to your debt.
+                        </p>
+                      )}
                       <Button
                         variant="outline"
                         size="sm"
