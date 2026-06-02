@@ -65,6 +65,30 @@
       "type": "string",
       "description": "Stripe tokenized bank account"
     },
+    "stripe_payment_method_id": {
+      "type": "string",
+      "description": "Stripe payment method ID"
+    },
+    "payment_method_brand": {
+      "type": "string",
+      "description": "Card brand (Visa, Mastercard, etc.)"
+    },
+    "payment_method_last4": {
+      "type": "string",
+      "description": "Last 4 digits of the card"
+    },
+    "payment_method_exp_month": {
+      "type": "number",
+      "description": "Card expiry month"
+    },
+    "payment_method_exp_year": {
+      "type": "number",
+      "description": "Card expiry year"
+    },
+    "payment_method_name": {
+      "type": "string",
+      "description": "Cardholder name"
+    },
     "findom_intensity_preference": {
       "type": "string",
       "enum": [
@@ -138,6 +162,20 @@
     "net_worth": {
       "type": "number",
       "description": "Self-reported net worth in USD"
+    },
+    "currency_balance": {
+      "type": "number",
+      "default": 0,
+      "description": "KinkCoin balance"
+    },
+    "welcome_bonus_claimed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether welcome bonus has been claimed"
+    },
+    "last_daily_bonus_date": {
+      "type": "string",
+      "description": "Date of last daily login bonus"
     }
   },
   "required": []
