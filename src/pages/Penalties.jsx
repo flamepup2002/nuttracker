@@ -43,12 +43,11 @@ export default function Penalties() {
   const totalOverduePenalties = overdueContracts.reduce((sum, c) => sum + ((c.monthly_payment || 0) * ((c.penalty_percentage || 0) / 100)), 0);
   const grandTotal = totalCancellationPenalties + totalOverduePenalties;
 
-  // Extreme/prison penalties — include cancelled irrevocable contracts too
+  // Extreme/prison penalties — persist for ALL cancelled contracts, only removed by court judge
   const prisonContracts = allContracts.filter(c =>
-    hasPrisonTerms(c) && (
-      c.is_accepted ||
-      (c.cancellation_irrevocable && (c.cancelled_by_admin || c.cancel_status === 'cancelled'))
-    )
+    hasPrisonTerms(c) &&
+    !c.criminal_charges_dismissed &&
+    (c.is_accepted || c.cancelled_by_admin || c.cancel_status === 'cancelled')
   );
 
   return (

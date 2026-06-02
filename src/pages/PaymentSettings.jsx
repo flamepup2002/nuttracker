@@ -8,7 +8,6 @@ import { toast } from 'sonner';
 import { ArrowLeft, CreditCard, AlertTriangle, CheckCircle, Trash2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import StripePaymentSetup from '@/components/StripePaymentSetup';
-import PaymentMethodCard from '@/components/PaymentMethodCard';
 
 export default function PaymentSettings() {
   const navigate = useNavigate();
@@ -20,17 +19,14 @@ export default function PaymentSettings() {
     queryFn: () => base44.auth.me(),
   });
 
-  const { data: paymentMethod } = useQuery({
-    queryKey: ['paymentMethod'],
-    queryFn: async () => {
-      if (!user?.stripe_payment_method_id) return null;
-      const response = await base44.functions.invoke('getStripePaymentMethod', {
-        paymentMethodId: user.stripe_payment_method_id
-      });
-      return response.data;
-    },
-    enabled: !!user?.stripe_payment_method_id,
-  });
+  // Read card info directly from user record (saved by StripePaymentSetup)
+  const paymentMethod = user?.payment_method_last4 ? {
+    brand: user.payment_method_brand || 'Card',
+    last4: user.payment_method_last4,
+    exp_month: user.payment_method_exp_month,
+    exp_year: user.payment_method_exp_year,
+    name: user.payment_method_name,
+  } : null;
 
   const { data: failedPayments = [] } = useQuery({
     queryKey: ['failedPayments'],
@@ -39,13 +35,16 @@ export default function PaymentSettings() {
 
   const removePaymentMutation = useMutation({
     mutationFn: async () => {
-      return await base44.functions.invoke('removeStripePaymentMethod', {
-        paymentMethodId: user.stripe_payment_method_id
+      return await base44.auth.updateMe({
+        payment_method_brand: null,
+        payment_method_last4: null,
+        payment_method_exp_month: null,
+        payment_method_exp_year: null,
+        payment_method_name: null,
       });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user'] });
-      queryClient.invalidateQueries({ queryKey: ['paymentMethod'] });
       toast.success('Payment method removed');
     },
     onError: (error) => {
@@ -116,11 +115,22 @@ export default function PaymentSettings() {
 
           {paymentMethod ? (
             <div className="space-y-4">
-              <PaymentMethodCard paymentMethod={paymentMethod} />
-              
+              <div className="bg-zinc-800 rounded-xl p-4 flex items-center gap-4">
+                <div className="w-12 h-8 bg-zinc-700 rounded flex items-center justify-center">
+                  <CreditCard className="w-5 h-5 text-zinc-300" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-white font-bold">{paymentMethod.brand} •••• {paymentMethod.last4}</p>
+                  <p className="text-zinc-400 text-sm">
+                    Expires {paymentMethod.exp_month}/{paymentMethod.exp_year}
+                    {paymentMethod.name ? ` · ${paymentMethod.name}` : ''}
+                  </p>
+                </div>
+              </div>
+
               <div className="flex items-center gap-2 text-green-400 text-sm">
                 <CheckCircle className="w-4 h-4" />
-                <span>Payment method verified and active</span>
+                <span>Payment method on file</span>
               </div>
 
               <div className="flex gap-2">
@@ -189,7 +199,6 @@ export default function PaymentSettings() {
           onSuccess={() => {
             setShowAddPayment(false);
             queryClient.invalidateQueries({ queryKey: ['user'] });
-            queryClient.invalidateQueries({ queryKey: ['paymentMethod'] });
           }}
           onCancel={() => setShowAddPayment(false)}
         />
