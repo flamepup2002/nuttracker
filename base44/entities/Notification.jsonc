@@ -11,7 +11,8 @@
         "collateral_liquidation",
         "contract_accepted",
         "contract_cancelled",
-        "new_contract_offer"
+        "new_contract_offer",
+        "criminal_charge"
       ],
       "description": "Type of notification"
     },
@@ -46,6 +47,16 @@
       ],
       "default": "medium",
       "description": "Notification priority level"
+    },
+    "court_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Scheduled court date for criminal charge notifications"
+    },
+    "charges_dismissed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the criminal charges have been dismissed by a judge"
     }
   },
   "required": [

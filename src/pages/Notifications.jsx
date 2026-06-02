@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Bell, Check, Trash2, Filter, Settings, Archive } from 'lucide-react';
+import { ArrowLeft, Bell, Check, Trash2, Filter, Settings, Archive, Gavel } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { toast } from 'sonner';
 
@@ -15,7 +15,8 @@ const NOTIFICATION_CONFIG = {
   collateral_liquidation: { icon: '🔴', color: 'from-red-700 to-red-900', bgColor: 'bg-red-900/30', borderColor: 'border-red-600/50' },
   contract_accepted: { icon: '✅', color: 'from-green-500 to-green-600', bgColor: 'bg-green-900/20', borderColor: 'border-green-500/30' },
   contract_cancelled: { icon: '🚫', color: 'from-gray-500 to-gray-600', bgColor: 'bg-gray-900/20', borderColor: 'border-gray-500/30' },
-  new_contract_offer: { icon: '📋', color: 'from-purple-500 to-purple-600', bgColor: 'bg-purple-900/20', borderColor: 'border-purple-500/30' }
+  new_contract_offer: { icon: '📋', color: 'from-purple-500 to-purple-600', bgColor: 'bg-purple-900/20', borderColor: 'border-purple-500/30' },
+  criminal_charge: { icon: '⚖️', color: 'from-red-700 to-red-900', bgColor: 'bg-red-950/40', borderColor: 'border-red-500/60' }
 };
 
 const PRIORITY_CONFIG = {
@@ -229,6 +230,18 @@ export default function Notifications() {
                         </span>
                       </div>
                       <p className="text-zinc-300 text-sm mb-2">{notification.message}</p>
+                      {notification.type === 'criminal_charge' && notification.court_date && (
+                        <div className="mt-2 mb-2 bg-red-900/40 border border-red-600/40 rounded-lg px-3 py-2 flex items-center gap-2">
+                          <Gavel className="w-4 h-4 text-red-400 flex-shrink-0" />
+                          <div>
+                            <p className="text-red-300 text-xs font-bold">Court Date</p>
+                            <p className="text-red-200 text-sm font-semibold">
+                              {new Date(notification.court_date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                            </p>
+                            <p className="text-red-400/70 text-xs mt-0.5">⚠️ Judge intervention required to clear these charges</p>
+                          </div>
+                        </div>
+                      )}
                       <p className="text-zinc-500 text-xs">
                         {new Date(notification.created_date).toLocaleString()}
                       </p>
