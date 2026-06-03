@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, Gavel, AlertTriangle, FileText, Shield } from 'lucide-react';
+import { ArrowLeft, Gavel, AlertTriangle, FileText, Shield, CalendarDays, CheckCircle } from 'lucide-react';
 
 function hasPrisonTerms(contract) {
   const prisonKeywords = ['prison', 'jail', 'arrest', 'warrant', 'felony', 'federal', 'incarcerat', 'sentence', 'fugitive', 'criminal', 'probation', 'bail', 'custody', 'prosecution', 'fbi', 'interpol'];
@@ -26,10 +26,16 @@ export default function CriminalCharges() {
 
   const { data: contracts = [], isLoading } = useQuery({
     queryKey: ['myContractsAll'],
-    queryFn: () => base44.entities.DebtContract.filter({ is_accepted: true }, '-created_date'),
+    queryFn: () => base44.entities.DebtContract.list('-created_date', 200),
   });
 
-  const prisonContracts = contracts.filter(c => hasPrisonTerms(c));
+  const { data: criminalNotifications = [] } = useQuery({
+    queryKey: ['criminal-notifications'],
+    queryFn: () => base44.entities.Notification.filter({ type: 'criminal_charge' }),
+  });
+
+  // Include ALL contracts with prison terms — even cancelled ones (charges survive cancellation)
+  const prisonContracts = contracts.filter(c => (c.is_accepted || c.cancelled_by_admin || c.cancel_status === 'cancelled') && hasPrisonTerms(c));
 
   // Collect all criminal terms across all prison contracts
   const allCharges = [];
@@ -102,6 +108,59 @@ export default function CriminalCharges() {
               </div>
             </motion.div>
 
+            {/* Court Dates Section */}
+            {criminalNotifications.length > 0 && (
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+                className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden"
+              >
+                <div className="px-5 py-4 bg-zinc-800/40 flex items-center gap-2 border-b border-zinc-800">
+                  <CalendarDays className="w-5 h-5 text-yellow-400" />
+                  <p className="text-white font-bold">Scheduled Court Dates</p>
+                  <span className="ml-auto text-xs bg-yellow-900/40 text-yellow-400 border border-yellow-700/40 px-2 py-0.5 rounded-full">{criminalNotifications.length} hearing{criminalNotifications.length !== 1 ? 's' : ''}</span>
+                </div>
+                <div className="p-5 space-y-3">
+                  {criminalNotifications.map((notif, i) => {
+                    const dismissed = notif.charges_dismissed;
+                    const courtDate = notif.court_date ? new Date(notif.court_date) : null;
+                    const isPast = courtDate && courtDate < new Date();
+                    const relatedContract = contracts.find(c => c.id === notif.contract_id);
+                    return (
+                      <div key={notif.id} className={`border rounded-xl p-4 ${dismissed ? 'bg-green-950/20 border-green-700/40' : isPast ? 'bg-red-950/30 border-red-700/50' : 'bg-zinc-800/40 border-zinc-700/40'}`}>
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              {dismissed ? (
+                                <CheckCircle className="w-4 h-4 text-green-400 flex-shrink-0" />
+                              ) : (
+                                <Gavel className="w-4 h-4 text-red-400 flex-shrink-0" />
+                              )}
+                              <p className={`text-sm font-bold ${dismissed ? 'text-green-300' : 'text-white'}`}>
+                                {dismissed ? 'Charges Dismissed' : isPast ? '⚠ MISSED HEARING' : 'Court Appearance Required'}
+                              </p>
+                            </div>
+                            {relatedContract && (
+                              <p className="text-zinc-500 text-xs mb-2">Re: {relatedContract.title}</p>
+                            )}
+                            {courtDate && (
+                              <p className={`text-sm font-bold ${dismissed ? 'text-green-400 line-through' : isPast ? 'text-red-400' : 'text-yellow-300'}`}>
+                                📅 {courtDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} at {courtDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                              </p>
+                            )}
+                            {isPast && !dismissed && (
+                              <p className="text-red-400 text-xs mt-1 font-bold">⚠ You failed to appear — additional penalties may apply.</p>
+                            )}
+                          </div>
+                          <span className={`text-xs px-2 py-0.5 rounded-full font-bold flex-shrink-0 ${dismissed ? 'bg-green-900/40 text-green-400 border border-green-700/40' : 'bg-red-900/40 text-red-400 border border-red-700/40'}`}>
+                            {dismissed ? 'DISMISSED' : 'ACTIVE'}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            )}
+
             {/* Per-contract charges */}
             {prisonContracts.map((contract, idx) => {
               const terms = contract.terms || [];
@@ -123,7 +182,7 @@ export default function CriminalCharges() {
                       </div>
                       <div className="flex gap-2 flex-wrap">
                         {cancelled ? (
-                          <span className="text-xs bg-red-900/40 text-red-400 border border-red-700/40 px-2 py-0.5 rounded-full font-bold">CANCELLED</span>
+                          <span className="text-xs bg-orange-900/40 text-orange-400 border border-orange-700/40 px-2 py-0.5 rounded-full font-bold">⚠ CONTRACT CANCELLED — CHARGES REMAIN ACTIVE</span>
                         ) : (
                           <span className="text-xs bg-green-900/30 text-green-400 px-2 py-0.5 rounded-full">Active</span>
                         )}
