@@ -8,6 +8,7 @@ import PageNotFound from './lib/PageNotFound';
 import AdminContractRequestsPage from './pages/AdminContractRequests';
 import PenaltiesPage from './pages/Penalties';
 import CriminalChargesPage from './pages/CriminalCharges';
+import CourtDatesPage from './pages/CourtDates';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
@@ -64,6 +65,7 @@ const AuthenticatedApp = () => {
       <Route path="/AdminContractRequests" element={<LayoutWrapper currentPageName="AdminContractRequests"><AdminContractRequestsPage /></LayoutWrapper>} />
       <Route path="/Penalties" element={<LayoutWrapper currentPageName="Penalties"><PenaltiesPage /></LayoutWrapper>} />
       <Route path="/CriminalCharges" element={<LayoutWrapper currentPageName="CriminalCharges"><CriminalChargesPage /></LayoutWrapper>} />
+      <Route path="/CourtDates" element={<LayoutWrapper currentPageName="CourtDates"><CourtDatesPage /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

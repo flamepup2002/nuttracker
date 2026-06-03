@@ -26,9 +26,10 @@ export default function CriminalCharges() {
 
   const { data: contracts = [], isLoading } = useQuery({
     queryKey: ['myContractsAll'],
-    queryFn: () => base44.entities.DebtContract.filter({ is_accepted: true }, '-created_date'),
+    queryFn: () => base44.entities.DebtContract.list('-created_date', 200),
   });
 
+  // Include ALL contracts with criminal terms — charges persist even after cancellation
   const prisonContracts = contracts.filter(c => hasPrisonTerms(c));
 
   // Collect all criminal terms across all prison contracts
@@ -123,7 +124,7 @@ export default function CriminalCharges() {
                       </div>
                       <div className="flex gap-2 flex-wrap">
                         {cancelled ? (
-                          <span className="text-xs bg-red-900/40 text-red-400 border border-red-700/40 px-2 py-0.5 rounded-full font-bold">CANCELLED</span>
+                          <span className="text-xs bg-red-900/40 text-red-400 border border-red-700/40 px-2 py-0.5 rounded-full font-bold">⚠ CONTRACT CANCELLED — CHARGES STILL ACTIVE</span>
                         ) : (
                           <span className="text-xs bg-green-900/30 text-green-400 px-2 py-0.5 rounded-full">Active</span>
                         )}
