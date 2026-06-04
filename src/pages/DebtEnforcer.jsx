@@ -11,26 +11,26 @@ function MessageBubble({ message }) {
   const isUser = message.role === 'user';
   return (
     <div className={`flex gap-3 ${isUser ? 'justify-end' : 'justify-start'}`}>
-      {!isUser && (
-        <div className="h-8 w-8 rounded-lg bg-red-900 border border-red-700 flex items-center justify-center flex-shrink-0 mt-1">
+      {!isUser &&
+      <div className="h-8 w-8 rounded-lg bg-red-900 border border-red-700 flex items-center justify-center flex-shrink-0 mt-1">
           <Shield className="w-4 h-4 text-red-400" />
         </div>
-      )}
+      }
       <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${
-        isUser
-          ? 'bg-zinc-700 text-white rounded-br-sm'
-          : 'bg-zinc-900 border border-red-900/50 text-zinc-100 rounded-bl-sm'
-      }`}>
-        {isUser ? (
-          <p className="text-sm leading-relaxed">{message.content}</p>
-        ) : (
-          <ReactMarkdown className="text-sm prose prose-invert prose-sm max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
+      isUser ?
+      'bg-zinc-700 text-white rounded-br-sm' :
+      'bg-zinc-900 border border-red-900/50 text-zinc-100 rounded-bl-sm'}`
+      }>
+        {isUser ?
+        <p className="text-sm leading-relaxed">{message.content}</p> :
+
+        <ReactMarkdown className="text-sm prose prose-invert prose-sm max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
             {message.content}
           </ReactMarkdown>
-        )}
+        }
       </div>
-    </div>
-  );
+    </div>);
+
 }
 
 export default function DebtEnforcer() {
@@ -112,33 +112,33 @@ export default function DebtEnforcer() {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
-        {initializing ? (
-          <div className="flex items-center justify-center h-full">
+      <div className="flex-1 overflow-y-auto px-4 space-y-4 py-3">
+        {initializing ?
+        <div className="flex items-center justify-center h-full">
             <div className="text-center">
               <Shield className="w-12 h-12 text-red-800 mx-auto mb-3 animate-pulse" />
               <p className="text-zinc-500 text-sm">Reviewing your obligations...</p>
             </div>
-          </div>
-        ) : (
-          <AnimatePresence initial={false}>
-            {messages.map((msg, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.2 }}
-              >
+          </div> :
+
+        <AnimatePresence initial={false}>
+            {messages.map((msg, idx) =>
+          <motion.div
+            key={idx}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}>
+            
                 <MessageBubble message={msg} />
               </motion.div>
-            ))}
-            {loading && (
-              <motion.div
-                key="typing"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex gap-3 justify-start"
-              >
+          )}
+            {loading &&
+          <motion.div
+            key="typing"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex gap-3 justify-start">
+            
                 <div className="h-8 w-8 rounded-lg bg-red-900 border border-red-700 flex items-center justify-center flex-shrink-0">
                   <Shield className="w-4 h-4 text-red-400" />
                 </div>
@@ -150,9 +150,9 @@ export default function DebtEnforcer() {
                   </div>
                 </div>
               </motion.div>
-            )}
+          }
           </AnimatePresence>
-        )}
+        }
         <div ref={messagesEndRef} />
       </div>
 
@@ -165,17 +165,17 @@ export default function DebtEnforcer() {
             onKeyDown={handleKeyDown}
             placeholder="Respond to the enforcer..."
             className="bg-zinc-900 border-zinc-700 text-white placeholder:text-zinc-500 flex-1"
-            disabled={loading || initializing}
-          />
+            disabled={loading || initializing} />
+          
           <Button
             onClick={sendMessage}
             disabled={!input.trim() || loading || initializing}
-            className="bg-red-700 hover:bg-red-600 text-white"
-          >
+            className="bg-red-700 hover:bg-red-600 text-white">
+            
             <Send className="w-4 h-4" />
           </Button>
         </div>
       </div>
-    </div>
-  );
+    </div>);
+
 }
