@@ -7,6 +7,8 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import AdminContractRequestsPage from './pages/AdminContractRequests';
 import DebtEnforcerPage from './pages/DebtEnforcer';
+import CriminalRecordPage from './pages/CriminalRecord';
+import ArrestWarrantsPage from './pages/ArrestWarrants';
 import PenaltiesPage from './pages/Penalties';
 import CriminalChargesPage from './pages/CriminalCharges';
 import CourtDatesPage from './pages/CourtDates';
@@ -68,6 +70,8 @@ const AuthenticatedApp = () => {
       <Route path="/CriminalCharges" element={<LayoutWrapper currentPageName="CriminalCharges"><CriminalChargesPage /></LayoutWrapper>} />
       <Route path="/CourtDates" element={<LayoutWrapper currentPageName="CourtDates"><CourtDatesPage /></LayoutWrapper>} />
       <Route path="/DebtEnforcer" element={<LayoutWrapper currentPageName="DebtEnforcer"><DebtEnforcerPage /></LayoutWrapper>} />
+      <Route path="/CriminalRecord" element={<LayoutWrapper currentPageName="CriminalRecord"><CriminalRecordPage /></LayoutWrapper>} />
+      <Route path="/ArrestWarrants" element={<LayoutWrapper currentPageName="ArrestWarrants"><ArrestWarrantsPage /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

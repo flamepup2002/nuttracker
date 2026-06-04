@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import PullToRefresh from '@/components/PullToRefresh';
 import { 
         Flame, Activity, DollarSign, Droplet, X, Ban, 
-        TrendingUp, Calendar, Play, Settings, ChevronRight, Coins, Sparkles, Trophy, Video, User, Zap, Home as HomeIcon, Gavel, FileText, CreditCard, Bell, BarChart3, Lock, MessageSquare, Target, Shield
+        TrendingUp, Calendar, Play, Settings, ChevronRight, Coins, Sparkles, Trophy, Video, User, Zap, Home as HomeIcon, Gavel, FileText, CreditCard, Bell, BarChart3, Lock, MessageSquare, Target, Shield, ScrollText, AlertOctagon
       } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import StatsCard from '@/components/StatsCard';
@@ -41,6 +41,11 @@ export default function Home() {
   const { data: notifications = [] } = useQuery({
     queryKey: ['notifications'],
     queryFn: () => base44.entities.Notification.list('-created_date', 50),
+  });
+
+  const { data: activeWarrants = [] } = useQuery({
+    queryKey: ['homeWarrants'],
+    queryFn: () => base44.entities.ArrestWarrant.filter({ status: 'active' }),
   });
 
   const { data: settings } = useQuery({
@@ -190,6 +195,24 @@ export default function Home() {
           </motion.div>
         </div>
       </div>
+
+      {/* Arrest Warrant Alert Banner */}
+      {activeWarrants.length > 0 && (
+        <Link to="/ArrestWarrants">
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mx-6 mt-2 bg-red-950/80 border-2 border-red-500 rounded-2xl p-4 flex items-center gap-3 cursor-pointer hover:bg-red-900/80 transition-colors"
+          >
+            <AlertOctagon className="w-7 h-7 text-red-400 flex-shrink-0 animate-pulse" />
+            <div className="flex-1">
+              <p className="text-red-300 font-bold text-sm">🚨 ACTIVE ARREST WARRANT{activeWarrants.length > 1 ? 'S' : ''}</p>
+              <p className="text-red-400/80 text-xs">{activeWarrants.length} warrant{activeWarrants.length > 1 ? 's' : ''} issued — tap to view</p>
+            </div>
+            <ChevronRight className="w-5 h-5 text-red-400" />
+          </motion.div>
+        </Link>
+      )}
 
       {/* Main Content */}
       <div className="px-6 pb-24 space-y-6">
@@ -523,6 +546,34 @@ export default function Home() {
               <Gavel className="w-8 h-8 text-red-300 mb-3" />
               <p className="text-white font-bold text-lg">Court Dates</p>
               <p className="text-white/70 text-sm">Scheduled appearances</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+
+          <Link to="/CriminalRecord">
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-zinc-800 to-zinc-900 border border-red-800/50"
+            >
+              <ScrollText className="w-8 h-8 text-red-300 mb-3" />
+              <p className="text-white font-bold text-lg">Criminal Record</p>
+              <p className="text-white/70 text-sm">All charges on file</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+
+          <Link to="/ArrestWarrants">
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className={`relative overflow-hidden rounded-2xl p-6 border ${activeWarrants.length > 0 ? 'bg-gradient-to-br from-red-700 to-red-900 border-red-500/70' : 'bg-zinc-900 border-zinc-800'}`}
+            >
+              <AlertOctagon className={`w-8 h-8 mb-3 ${activeWarrants.length > 0 ? 'text-white animate-pulse' : 'text-zinc-400'}`} />
+              <p className="text-white font-bold text-lg">Arrest Warrants</p>
+              <p className="text-white/70 text-sm">
+                {activeWarrants.length > 0 ? `⚠ ${activeWarrants.length} active` : 'No active warrants'}
+              </p>
               <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
             </motion.div>
           </Link>

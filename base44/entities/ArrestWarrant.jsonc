@@ -1,0 +1,61 @@
+{
+  "name": "ArrestWarrant",
+  "type": "object",
+  "properties": {
+    "notification_id": {
+      "type": "string",
+      "description": "The court date notification that was missed"
+    },
+    "contract_id": {
+      "type": "string",
+      "description": "The related contract"
+    },
+    "reason": {
+      "type": "string",
+      "description": "Why the warrant was issued"
+    },
+    "issued_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the warrant was issued"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "resolved"
+      ],
+      "default": "active"
+    },
+    "charges_added": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Additional criminal charges added due to missed court date"
+    },
+    "resolved_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "notification_id",
+    "reason",
+    "issued_at"
+  ],
+  "rls": {
+    "create": {
+      "created_by": "{{user.email}}"
+    },
+    "read": {
+      "created_by": "{{user.email}}"
+    },
+    "update": {
+      "created_by": "{{user.email}}"
+    },
+    "delete": {
+      "created_by": "{{user.email}}"
+    }
+  }
+}

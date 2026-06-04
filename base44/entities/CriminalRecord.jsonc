@@ -1,0 +1,60 @@
+{
+  "name": "CriminalRecord",
+  "type": "object",
+  "properties": {
+    "source": {
+      "type": "string",
+      "enum": [
+        "missed_court_date",
+        "contract_breach",
+        "warrant_issued",
+        "original_charge"
+      ],
+      "description": "How this record was added"
+    },
+    "charge": {
+      "type": "string",
+      "description": "The criminal charge text"
+    },
+    "contract_id": {
+      "type": "string",
+      "description": "Related contract if any"
+    },
+    "warrant_id": {
+      "type": "string",
+      "description": "Related warrant if any"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "misdemeanor",
+        "felony",
+        "federal"
+      ],
+      "default": "misdemeanor"
+    },
+    "added_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "charge",
+    "source",
+    "added_at"
+  ],
+  "rls": {
+    "create": {
+      "created_by": "{{user.email}}"
+    },
+    "read": {
+      "created_by": "{{user.email}}"
+    },
+    "update": {
+      "created_by": "{{user.email}}"
+    },
+    "delete": {
+      "created_by": "{{user.email}}"
+    }
+  }
+}
