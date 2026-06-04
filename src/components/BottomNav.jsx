@@ -9,8 +9,8 @@ import {
   DrawerDescription,
   DrawerHeader,
   DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
+  DrawerTrigger } from
+"@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 
 export default function BottomNav() {
@@ -28,19 +28,19 @@ export default function BottomNav() {
   };
 
   const navItems = [
-    { path: createPageUrl('Home'), icon: Home, label: 'Home' },
-    { path: null, icon: Zap, label: 'Sessions', drawer: true },
-    { path: createPageUrl('GoonerCam'), icon: Video, label: 'Cam' },
-    { path: createPageUrl('Shop'), icon: ShoppingBag, label: 'Shop' },
-    { path: createPageUrl('Profile'), icon: User, label: 'Profile' },
-  ];
+  { path: createPageUrl('Home'), icon: Home, label: 'Home' },
+  { path: null, icon: Zap, label: 'Sessions', drawer: true },
+  { path: createPageUrl('GoonerCam'), icon: Video, label: 'Cam' },
+  { path: createPageUrl('Shop'), icon: ShoppingBag, label: 'Shop' },
+  { path: createPageUrl('Profile'), icon: User, label: 'Profile' }];
+
 
   return (
     <>
-      <nav 
+      <nav
         className="fixed bottom-0 left-0 right-0 bg-zinc-900/95 backdrop-blur-lg border-t border-zinc-800 z-50"
-        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px))' }}
-      >
+        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px))' }}>
+        
         <div className="flex items-center justify-around h-16">
           {navItems.map((item) => {
             if (item.drawer) {
@@ -48,8 +48,8 @@ export default function BottomNav() {
                 <Drawer key={item.label} open={sessionDrawerOpen} onOpenChange={setSessionDrawerOpen}>
                   <DrawerTrigger asChild>
                     <button
-                      className="flex flex-col items-center justify-center flex-1 h-full text-zinc-400 hover:text-white transition-colors"
-                    >
+                      className="flex flex-col items-center justify-center flex-1 h-full text-zinc-400 hover:text-white transition-colors">
+                      
                       <item.icon className="w-6 h-6 mb-1" />
                       <span className="text-xs">{item.label}</span>
                     </button>
@@ -81,8 +81,8 @@ export default function BottomNav() {
                       </DrawerClose>
                     </div>
                   </DrawerContent>
-                </Drawer>
-              );
+                </Drawer>);
+
             }
 
             return (
@@ -95,19 +95,19 @@ export default function BottomNav() {
                     handleTabClick(item.path);
                   }
                 }}
-                className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
-                  isActive(item.path)
-                    ? 'text-purple-400'
-                    : 'text-zinc-400 hover:text-white'
-                }`}
-              >
+                className={`flex flex-col items-center justify-center flex-1 h-full transition-colors opacity-5 ${
+                isActive(item.path) ?
+                'text-purple-400' :
+                'text-zinc-400 hover:text-white'}`
+                }>
+                
                 <item.icon className="w-6 h-6 mb-1" />
                 <span className="text-xs">{item.label}</span>
-              </Link>
-            );
+              </Link>);
+
           })}
         </div>
       </nav>
-    </>
-  );
+    </>);
+
 }
