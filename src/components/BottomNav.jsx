@@ -95,7 +95,7 @@ export default function BottomNav() {
                     handleTabClick(item.path);
                   }
                 }}
-                className={`flex flex-col items-center justify-center flex-1 h-full transition-colors opacity-5 ${
+                className={`flex flex-col items-center justify-center flex-1 h-full transition-colors opacity-100 ${
                 isActive(item.path) ?
                 'text-purple-400' :
                 'text-zinc-400 hover:text-white'}`
