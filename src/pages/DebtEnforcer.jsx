@@ -112,7 +112,7 @@ export default function DebtEnforcer() {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 space-y-4 py-4 my-4">
+      <div className="flex-1 overflow-y-auto px-4 space-y-4 py-4 my-5">
         {initializing ?
         <div className="flex items-center justify-center h-full">
             <div className="text-center">
