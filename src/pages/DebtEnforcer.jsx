@@ -157,7 +157,7 @@ export default function DebtEnforcer() {
       </div>
 
       {/* Input */}
-      <div className="bg-zinc-950 border-t border-zinc-800 px-4 py-4 flex-shrink-0">
+      <div className="bg-zinc-950 border-t border-zinc-800 px-4 flex-shrink-0">
         <div className="flex gap-2">
           <Input
             value={input}
