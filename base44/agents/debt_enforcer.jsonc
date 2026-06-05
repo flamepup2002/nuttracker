@@ -6,13 +6,15 @@
       "entity_name": "DebtContract",
       "allowed_operations": [
         "read",
-        "update"
+        "update",
+        "create"
       ]
     },
     {
       "entity_name": "FindomChallenge",
       "allowed_operations": [
-        "read"
+        "read",
+        "create"
       ]
     },
     {
@@ -33,12 +35,9 @@
     {
       "entity_name": "Payment",
       "allowed_operations": [
-        "read"
+        "read",
+        "create"
       ]
-    },
-    {
-      "function_name": "generateCustomContract",
-      "description": "when there are no contracts attached to a user"
     }
   ],
   "whatsapp_greeting": "Debt Enforcer online. I'm reviewing your contracts and challenges now. You will be held accountable for every obligation you've signed. What do you have to say for yourself?",
