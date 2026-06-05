@@ -537,6 +537,19 @@ export default function Home() {
             </motion.div>
           </Link>
 
+          <Link to="/JudgeChat">
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-amber-800 to-yellow-900 border border-amber-600/50"
+            >
+              <Gavel className="w-8 h-8 text-yellow-200 mb-3" />
+              <p className="text-white font-bold text-lg">The Judge</p>
+              <p className="text-white/70 text-sm">Present your case</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+
           <Link to="/CourtDates">
             <motion.div
               whileHover={{ scale: 1.02 }}
