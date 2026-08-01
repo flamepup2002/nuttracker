@@ -5,9 +5,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft, Gavel, Calendar, Clock, CheckCircle, AlertTriangle, Shield, Edit2, Trash2, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-
-const JUDGE_IDS = ['JDG-001', 'JDG-002', 'JDG-003', 'JDG-004', 'JDG-005'];
+import JudgeDismissModal from '@/components/JudgeDismissModal';
 
 function EditDateModal({ notification, onClose, onSave }) {
   const [value, setValue] = useState(notification.court_date ? notification.court_date.slice(0, 16) : '');
@@ -38,57 +36,6 @@ function EditDateModal({ notification, onClose, onSave }) {
           <Button variant="outline" className="flex-1 border-zinc-600 text-zinc-300" onClick={onClose}>Cancel</Button>
           <Button className="flex-1 bg-red-700 hover:bg-red-600" onClick={() => onSave(new Date(value).toISOString())} disabled={!value}>
             Save Date
-          </Button>
-        </div>
-      </motion.div>
-    </motion.div>
-  );
-}
-
-function DismissModal({ notification, onClose, onDismiss }) {
-  const [judgeId, setJudgeId] = useState('');
-  const [error, setError] = useState('');
-
-  const handleDismiss = () => {
-    if (!JUDGE_IDS.includes(judgeId.trim().toUpperCase())) {
-      setError('Invalid Judge ID. Must be an authorized court judge ID (e.g. JDG-001).');
-      return;
-    }
-    onDismiss(judgeId.trim().toUpperCase());
-  };
-
-  return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
-      onClick={onClose}
-    >
-      <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-zinc-900 border border-red-900/60 rounded-2xl w-full max-w-sm p-6 space-y-4"
-        onClick={e => e.stopPropagation()}
-      >
-        <div className="flex items-center justify-between">
-          <h2 className="text-white font-bold flex items-center gap-2"><Trash2 className="w-4 h-4 text-red-400" /> Dismiss Charges</h2>
-          <button onClick={onClose}><X className="w-5 h-5 text-zinc-400 hover:text-white" /></button>
-        </div>
-        <div className="bg-red-950/40 border border-red-700/40 rounded-xl p-3">
-          <p className="text-red-300 text-xs font-semibold">⚠ JUDICIAL ACTION REQUIRED</p>
-          <p className="text-zinc-400 text-xs mt-1">Only an authorized judge may dismiss criminal charges. A valid Judge ID is required.</p>
-        </div>
-        <p className="text-zinc-400 text-sm">{notification.title}</p>
-        <div>
-          <label className="text-zinc-400 text-xs mb-1 block">Judge ID Number</label>
-          <Input
-            placeholder="e.g. JDG-001"
-            value={judgeId}
-            onChange={e => { setJudgeId(e.target.value); setError(''); }}
-            className="bg-zinc-800 border-zinc-600 text-white placeholder:text-zinc-500"
-          />
-          {error && <p className="text-red-400 text-xs mt-1">{error}</p>}
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" className="flex-1 border-zinc-600 text-zinc-300" onClick={onClose}>Cancel</Button>
-          <Button className="flex-1 bg-red-800 hover:bg-red-700" onClick={handleDismiss} disabled={!judgeId.trim()}>
-            Dismiss
           </Button>
         </div>
       </motion.div>
@@ -144,8 +91,8 @@ export default function CourtDates() {
     setEditingNotification(null);
   };
 
-  const handleDismiss = (judgeId) => {
-    updateMutation.mutate({ id: dismissingNotification.id, data: { charges_dismissed: true, message: dismissingNotification.message + ` [Dismissed by Judge ${judgeId}]` } });
+  const handleDismiss = ({ judgeName, signature }) => {
+    updateMutation.mutate({ id: dismissingNotification.id, data: { charges_dismissed: true, message: dismissingNotification.message + ` [Dismissed by Justice ${judgeName} — e-signature verified via Alberta roster]` } });
     setDismissingNotification(null);
   };
 
@@ -306,7 +253,7 @@ export default function CourtDates() {
           <EditDateModal notification={editingNotification} onClose={() => setEditingNotification(null)} onSave={handleSaveDate} />
         )}
         {dismissingNotification && (
-          <DismissModal notification={dismissingNotification} onClose={() => setDismissingNotification(null)} onDismiss={handleDismiss} />
+          <JudgeDismissModal notification={dismissingNotification} onClose={() => setDismissingNotification(null)} onDismiss={handleDismiss} />
         )}
       </AnimatePresence>
     </div>
