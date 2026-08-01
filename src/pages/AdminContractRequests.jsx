@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { applyIrrevocableAdminPenalty } from '@/lib/irrevocablePenalty';
 
 export default function AdminContractRequests() {
   const navigate = useNavigate();
@@ -86,27 +87,27 @@ export default function AdminContractRequests() {
   });
 
   const approveCancelMutation = useMutation({
-    mutationFn: async ({ requestId, contractId, irrevocable, monthlyPayment, approve }) => {
+    mutationFn: async ({ requestId, contractId, irrevocable, approve }) => {
+      if (approve && irrevocable) {
+        // Irrevocable contracts cannot be cancelled — block and apply 12-month penalty
+        const existing = await base44.entities.DebtContract.filter({ id: contractId }, '-created_date', 1);
+        const contract = existing[0];
+        if (contract) {
+          await applyIrrevocableAdminPenalty(contract);
+        }
+        return base44.entities.UserFeedback.update(requestId, {
+          status: 'rejected',
+          admin_notes: `Cancellation DENIED — contract is irrevocable. 12-month penalty and second penalty contract applied. ${adminNote}`.trim(),
+        });
+      }
       if (approve) {
-        // Apply irrevocable penalty even for admin if enabled, then force cancel
-        const updates = {
+        await base44.entities.DebtContract.update(contractId, {
           is_accepted: false,
           cancelled_at: new Date().toISOString(),
           cancelled_by_admin: true,
           cancel_status: 'cancelled',
-        };
-        if (irrevocable) {
-          // Fetch current contract to preserve existing penalty amounts
-          const existing = await base44.entities.DebtContract.filter({ id: contractId }, '-created_date', 1);
-          const current = existing[0] || {};
-          const penalty = monthlyPayment * 6;
-          updates.cancellation_penalty_triggered = true;
-          updates.cancellation_penalty_amount = (current.cancellation_penalty_amount || 0) + penalty;
-          updates.total_obligation = (current.total_obligation || 0) + penalty;
-        }
-        await base44.entities.DebtContract.update(contractId, updates);
+        });
       }
-      // Update the request status
       return base44.entities.UserFeedback.update(requestId, {
         status: approve ? 'resolved' : 'rejected',
         admin_notes: adminNote,
@@ -114,7 +115,11 @@ export default function AdminContractRequests() {
     },
     onSuccess: (_, vars) => {
       queryClient.invalidateQueries({ queryKey: ['adminCancelRequests'] });
-      toast.success(vars.approve ? 'Contract cancelled & request approved' : 'Cancel request denied');
+      if (vars.approve && vars.irrevocable) {
+        toast.error('🔒 Cancellation DENIED — irrevocable. 12-month penalty + second penalty contract applied.', { duration: 7000 });
+      } else {
+        toast.success(vars.approve ? 'Contract cancelled & request approved' : 'Cancel request denied');
+      }
       setSelectedItem(null);
       setAdminNote('');
     },
@@ -266,7 +271,7 @@ export default function AdminContractRequests() {
                     <p className="text-zinc-300 text-sm">{selectedItem.message}</p>
                     {selectedItem.admin_notes?.includes('irrevocable') && (
                       <div className="mt-3 bg-red-900/30 border border-red-600/50 rounded-lg p-3">
-                        <p className="text-red-300 text-xs font-bold">⚠️ IRREVOCABLE CONTRACT — Approving will still trigger the 6-month penalty</p>
+                        <p className="text-red-300 text-xs font-bold">⚠️ IRREVOCABLE CONTRACT — Approval will be DENIED. The attempt triggers a 12-month penalty and a second penalty contract.</p>
                       </div>
                     )}
                   </div>

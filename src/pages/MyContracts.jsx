@@ -19,6 +19,7 @@ import {
   AlertDialogDescription,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { applyIrrevocableAdminPenalty } from '@/lib/irrevocablePenalty';
 
 const INTENSITY_CONFIG = {
   mild: { color: 'from-blue-500 to-blue-600', icon: '📋' },
@@ -210,27 +211,25 @@ export default function MyContracts() {
   const adminCancelMutation = useMutation({
     mutationFn: async (contractId) => {
       const contract = contracts.find(c => c.id === contractId);
-      const updates = {
+      // Irrevocable contracts CANNOT be cancelled by admins. Attempting to do so
+      // triggers a 12-month penalty and a second penalty contract instead.
+      if (contract.cancellation_irrevocable) {
+        const { penaltyAmount } = await applyIrrevocableAdminPenalty(contract);
+        return { blocked: true, penaltyAmount };
+      }
+      await base44.entities.DebtContract.update(contractId, {
         is_accepted: false,
         cancelled_at: new Date().toISOString(),
         cancelled_by_admin: true,
         cancel_status: 'cancelled',
-      };
-      // If irrevocable: add penalty but keep penalty_amount intact (do NOT clear it)
-      if (contract.cancellation_irrevocable) {
-      const penalty = contract.monthly_payment * 6;
-      updates.cancellation_penalty_triggered = true;
-        updates.cancellation_penalty_amount = (contract.cancellation_penalty_amount || 0) + penalty;
-        updates.total_obligation = (contract.total_obligation || 0) + penalty;
-        // Return the penalty so onSuccess can use it
-        return { result: await base44.entities.DebtContract.update(contractId, updates), penalty, irrevocable: true };
-      }
-      return { result: await base44.entities.DebtContract.update(contractId, updates), irrevocable: false };
+      });
+      return { blocked: false };
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['myContracts'] });
-      if (data.irrevocable) {
-        toast.warning(`Contract cancelled. Irrevocable penalty of $${data.penalty.toFixed(0)} has been applied and remains owed.`, { duration: 6000 });
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      if (data.blocked) {
+        toast.error(`🔒 CANCELLATION DENIED — Irrevocable contract. A 12-month penalty of $${data.penaltyAmount.toFixed(0)} has been applied and a second penalty contract has been created.`, { duration: 7000 });
       } else {
         toast.success('Contract marked as cancelled');
       }
@@ -651,7 +650,7 @@ export default function MyContracts() {
               {selectedContract.cancellation_irrevocable ? (
                 <div className="bg-red-900/50 border-2 border-red-500 rounded-lg p-3">
                   <p className="text-red-300 text-xs font-bold">
-                    ⚠️ IRREVOCABLE CONTRACT — Even admin cancellation triggers a {6}-month penalty of ${(selectedContract.monthly_payment * 6).toFixed(0)} on the user's balance.
+                    ⚠️ IRREVOCABLE CONTRACT — Cancellation will be DENIED. The attempt triggers a 12-month penalty of ${(selectedContract.monthly_payment * 12).toFixed(0)} and a second penalty contract will be created on the user's account.
                   </p>
                 </div>
               ) : (

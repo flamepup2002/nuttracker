@@ -4,6 +4,7 @@ import { Trash2, X, Gavel, ShieldCheck, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import SignaturePad from '@/components/SignaturePad';
+import { base44 } from '@/api/base44Client';
 import { searchJudges, verifyJudge } from '@/lib/albertaJudges';
 
 export default function JudgeDismissModal({ notification, onClose, onDismiss }) {
@@ -15,7 +16,7 @@ export default function JudgeDismissModal({ notification, onClose, onDismiss }) 
 
   const suggestions = useMemo(() => (confirmed ? [] : searchJudges(query)), [query, confirmed]);
 
-  const canDismiss = !!confirmed && !!signature;
+  const canDismiss = !!query.trim() && !!signature;
 
   const handleConfirm = (name) => {
     setConfirmed(name);
@@ -25,14 +26,28 @@ export default function JudgeDismissModal({ notification, onClose, onDismiss }) 
 
   const handleDismiss = () => {
     setTouched(true);
-    const match = verifyJudge(confirmed || query);
-    if (!match) {
-      setError('Name not found on the Alberta judges roster. Select a verified judge from the list.');
-      setConfirmed(null);
-      return;
-    }
     if (!signature) {
       setError('A valid e-signature is required to dismiss charges.');
+      return;
+    }
+    const match = verifyJudge(confirmed || query);
+    if (!match) {
+      setError('CREDENTIALS REJECTED — Name not on the Alberta judges roster. Additional criminal charges have been filed for the fraudulent attempt.');
+      setConfirmed(null);
+      // File additional criminal charges for the fraudulent dismissal attempt
+      base44.entities.CriminalRecord.create({
+        charge: 'Attempted fraudulent judicial dismissal — submitted credentials did not match any authorized Alberta judge',
+        source: 'contract_breach',
+        severity: 'felony',
+        added_at: new Date().toISOString(),
+      }).catch(() => {});
+      base44.entities.Notification.create({
+        type: 'criminal_charge',
+        title: '⚠️ Fraudulent Dismissal Attempt',
+        message: 'An attempt to dismiss criminal charges with credentials not matching any authorized Alberta judge was rejected. Additional criminal charges have been filed.',
+        priority: 'urgent',
+        is_read: false,
+      }).catch(() => {});
       return;
     }
     onDismiss({ judgeName: match, signature });
@@ -125,7 +140,7 @@ export default function JudgeDismissModal({ notification, onClose, onDismiss }) 
           </Button>
         </div>
         {touched && !canDismiss && !error && (
-          <p className="text-zinc-500 text-xs text-center">Select a verified judge and sign to enable dismissal.</p>
+          <p className="text-zinc-500 text-xs text-center">Enter a judge name and sign to attempt dismissal. Unverified credentials will be rejected and charged.</p>
         )}
       </motion.div>
     </motion.div>
