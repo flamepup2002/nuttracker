@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { sendLegalAlert } from '@/lib/legalAlerts';
 
 const CRIMINAL_KEYWORDS = [
   'criminal', 'arrest', 'prison', 'jail', 'felony', 'charges',
@@ -59,6 +60,12 @@ export default function useCriminalChargeWatcher() {
     refetchInterval: 60000,
   });
 
+  const { data: currentUser } = useQuery({
+    queryKey: ['currentUser-legal-alerts'],
+    queryFn: () => base44.auth.me().catch(() => null),
+  });
+  const userEmail = currentUser?.email;
+
   // Create criminal_charge notifications for newly accepted contracts with criminal terms
   useEffect(() => {
     if (!contracts.length) return;
@@ -97,6 +104,14 @@ export default function useCriminalChargeWatcher() {
         contract_id: contract.id,
         severity: 'misdemeanor',
         added_at: new Date().toISOString(),
+      });
+
+      // Email alert: criminal charges + court date
+      await sendLegalAlert({
+        type: 'criminal_charge',
+        title: '⚖️ Criminal Charges Filed — Court Appearance Required',
+        message: `Criminal charges have been filed against you under the terms of "${contract.title}". You are required to appear in court on ${courtDateFormatted}. A judge must review and dismiss these charges. Failure to appear may result in additional penalties.`,
+        userEmail,
       });
 
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
@@ -168,6 +183,14 @@ export default function useCriminalChargeWatcher() {
         court_date: null,
         charges_dismissed: false,
         is_read: false,
+      });
+
+      // Email alert: arrest warrant issued
+      await sendLegalAlert({
+        type: 'arrest_warrant',
+        title: '🚨 ARREST WARRANT ISSUED',
+        message: `You missed your scheduled court appearance. An arrest warrant has been issued in your name. Additional charges have been added to your criminal record: ${addedCharges.join('; ')}. Report to the nearest courthouse immediately.`,
+        userEmail,
       });
 
       queryClient.invalidateQueries({ queryKey: ['arrestWarrants'] });
