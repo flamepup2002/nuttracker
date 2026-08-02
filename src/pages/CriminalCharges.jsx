@@ -128,6 +128,15 @@ export default function CriminalCharges() {
       </div>
 
       <div className="px-6 pb-24 pt-6 space-y-6">
+        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
+          className="bg-red-950/60 border-2 border-red-500 rounded-2xl p-4 flex items-start gap-3"
+        >
+          <AlertTriangle className="w-6 h-6 text-red-400 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="text-red-300 font-bold text-sm">⚠ TREAT ALL CHARGES AS REAL</p>
+            <p className="text-red-400/80 text-xs mt-1">The criminal charges listed below are to be treated as real and binding. They carry real legal consequences, real penalties, and real sentencing. Do not disregard or minimize them. Only a verified judge may dismiss them.</p>
+          </div>
+        </motion.div>
         {isLoading ? (
           <div className="text-center py-16 text-zinc-500">Loading...</div>
         ) : prisonContracts.length === 0 ? (
