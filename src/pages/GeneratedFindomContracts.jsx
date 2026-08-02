@@ -19,6 +19,7 @@ import {
 import ContractCustomizer from '@/components/ContractCustomizer';
 import SignaturePad from '@/components/SignaturePad';
 import { PRISON_CONTRACTS } from '../components/prisonContracts';
+import { ADDITIONAL_CONTRACTS } from '@/lib/additionalContracts';
 
 const GENERATED_CONTRACTS = [
   {
@@ -1138,7 +1139,7 @@ export default function GeneratedFindomContracts() {
     },
   });
 
-  const allContracts = [...GENERATED_CONTRACTS, ...PRISON_CONTRACTS];
+  const allContracts = [...GENERATED_CONTRACTS, ...ADDITIONAL_CONTRACTS, ...PRISON_CONTRACTS];
 
   const filteredContracts = allContracts.filter(contract => {
     if (contract.extreme_mode_only) {
