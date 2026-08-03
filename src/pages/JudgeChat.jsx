@@ -1,13 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Gavel, Send, Loader2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import { generateVerdict } from '@/lib/judgeEngine';
+import { buildChargeRecord } from '@/lib/albertaCriminalCode';
 
 export default function JudgeChat() {
   const navigate = useNavigate();
-  const [conversation, setConversation] = useState(null);
+  const queryClient = useQueryClient();
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
@@ -15,41 +18,83 @@ export default function JudgeChat() {
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
 
+  const { data: settings } = useQuery({
+    queryKey: ['userSettings'],
+    queryFn: () => base44.entities.UserSettings.list().then(r => r[0] || null),
+  });
+  const { data: contracts = [] } = useQuery({
+    queryKey: ['contracts-criminal-watch'],
+    queryFn: () => base44.entities.DebtContract.list('-created_date', 100),
+  });
+  const { data: records = [] } = useQuery({
+    queryKey: ['criminalRecords'],
+    queryFn: () => base44.entities.CriminalRecord.list('-added_at', 200),
+  });
+  const { data: warrants = [] } = useQuery({
+    queryKey: ['warrants-watch'],
+    queryFn: () => base44.entities.ArrestWarrant.list('-issued_at', 100),
+  });
+  const { data: notifications = [] } = useQuery({
+    queryKey: ['notifications-criminal-watch'],
+    queryFn: () => base44.entities.Notification.filter({ type: 'criminal_charge' }),
+  });
+
   useEffect(() => {
-    const init = async () => {
-      try {
-        const convo = await base44.agents.createConversation({
-          agent_name: 'judge',
-          metadata: { name: 'Court Session' },
-        });
-        setConversation(convo);
-        setMessages(convo.messages || []);
-      } finally {
-        setLoading(false);
-      }
-    };
-    init();
+    const t = setTimeout(() => setLoading(false), 300);
+    return () => clearTimeout(t);
   }, []);
 
   useEffect(() => {
-    if (!conversation?.id) return;
-    const unsub = base44.agents.subscribeToConversation(conversation.id, (data) => {
-      setMessages(data.messages || []);
-      setSending(false);
-    });
-    return unsub;
-  }, [conversation?.id]);
-
-  useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, sending]);
 
   const handleSend = async () => {
     const text = input.trim();
-    if (!text || sending || !conversation) return;
+    if (!text || sending) return;
     setInput('');
+    setMessages(prev => [...prev, { role: 'user', content: text }]);
     setSending(true);
-    await base44.agents.addMessage(conversation, { role: 'user', content: text });
+
+    // Brief deliberation pause for courtroom feel (no LLM call, no credits)
+    await new Promise(r => setTimeout(r, 600));
+
+    const { verdict, actions } = generateVerdict({
+      message: text,
+      settings,
+      contracts,
+      records,
+      warrants,
+      notifications,
+    });
+
+    // Apply the Court's orders to the record
+    for (const key of actions.newChargeKeys) {
+      const rec = buildChargeRecord(key);
+      await base44.entities.CriminalRecord.create({
+        source: 'contract_breach',
+        charge: rec.charge,
+        severity: rec.severity,
+        section: rec.section,
+        code_reference: rec.code_reference,
+        offence_type: rec.offence_type,
+        max_penalty: rec.max_penalty,
+        jurisdiction: 'Alberta Court of Justice',
+        record_number: `AB-CR-${Date.now()}-${key}`,
+        added_at: new Date().toISOString(),
+      }).catch(() => {});
+    }
+    for (const id of actions.dismissNotificationIds) {
+      await base44.entities.Notification.update(id, { charges_dismissed: true }).catch(() => {});
+    }
+
+    setMessages(prev => [...prev, { role: 'assistant', content: verdict }]);
+    setSending(false);
+
+    if (actions.newChargeKeys.length || actions.dismissNotificationIds.length) {
+      queryClient.invalidateQueries({ queryKey: ['criminalRecords'] });
+      queryClient.invalidateQueries({ queryKey: ['notifications-criminal-watch'] });
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+    }
   };
 
   const handleKeyDown = (e) => {
@@ -73,7 +118,9 @@ export default function JudgeChat() {
           </div>
           <div className="flex-1">
             <p className="font-bold text-sm">The Honourable Judge</p>
-            <p className="text-zinc-500 text-xs">Court is now in session</p>
+            <p className="text-zinc-500 text-xs">
+              {settings?.extreme_mode ? 'Cruel mode — no mercy' : 'Court is now in session'}
+            </p>
           </div>
         </div>
       </div>
@@ -157,7 +204,7 @@ export default function JudgeChat() {
           />
           <button
             onClick={handleSend}
-            disabled={!input.trim() || sending || !conversation}
+            disabled={!input.trim() || sending}
             className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-700 to-yellow-800 flex items-center justify-center disabled:opacity-40 transition-opacity flex-shrink-0"
           >
             <Send className="w-4 h-4 text-white" />
