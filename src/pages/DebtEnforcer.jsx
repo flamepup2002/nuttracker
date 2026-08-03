@@ -79,7 +79,7 @@ export default function DebtEnforcer() {
   };
 
   const sendMessage = async () => {
-    if (!input.trim() || !conversation || loading) return;
+    if (!input.trim() || !conversation) return;
     const text = input.trim();
     setInput('');
     setLoading(true);
