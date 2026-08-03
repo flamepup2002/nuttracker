@@ -1,0 +1,90 @@
+{
+  "name": "PoliceDispatch",
+  "type": "object",
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "description": "Criminal record that triggered the dispatch"
+    },
+    "contract_id": {
+      "type": "string",
+      "description": "Related contract if any"
+    },
+    "unit_id": {
+      "type": "string",
+      "description": "Police unit callsign (e.g. EPS-42)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "en_route",
+        "arrived",
+        "cancelled"
+      ],
+      "default": "en_route",
+      "description": "Dispatch status"
+    },
+    "dispatched_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the unit was dispatched"
+    },
+    "eta_seconds": {
+      "type": "number",
+      "description": "Estimated travel time in seconds"
+    },
+    "origin_lat": {
+      "type": "number",
+      "description": "Police station departure latitude"
+    },
+    "origin_lng": {
+      "type": "number",
+      "description": "Police station departure longitude"
+    },
+    "origin_label": {
+      "type": "string",
+      "description": "Name of the dispatching police station"
+    },
+    "dest_lat": {
+      "type": "number",
+      "description": "Destination latitude (suspect location)"
+    },
+    "dest_lng": {
+      "type": "number",
+      "description": "Destination longitude (suspect location)"
+    },
+    "distance_meters": {
+      "type": "number",
+      "description": "Initial distance to destination in meters"
+    },
+    "arrived_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the unit arrived on scene"
+    }
+  },
+  "required": [
+    "record_id",
+    "unit_id",
+    "dispatched_at",
+    "eta_seconds",
+    "origin_lat",
+    "origin_lng",
+    "dest_lat",
+    "dest_lng"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}

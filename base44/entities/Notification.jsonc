@@ -12,7 +12,8 @@
         "contract_accepted",
         "contract_cancelled",
         "new_contract_offer",
-        "criminal_charge"
+        "criminal_charge",
+        "police_dispatch"
       ],
       "description": "Type of notification"
     },

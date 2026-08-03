@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
@@ -6,10 +6,62 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { fileWithLocalDatabase } from '@/lib/localCriminalDatabase';
 import { captureGps } from '@/lib/gpsCapture';
+import LiveDispatchMap from '@/components/LiveDispatchMap';
 import {
   ArrowLeft, Siren, ShieldCheck, Database, Clock, FileText,
-  CheckCircle2, AlertTriangle, Loader2, Link2, MapPin
+  CheckCircle2, AlertTriangle, Loader2, Link2, MapPin, Navigation
 } from 'lucide-react';
+
+const EPS_STATIONS = [
+  { name: 'EPS Downtown HQ', lat: 53.5444, lng: -113.4904 },
+  { name: 'EPS West Division', lat: 53.5186, lng: -113.6256 },
+  { name: 'EPS North Division', lat: 53.5801, lng: -113.4869 },
+  { name: 'EPS South Division', lat: 53.4739, lng: -113.5035 },
+  { name: 'RCMP K Division', lat: 53.5344, lng: -113.5278 },
+];
+
+function haversine(lat1, lng1, lat2, lng2) {
+  const R = 6371000;
+  const toRad = (d) => (d * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function pickNearestStation(lat, lng) {
+  let best = EPS_STATIONS[0];
+  let bestD = Infinity;
+  EPS_STATIONS.forEach((s) => {
+    const d = haversine(lat, lng, s.lat, s.lng);
+    if (d < bestD) { bestD = d; best = s; }
+  });
+  return { ...best, distance: bestD };
+}
+
+function buildDispatch(record, filed) {
+  const lat = filed.gps_latitude;
+  const lng = filed.gps_longitude;
+  const station = pickNearestStation(lat, lng);
+  const distance = station.distance;
+  // assume 45 km/h average response speed = 12.5 m/s
+  const etaSeconds = Math.max(180, Math.round(distance / 12.5));
+  const unitNum = Math.floor(Math.random() * 90) + 10;
+  return {
+    record_id: record.id,
+    contract_id: record.contract_id || null,
+    unit_id: `EPS-${unitNum}`,
+    status: 'en_route',
+    dispatched_at: new Date().toISOString(),
+    eta_seconds: etaSeconds,
+    origin_lat: station.lat,
+    origin_lng: station.lng,
+    origin_label: station.name,
+    dest_lat: lat,
+    dest_lng: lng,
+    distance_meters: Math.round(distance),
+  };
+}
 
 const SEVERITY_CONFIG = {
   misdemeanor: { label: 'Misdemeanor', color: 'text-yellow-400', bg: 'bg-yellow-950/30 border-yellow-700/40' },
@@ -32,6 +84,28 @@ export default function PoliceDatabase() {
     queryKey: ['arrestWarrants'],
     queryFn: () => base44.entities.ArrestWarrant.list('-issued_at', 100),
   });
+
+  const { data: dispatches = [], isLoading: loadingDispatches } = useQuery({
+    queryKey: ['policeDispatches'],
+    queryFn: () => base44.entities.PoliceDispatch.list('-dispatched_at', 50),
+  });
+
+  // Auto-mark dispatches as arrived when their ETA elapses
+  useEffect(() => {
+    const now = Date.now();
+    dispatches.forEach((d) => {
+      if (d.status === 'en_route') {
+        const elapsed = (now - new Date(d.dispatched_at).getTime()) / 1000;
+        if (elapsed >= d.eta_seconds) {
+          base44.entities.PoliceDispatch.update(d.id, {
+            status: 'arrived',
+            arrived_at: new Date().toISOString(),
+          }).then(() => queryClient.invalidateQueries({ queryKey: ['policeDispatches'] }))
+            .catch(() => {});
+        }
+      }
+    });
+  }, [dispatches, queryClient]);
 
   const warrantsById = {};
   warrants.forEach(w => { warrantsById[w.id] = w; });
@@ -72,6 +146,31 @@ export default function PoliceDatabase() {
           ? `Record entered into EPS/CPIC — linked arrest warrant resolved. ${gpsNote}`
           : `Record entered into EPS/CPIC — ${filed.database_reference}. ${gpsNote}`,
       });
+
+      // Dispatch a police unit + alert when live GPS is available
+      if (filed.gps_latitude != null) {
+        try {
+          const dispatchPayload = buildDispatch({ id: filed.id, contract_id: filed.contract_id }, filed);
+          const dispatch = await base44.entities.PoliceDispatch.create(dispatchPayload);
+          await queryClient.invalidateQueries({ queryKey: ['policeDispatches'] });
+          const etaMin = Math.max(1, Math.round(dispatch.eta_seconds / 60));
+          toast.error('🚨 POLICE DISPATCHED', {
+            description: `${dispatch.unit_id} en route from ${dispatch.origin_label} — ETA ~${etaMin} min (${(dispatch.distance_meters / 1000).toFixed(1)} km).`,
+            duration: 8000,
+          });
+          try {
+            await base44.entities.Notification.create({
+              type: 'police_dispatch',
+              title: `Police unit dispatched — ${dispatch.unit_id}`,
+              message: `A police unit has been dispatched from ${dispatch.origin_label} to your location. ETA approximately ${etaMin} minute${etaMin === 1 ? '' : 's'} (${(dispatch.distance_meters / 1000).toFixed(1)} km). Remain at your current location.`,
+              priority: 'urgent',
+              action_url: '/PoliceDatabase',
+              contract_id: filed.contract_id || null,
+            });
+            await queryClient.invalidateQueries({ queryKey: ['notifications'] });
+          } catch (e) { /* notification best-effort */ }
+        } catch (e) { /* dispatch best-effort */ }
+      }
     },
     onError: (err) => {
       setFilingId(null);
@@ -161,7 +260,19 @@ export default function PoliceDatabase() {
           </motion.div>
         )}
 
-        {loadingRecords || loadingWarrants ? (
+        {/* Active police dispatches — live map */}
+        {dispatches.filter(d => d.status === 'en_route').length > 0 && (
+          <div className="space-y-3">
+            <p className="text-red-400 text-xs font-semibold uppercase tracking-wider flex items-center gap-2">
+              <Navigation className="w-3 h-3 animate-pulse" /> Police Units En Route
+            </p>
+            {dispatches.filter(d => d.status === 'en_route').map((d) => (
+              <LiveDispatchMap key={d.id} dispatch={d} />
+            ))}
+          </div>
+        )}
+
+        {loadingRecords || loadingWarrants || loadingDispatches ? (
           <div className="text-center py-16 text-zinc-500">Loading...</div>
         ) : records.length === 0 ? (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
