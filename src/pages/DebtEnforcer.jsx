@@ -112,7 +112,7 @@ export default function DebtEnforcer() {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 space-y-4 py-4">
+      <div className="flex-1 overflow-y-auto px-4 space-y-4 py-4 pb-44">
         {initializing ?
         <div className="flex items-center justify-center h-full">
             <div className="text-center">
@@ -157,7 +157,7 @@ export default function DebtEnforcer() {
       </div>
 
       {/* Input */}
-      <div className="bg-zinc-950 border-t border-zinc-800 px-4 flex-shrink-0 py-4">
+      <div className="fixed left-0 right-0 bg-zinc-950 border-t border-zinc-800 px-4 py-3" style={{ bottom: 'calc(48px + env(safe-area-inset-bottom, 0px))' }}>
         <div className="flex gap-2">
           <Input
             value={input}
