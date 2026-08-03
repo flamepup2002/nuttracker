@@ -113,6 +113,12 @@ export default function CriminalRecord() {
                           {record.jurisdiction && <span>Jurisdiction: <span className="text-zinc-400">{record.jurisdiction}</span></span>}
                           {record.record_number && <span> · {record.record_number}</span>}
                         </p>
+                        {record.database_filed && (
+                          <p className="text-zinc-500">
+                            Filed with: <span className="text-zinc-400">{record.database_name}</span>
+                            {record.database_reference && <span> · {record.database_reference}</span>}
+                          </p>
+                        )}
                       </div>
                     )}
                     <div className="flex items-center gap-1 mt-2">

@@ -62,6 +62,24 @@
       "type": "string",
       "description": "Official Alberta criminal record number"
     },
+    "database_filed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the record has been entered into the local criminal database"
+    },
+    "database_name": {
+      "type": "string",
+      "description": "Local police criminal database the record was filed with"
+    },
+    "database_reference": {
+      "type": "string",
+      "description": "Reference number assigned by the local criminal database (e.g. CPIC-AB-...)"
+    },
+    "filed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the record was entered into the local criminal database"
+    },
     "added_at": {
       "type": "string",
       "format": "date-time"

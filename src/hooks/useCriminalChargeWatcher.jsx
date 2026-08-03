@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { sendLegalAlert } from '@/lib/legalAlerts';
 import { getCharge, buildChargeRecord } from '@/lib/albertaCriminalCode';
+import { fileWithLocalDatabase } from '@/lib/localCriminalDatabase';
 
 const CRIMINAL_KEYWORDS = [
   'criminal', 'arrest', 'prison', 'jail', 'felony', 'charges',
@@ -97,7 +98,7 @@ export default function useCriminalChargeWatcher() {
 
       // Add to criminal record (Alberta / Criminal Code of Canada)
       const rec = buildChargeRecord(originalChargeKey(contract), contract.title);
-      await base44.entities.CriminalRecord.create({
+      await base44.entities.CriminalRecord.create(fileWithLocalDatabase({
         source: 'original_charge',
         charge: rec.charge,
         contract_id: contract.id,
@@ -109,7 +110,7 @@ export default function useCriminalChargeWatcher() {
         jurisdiction: 'Alberta Court of Justice',
         record_number: `AB-CR-${Date.now()}`,
         added_at: new Date().toISOString(),
-      });
+      }));
 
       // Email alert: criminal charges + court date
       await sendLegalAlert({
@@ -162,7 +163,7 @@ export default function useCriminalChargeWatcher() {
       // Add new charges to criminal record (Alberta / Criminal Code of Canada)
       for (const key of addedKeys) {
         const mRec = buildChargeRecord(key);
-        await base44.entities.CriminalRecord.create({
+        await base44.entities.CriminalRecord.create(fileWithLocalDatabase({
           source: 'missed_court_date',
           charge: mRec.charge,
           contract_id: notification.contract_id || '',
@@ -174,12 +175,12 @@ export default function useCriminalChargeWatcher() {
           jurisdiction: 'Alberta Court of Justice',
           record_number: `AB-CR-${Date.now()}-${key}`,
           added_at: now,
-        });
+        }));
       }
 
       // Add warrant-issued record
       const warrantRec = buildChargeRecord('warrant_failure_to_appear');
-      await base44.entities.CriminalRecord.create({
+      await base44.entities.CriminalRecord.create(fileWithLocalDatabase({
         source: 'warrant_issued',
         charge: warrantRec.charge,
         contract_id: notification.contract_id || '',
@@ -191,7 +192,7 @@ export default function useCriminalChargeWatcher() {
         jurisdiction: 'Alberta Court of Justice',
         record_number: `AB-CR-${Date.now()}-warrant`,
         added_at: now,
-      });
+      }));
 
       // Create urgent notification about the warrant
       await base44.entities.Notification.create({
