@@ -8,6 +8,7 @@ import { base44 } from '@/api/base44Client';
 import { searchJudges, verifyJudge } from '@/lib/albertaJudges';
 import { compareSignatures } from '@/lib/signatureCompare';
 import { buildChargeRecord } from '@/lib/albertaCriminalCode';
+import { fileCriminalRecord } from '@/lib/criminalDatabase';
 
 const SIGNATURE_MATCH_THRESHOLD = 0.6;
 
@@ -33,7 +34,7 @@ export default function JudgeDismissModal({ notification, onClose, onDismiss }) 
     const keys = ['personation', 'uttering_forged_document'];
     for (const key of keys) {
       const rec = buildChargeRecord(key);
-      await base44.entities.CriminalRecord.create({
+      await fileCriminalRecord({
         source: 'contract_breach',
         charge: `${rec.charge} — ${reason}`,
         severity: rec.severity,

@@ -7,6 +7,7 @@ import { ArrowLeft, Gavel, Send, Loader2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { generateVerdict } from '@/lib/judgeEngine';
 import { buildChargeRecord } from '@/lib/albertaCriminalCode';
+import { fileCriminalRecord } from '@/lib/criminalDatabase';
 
 export default function JudgeChat() {
   const navigate = useNavigate();
@@ -70,7 +71,7 @@ export default function JudgeChat() {
     // Apply the Court's orders to the record
     for (const key of actions.newChargeKeys) {
       const rec = buildChargeRecord(key);
-      await base44.entities.CriminalRecord.create({
+      await fileCriminalRecord({
         source: 'contract_breach',
         charge: rec.charge,
         severity: rec.severity,
