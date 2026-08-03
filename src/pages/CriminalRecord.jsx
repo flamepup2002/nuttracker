@@ -67,9 +67,9 @@ export default function CriminalRecord() {
               <div className="flex items-start gap-3">
                 <AlertTriangle className="w-7 h-7 text-red-400 flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-red-300 font-bold text-lg">OFFICIAL CRIMINAL RECORD</p>
+                  <p className="text-red-300 font-bold text-lg">OFFICIAL ALBERTA CRIMINAL RECORD</p>
                   <p className="text-red-400/80 text-sm mt-1">
-                    All charges filed against you are permanently recorded here. Missed court dates add additional charges.
+                    All charges are filed under the Criminal Code of Canada (R.S.C. 1985, c. C-46) and recorded with the Alberta Court of Justice. Missed court dates add additional charges.
                   </p>
                   <div className="mt-3 grid grid-cols-3 gap-2">
                     <div className="bg-black/30 rounded-lg p-2 text-center">
@@ -102,6 +102,19 @@ export default function CriminalRecord() {
                       <span className="text-xs text-zinc-500">{SOURCE_LABELS[record.source] || record.source}</span>
                     </div>
                     <p className="text-zinc-200 text-sm leading-relaxed">{record.charge}</p>
+                    {record.code_reference && (
+                      <div className="mt-2 space-y-1 text-xs border-t border-white/5 pt-2">
+                        <p className="text-zinc-300"><span className="text-zinc-500">Statute:</span> {record.code_reference}</p>
+                        <div className="flex flex-wrap gap-x-3 gap-y-1">
+                          {record.offence_type && <span className="text-zinc-500">Offence: <span className="text-zinc-300 capitalize">{record.offence_type}</span></span>}
+                          {record.max_penalty && <span className="text-zinc-500">Penalty: <span className="text-zinc-300">{record.max_penalty}</span></span>}
+                        </div>
+                        <p className="text-zinc-500">
+                          {record.jurisdiction && <span>Jurisdiction: <span className="text-zinc-400">{record.jurisdiction}</span></span>}
+                          {record.record_number && <span> · {record.record_number}</span>}
+                        </p>
+                      </div>
+                    )}
                     <div className="flex items-center gap-1 mt-2">
                       <Clock className="w-3 h-3 text-zinc-600" />
                       <p className="text-zinc-600 text-xs">{new Date(record.added_at).toLocaleString()}</p>

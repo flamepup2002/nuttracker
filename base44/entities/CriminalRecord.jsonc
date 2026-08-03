@@ -33,6 +33,35 @@
       ],
       "default": "misdemeanor"
     },
+    "section": {
+      "type": "string",
+      "description": "Criminal Code section (e.g. s. 145(1)(a))"
+    },
+    "code_reference": {
+      "type": "string",
+      "description": "Full legal citation (Criminal Code, R.S.C. 1985, c. C-46, ...)"
+    },
+    "offence_type": {
+      "type": "string",
+      "enum": [
+        "summary",
+        "indictable",
+        "hybrid"
+      ],
+      "description": "Canadian offence classification"
+    },
+    "max_penalty": {
+      "type": "string",
+      "description": "Maximum penalty for the offence"
+    },
+    "jurisdiction": {
+      "type": "string",
+      "description": "Recording court jurisdiction (e.g. Alberta Court of Justice)"
+    },
+    "record_number": {
+      "type": "string",
+      "description": "Official Alberta criminal record number"
+    },
     "added_at": {
       "type": "string",
       "format": "date-time"

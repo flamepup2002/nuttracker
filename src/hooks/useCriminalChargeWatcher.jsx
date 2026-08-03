@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { sendLegalAlert } from '@/lib/legalAlerts';
+import { getCharge, buildChargeRecord } from '@/lib/albertaCriminalCode';
 
 const CRIMINAL_KEYWORDS = [
   'criminal', 'arrest', 'prison', 'jail', 'felony', 'charges',
@@ -30,12 +31,14 @@ function generateCourtDate() {
   return date.toISOString();
 }
 
-const MISSED_COURT_CHARGES = [
-  'Failure to Appear — Contempt of Court (Class A Misdemeanor)',
-  'Willful absence from scheduled judicial proceedings — criminal contempt',
-  'Obstruction of Justice — deliberate evasion of court-ordered appearance',
-  'Bench warrant issued for immediate apprehension by law enforcement',
-];
+const MISSED_COURT_CHARGE_KEYS = ['failure_to_appear', 'contempt_of_court', 'obstruction_of_justice', 'bench_warrant'];
+
+function originalChargeKey(contract) {
+  const intensity = (contract.intensity_level || '').toLowerCase();
+  if (intensity === 'extreme') return 'extortion';
+  if (intensity === 'intense') return 'fraud';
+  return 'fraud_under';
+}
 
 export default function useCriminalChargeWatcher() {
   const queryClient = useQueryClient();
@@ -92,12 +95,19 @@ export default function useCriminalChargeWatcher() {
         is_read: false,
       });
 
-      // Add to criminal record
+      // Add to criminal record (Alberta / Criminal Code of Canada)
+      const rec = buildChargeRecord(originalChargeKey(contract), contract.title);
       await base44.entities.CriminalRecord.create({
         source: 'original_charge',
-        charge: `Criminal charges filed under contract: "${contract.title}"`,
+        charge: rec.charge,
         contract_id: contract.id,
-        severity: 'misdemeanor',
+        severity: rec.severity,
+        section: rec.section,
+        code_reference: rec.code_reference,
+        offence_type: rec.offence_type,
+        max_penalty: rec.max_penalty,
+        jurisdiction: 'Alberta Court of Justice',
+        record_number: `AB-CR-${Date.now()}`,
         added_at: new Date().toISOString(),
       });
 
@@ -133,10 +143,11 @@ export default function useCriminalChargeWatcher() {
       missedCourtRef.current.add(notification.id);
       const me = await base44.auth.me().catch(() => null);
       const now = new Date().toISOString();
-      const addedCharges = [
-        MISSED_COURT_CHARGES[Math.floor(Math.random() * MISSED_COURT_CHARGES.length)],
-        'Bail revocation — subject to immediate detention pending re-arraignment',
+      const addedKeys = [
+        MISSED_COURT_CHARGE_KEYS[Math.floor(Math.random() * MISSED_COURT_CHARGE_KEYS.length)],
+        'bail_revocation',
       ];
+      const addedCharges = addedKeys.map(k => getCharge(k).charge);
 
       // Issue arrest warrant
       await base44.entities.ArrestWarrant.create({
@@ -148,23 +159,37 @@ export default function useCriminalChargeWatcher() {
         charges_added: addedCharges,
       });
 
-      // Add new charges to criminal record
-      for (const charge of addedCharges) {
+      // Add new charges to criminal record (Alberta / Criminal Code of Canada)
+      for (const key of addedKeys) {
+        const mRec = buildChargeRecord(key);
         await base44.entities.CriminalRecord.create({
           source: 'missed_court_date',
-          charge,
+          charge: mRec.charge,
           contract_id: notification.contract_id || '',
-          severity: charge.toLowerCase().includes('felony') ? 'felony' : 'misdemeanor',
+          severity: mRec.severity,
+          section: mRec.section,
+          code_reference: mRec.code_reference,
+          offence_type: mRec.offence_type,
+          max_penalty: mRec.max_penalty,
+          jurisdiction: 'Alberta Court of Justice',
+          record_number: `AB-CR-${Date.now()}-${key}`,
           added_at: now,
         });
       }
 
       // Add warrant-issued record
+      const warrantRec = buildChargeRecord('warrant_failure_to_appear');
       await base44.entities.CriminalRecord.create({
         source: 'warrant_issued',
-        charge: 'Arrest Warrant Issued — failure to appear at mandatory court proceeding',
+        charge: warrantRec.charge,
         contract_id: notification.contract_id || '',
-        severity: 'felony',
+        severity: warrantRec.severity,
+        section: warrantRec.section,
+        code_reference: warrantRec.code_reference,
+        offence_type: warrantRec.offence_type,
+        max_penalty: warrantRec.max_penalty,
+        jurisdiction: 'Alberta Court of Justice',
+        record_number: `AB-CR-${Date.now()}-warrant`,
         added_at: now,
       });
 
