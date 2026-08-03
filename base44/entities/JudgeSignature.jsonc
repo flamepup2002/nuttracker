@@ -1,0 +1,46 @@
+{
+  "name": "JudgeSignature",
+  "type": "object",
+  "properties": {
+    "judge_name": {
+      "type": "string",
+      "description": "The judge's display name (from the Alberta roster)"
+    },
+    "signature_data": {
+      "type": "string",
+      "description": "Base64 data URL of the judge's enrolled reference e-signature"
+    },
+    "enrolled_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this reference signature was first enrolled"
+    }
+  },
+  "required": [
+    "judge_name",
+    "signature_data",
+    "enrolled_at"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

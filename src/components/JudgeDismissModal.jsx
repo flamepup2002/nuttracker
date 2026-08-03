@@ -6,6 +6,9 @@ import { Input } from '@/components/ui/input';
 import SignaturePad from '@/components/SignaturePad';
 import { base44 } from '@/api/base44Client';
 import { searchJudges, verifyJudge } from '@/lib/albertaJudges';
+import { compareSignatures } from '@/lib/signatureCompare';
+
+const SIGNATURE_MATCH_THRESHOLD = 0.6;
 
 export default function JudgeDismissModal({ notification, onClose, onDismiss }) {
   const [query, setQuery] = useState('');
@@ -13,6 +16,7 @@ export default function JudgeDismissModal({ notification, onClose, onDismiss }) 
   const [signature, setSignature] = useState(null);
   const [error, setError] = useState('');
   const [touched, setTouched] = useState(false);
+  const [verifying, setVerifying] = useState(false);
 
   const suggestions = useMemo(() => (confirmed ? [] : searchJudges(query)), [query, confirmed]);
 
@@ -24,7 +28,23 @@ export default function JudgeDismissModal({ notification, onClose, onDismiss }) 
     setError('');
   };
 
-  const handleDismiss = () => {
+  const fileFraudCharges = (reason) => {
+    base44.entities.CriminalRecord.create({
+      charge: `Attempted fraudulent judicial dismissal — ${reason}`,
+      source: 'contract_breach',
+      severity: 'felony',
+      added_at: new Date().toISOString(),
+    }).catch(() => {});
+    base44.entities.Notification.create({
+      type: 'criminal_charge',
+      title: '⚠️ Fraudulent Dismissal Attempt',
+      message: `An attempt to dismiss criminal charges was rejected: ${reason}. Additional criminal charges have been filed.`,
+      priority: 'urgent',
+      is_read: false,
+    }).catch(() => {});
+  };
+
+  const handleDismiss = async () => {
     setTouched(true);
     if (!signature) {
       setError('A valid e-signature is required to dismiss charges.');
@@ -34,23 +54,36 @@ export default function JudgeDismissModal({ notification, onClose, onDismiss }) 
     if (!match) {
       setError('CREDENTIALS REJECTED — Name not on the Alberta judges roster. Additional criminal charges have been filed for the fraudulent attempt.');
       setConfirmed(null);
-      // File additional criminal charges for the fraudulent dismissal attempt
-      base44.entities.CriminalRecord.create({
-        charge: 'Attempted fraudulent judicial dismissal — submitted credentials did not match any authorized Alberta judge',
-        source: 'contract_breach',
-        severity: 'felony',
-        added_at: new Date().toISOString(),
-      }).catch(() => {});
-      base44.entities.Notification.create({
-        type: 'criminal_charge',
-        title: '⚠️ Fraudulent Dismissal Attempt',
-        message: 'An attempt to dismiss criminal charges with credentials not matching any authorized Alberta judge was rejected. Additional criminal charges have been filed.',
-        priority: 'urgent',
-        is_read: false,
-      }).catch(() => {});
+      fileFraudCharges('submitted credentials did not match any authorized Alberta judge');
       return;
     }
-    onDismiss({ judgeName: match, signature });
+    // Verify the drawn signature against the judge's enrolled reference signature
+    setVerifying(true);
+    try {
+      const existing = await base44.entities.JudgeSignature.filter({ judge_name: match });
+      const ref = existing[0];
+      if (!ref) {
+        // First dismissal by this judge — enroll this signature as the reference
+        await base44.entities.JudgeSignature.create({
+          judge_name: match,
+          signature_data: signature,
+          enrolled_at: new Date().toISOString(),
+        });
+        onDismiss({ judgeName: match, signature });
+        return;
+      }
+      const score = await compareSignatures(signature, ref.signature_data);
+      if (score < SIGNATURE_MATCH_THRESHOLD) {
+        setError(`SIGNATURE REJECTED — Signature does not match the enrolled signature of Justice ${match} (similarity ${(score * 100).toFixed(0)}%). Additional criminal charges have been filed for the fraudulent dismissal attempt.`);
+        fileFraudCharges(`submitted signature did not match the enrolled signature of Justice ${match} (similarity ${(score * 100).toFixed(0)}%)`);
+        return;
+      }
+      onDismiss({ judgeName: match, signature });
+    } catch (e) {
+      setError('Signature verification failed: ' + String(e?.message || e));
+    } finally {
+      setVerifying(false);
+    }
   };
 
   return (
@@ -80,7 +113,7 @@ export default function JudgeDismissModal({ notification, onClose, onDismiss }) 
             <ShieldCheck className="w-3.5 h-3.5" /> VERIFIED JUDGE REQUIRED
           </p>
           <p className="text-zinc-400 text-xs mt-1">
-            Charges may only be dismissed by a sitting Alberta judge. Your name is checked against the official Alberta Courts roster, and an e-signature is required.
+            Charges may only be dismissed by a sitting Alberta judge. Your name is checked against the official Alberta Courts roster, and your e-signature must match the enrolled reference signature on file for that judge. The first dismissal by a judge enrolls their reference signature; all later dismissals must match it.
           </p>
         </div>
 
@@ -134,9 +167,9 @@ export default function JudgeDismissModal({ notification, onClose, onDismiss }) 
           <Button
             className="flex-1 bg-amber-800 hover:bg-amber-700 text-white"
             onClick={handleDismiss}
-            disabled={!canDismiss}
+            disabled={!canDismiss || verifying}
           >
-            <Trash2 className="w-4 h-4" /> Dismiss Charges
+            <Trash2 className="w-4 h-4" /> {verifying ? 'Verifying…' : 'Dismiss Charges'}
           </Button>
         </div>
         {touched && !canDismiss && !error && (
