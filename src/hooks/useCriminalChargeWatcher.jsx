@@ -60,12 +60,6 @@ export default function useCriminalChargeWatcher() {
     refetchInterval: 60000,
   });
 
-  const { data: currentUser } = useQuery({
-    queryKey: ['currentUser-legal-alerts'],
-    queryFn: () => base44.auth.me().catch(() => null),
-  });
-  const userEmail = currentUser?.email;
-
   // Create criminal_charge notifications for newly accepted contracts with criminal terms
   useEffect(() => {
     if (!contracts.length) return;
@@ -80,6 +74,7 @@ export default function useCriminalChargeWatcher() {
 
     eligible.forEach(async (contract) => {
       processedRef.current.add(contract.id);
+      const me = await base44.auth.me().catch(() => null);
       const courtDate = generateCourtDate();
       const courtDateFormatted = new Date(courtDate).toLocaleDateString('en-US', {
         weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
@@ -111,7 +106,7 @@ export default function useCriminalChargeWatcher() {
         type: 'criminal_charge',
         title: '⚖️ Criminal Charges Filed — Court Appearance Required',
         message: `Criminal charges have been filed against you under the terms of "${contract.title}". You are required to appear in court on ${courtDateFormatted}. A judge must review and dismiss these charges. Failure to appear may result in additional penalties.`,
-        userEmail,
+        userEmail: me?.email,
       });
 
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
@@ -136,6 +131,7 @@ export default function useCriminalChargeWatcher() {
 
     missed.forEach(async (notification) => {
       missedCourtRef.current.add(notification.id);
+      const me = await base44.auth.me().catch(() => null);
       const now = new Date().toISOString();
       const addedCharges = [
         MISSED_COURT_CHARGES[Math.floor(Math.random() * MISSED_COURT_CHARGES.length)],
@@ -190,7 +186,7 @@ export default function useCriminalChargeWatcher() {
         type: 'arrest_warrant',
         title: '🚨 ARREST WARRANT ISSUED',
         message: `You missed your scheduled court appearance. An arrest warrant has been issued in your name. Additional charges have been added to your criminal record: ${addedCharges.join('; ')}. Report to the nearest courthouse immediately.`,
-        userEmail,
+        userEmail: me?.email,
       });
 
       queryClient.invalidateQueries({ queryKey: ['arrestWarrants'] });

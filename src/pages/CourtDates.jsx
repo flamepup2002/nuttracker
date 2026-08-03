@@ -6,6 +6,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft, Gavel, Calendar, Clock, CheckCircle, AlertTriangle, Shield, Edit2, Trash2, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import JudgeDismissModal from '@/components/JudgeDismissModal';
+import AddToCalendarButton from '@/components/AddToCalendarButton';
+import EmailAlertButton from '@/components/EmailAlertButton';
 
 function EditDateModal({ notification, onClose, onSave }) {
   const [value, setValue] = useState(notification.court_date ? notification.court_date.slice(0, 16) : '');
@@ -184,6 +186,10 @@ export default function CourtDates() {
                       <Calendar className="w-4 h-4 text-red-400 flex-shrink-0" />
                       <p className="text-red-300 text-sm font-semibold">{formatDate(n.court_date)}</p>
                     </div>
+                    <div className="flex gap-2 mt-3">
+                      <AddToCalendarButton title={n.title} description={n.message} startIso={n.court_date} location="Courthouse" />
+                      <EmailAlertButton title={n.title} message={n.message} />
+                    </div>
                     <AdminActions notification={n} />
                   </motion.div>
                 ))}
@@ -211,6 +217,10 @@ export default function CourtDates() {
                     <div className="flex items-center gap-2 bg-black/30 rounded-lg px-3 py-2">
                       <Calendar className="w-4 h-4 text-orange-400 flex-shrink-0" />
                       <p className="text-orange-300 text-sm font-semibold">{formatDate(n.court_date)}</p>
+                    </div>
+                    <div className="flex gap-2 mt-3">
+                      <AddToCalendarButton title={n.title} description={n.message} startIso={n.court_date} location="Courthouse" />
+                      <EmailAlertButton title={n.title} message={n.message} />
                     </div>
                     <AdminActions notification={n} />
                   </motion.div>
