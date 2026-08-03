@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import useCriminalChargeWatcher from './hooks/useCriminalChargeWatcher';
+import useCourtDateAlertWatcher from './hooks/useCourtDateAlertWatcher';
 import { base44 } from '@/api/base44Client';
 import NotificationToast from './components/NotificationToast';
 import BottomNav from './components/BottomNav';
@@ -39,6 +40,7 @@ const THEME_COLORS = {
 
 export default function Layout({ children }) {
   useCriminalChargeWatcher();
+  useCourtDateAlertWatcher();
   const [activeTheme, setActiveTheme] = useState('default');
 
   useEffect(() => {

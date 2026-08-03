@@ -57,6 +57,16 @@
       "type": "boolean",
       "default": false,
       "description": "Whether the criminal charges have been dismissed by a judge"
+    },
+    "alert_7d_sent": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the 7-day court date reminder email has been sent"
+    },
+    "alert_24h_sent": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the 24-hour court date reminder email has been sent"
     }
   },
   "required": [
