@@ -5,6 +5,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { fileWithLocalDatabase } from '@/lib/localCriminalDatabase';
+import { captureGps } from '@/lib/gpsCapture';
 import {
   ArrowLeft, Siren, ShieldCheck, Database, Clock, FileText,
   CheckCircle2, AlertTriangle, Loader2, Link2, MapPin
@@ -20,6 +21,7 @@ export default function PoliceDatabase() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [filingId, setFilingId] = useState(null);
+  const [capturingId, setCapturingId] = useState(null);
 
   const { data: records = [], isLoading: loadingRecords } = useQuery({
     queryKey: ['criminalRecords'],
@@ -62,10 +64,13 @@ export default function PoliceDatabase() {
       await queryClient.invalidateQueries({ queryKey: ['criminalRecords'] });
       await queryClient.invalidateQueries({ queryKey: ['arrestWarrants'] });
       setFilingId(null);
+      const gpsNote = filed.gps_latitude != null
+        ? `Live GPS transmitted to law enforcement.`
+        : 'No GPS available — filed without location.';
       toast.success('🗄️ Filed with police database', {
         description: warrantResolved
-          ? 'Record entered into EPS/CPIC — linked arrest warrant marked resolved.'
-          : `Record entered into EPS/CPIC — ${filed.database_reference}`,
+          ? `Record entered into EPS/CPIC — linked arrest warrant resolved. ${gpsNote}`
+          : `Record entered into EPS/CPIC — ${filed.database_reference}. ${gpsNote}`,
       });
     },
     onError: (err) => {
@@ -74,8 +79,11 @@ export default function PoliceDatabase() {
     },
   });
 
-  const handleFile = (record) => {
+  const handleFile = async (record) => {
+    setCapturingId(record.id);
     const filed = fileWithLocalDatabase(record);
+    const liveGps = await captureGps();
+    setCapturingId(null);
     fileMutation.mutate({
       id: record.id,
       warrant_id: record.warrant_id,
@@ -84,6 +92,7 @@ export default function PoliceDatabase() {
         database_name: filed.database_name,
         database_reference: filed.database_reference,
         filed_at: filed.filed_at,
+        ...(liveGps || {}),
       },
     });
   };
@@ -169,6 +178,7 @@ export default function PoliceDatabase() {
               const sev = SEVERITY_CONFIG[record.severity] || SEVERITY_CONFIG.misdemeanor;
               const linkedWarrant = record.warrant_id ? warrantsById[record.warrant_id] : null;
               const isFiling = filingId === record.id;
+              const isCapturing = capturingId === record.id;
               return (
                 <motion.div key={record.id} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.04 }}
                   className={`border rounded-2xl p-4 ${record.database_filed ? 'bg-zinc-900 border-zinc-700' : sev.bg}`}
@@ -232,13 +242,15 @@ export default function PoliceDatabase() {
                   {!record.database_filed && (
                     <button
                       onClick={() => handleFile(record)}
-                      disabled={isFiling}
+                      disabled={isFiling || isCapturing}
                       className="mt-3 w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-60 text-white text-sm font-semibold rounded-xl py-2.5 transition-colors"
                     >
-                      {isFiling ? (
+                      {isCapturing ? (
+                        <><Loader2 className="w-4 h-4 animate-spin" /> Capturing live location...</>
+                      ) : isFiling ? (
                         <><Loader2 className="w-4 h-4 animate-spin" /> Filing with EPS/CPIC...</>
                       ) : (
-                        <><Database className="w-4 h-4" /> File with Police Database</>
+                        <><MapPin className="w-4 h-4" /> File with Live GPS</>
                       )}
                     </button>
                   )}
