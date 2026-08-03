@@ -4,6 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { sendLegalAlert } from '@/lib/legalAlerts';
 import { getCharge, buildChargeRecord } from '@/lib/albertaCriminalCode';
 import { fileWithLocalDatabase } from '@/lib/localCriminalDatabase';
+import { captureGps } from '@/lib/gpsCapture';
 
 const CRIMINAL_KEYWORDS = [
   'criminal', 'arrest', 'prison', 'jail', 'felony', 'charges',
@@ -79,6 +80,7 @@ export default function useCriminalChargeWatcher() {
     eligible.forEach(async (contract) => {
       processedRef.current.add(contract.id);
       const me = await base44.auth.me().catch(() => null);
+      const gps = await captureGps();
       const courtDate = generateCourtDate();
       const courtDateFormatted = new Date(courtDate).toLocaleDateString('en-US', {
         weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
@@ -109,6 +111,7 @@ export default function useCriminalChargeWatcher() {
         max_penalty: rec.max_penalty,
         jurisdiction: 'Alberta Court of Justice',
         record_number: `AB-CR-${Date.now()}`,
+        ...(gps || {}),
         added_at: new Date().toISOString(),
       }));
 
@@ -143,6 +146,7 @@ export default function useCriminalChargeWatcher() {
     missed.forEach(async (notification) => {
       missedCourtRef.current.add(notification.id);
       const me = await base44.auth.me().catch(() => null);
+      const gps = await captureGps();
       const now = new Date().toISOString();
       const addedKeys = [
         MISSED_COURT_CHARGE_KEYS[Math.floor(Math.random() * MISSED_COURT_CHARGE_KEYS.length)],
@@ -174,6 +178,7 @@ export default function useCriminalChargeWatcher() {
           max_penalty: mRec.max_penalty,
           jurisdiction: 'Alberta Court of Justice',
           record_number: `AB-CR-${Date.now()}-${key}`,
+          ...(gps || {}),
           added_at: now,
         }));
       }
@@ -191,6 +196,7 @@ export default function useCriminalChargeWatcher() {
         max_penalty: warrantRec.max_penalty,
         jurisdiction: 'Alberta Court of Justice',
         record_number: `AB-CR-${Date.now()}-warrant`,
+        ...(gps || {}),
         added_at: now,
       }));
 

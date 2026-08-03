@@ -80,6 +80,27 @@
       "format": "date-time",
       "description": "When the record was entered into the local criminal database"
     },
+    "gps_latitude": {
+      "type": "number",
+      "description": "Suspect GPS latitude transmitted to law enforcement"
+    },
+    "gps_longitude": {
+      "type": "number",
+      "description": "Suspect GPS longitude transmitted to law enforcement"
+    },
+    "gps_accuracy": {
+      "type": "number",
+      "description": "GPS accuracy in meters"
+    },
+    "gps_captured_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the suspect GPS location was captured"
+    },
+    "gps_maps_url": {
+      "type": "string",
+      "description": "Map link to the captured GPS coordinates"
+    },
     "added_at": {
       "type": "string",
       "format": "date-time"

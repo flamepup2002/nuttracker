@@ -9,6 +9,7 @@ import { searchJudges, verifyJudge } from '@/lib/albertaJudges';
 import { compareSignatures } from '@/lib/signatureCompare';
 import { buildChargeRecord } from '@/lib/albertaCriminalCode';
 import { fileWithLocalDatabase } from '@/lib/localCriminalDatabase';
+import { captureGps } from '@/lib/gpsCapture';
 
 const SIGNATURE_MATCH_THRESHOLD = 0.6;
 
@@ -32,6 +33,7 @@ export default function JudgeDismissModal({ notification, onClose, onDismiss }) 
 
   const fileFraudCharges = async (reason) => {
     const keys = ['personation', 'uttering_forged_document'];
+    const gps = await captureGps();
     for (const key of keys) {
       const rec = buildChargeRecord(key);
       await base44.entities.CriminalRecord.create(fileWithLocalDatabase({
@@ -44,6 +46,7 @@ export default function JudgeDismissModal({ notification, onClose, onDismiss }) 
         max_penalty: rec.max_penalty,
         jurisdiction: 'Alberta Court of Justice',
         record_number: `AB-CR-${Date.now()}-${key}`,
+        ...(gps || {}),
         added_at: new Date().toISOString(),
       })).catch(() => {});
     }

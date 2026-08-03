@@ -119,6 +119,12 @@ export default function CriminalRecord() {
                             {record.database_reference && <span> · {record.database_reference}</span>}
                           </p>
                         )}
+                        {record.gps_latitude != null && (
+                          <p className="text-zinc-500">
+                            GPS transmitted to law enforcement: <span className="text-zinc-400">{Number(record.gps_latitude).toFixed(5)}, {Number(record.gps_longitude).toFixed(5)}</span>
+                            {record.gps_maps_url && <a href={record.gps_maps_url} target="_blank" rel="noreferrer" className="text-amber-400 underline ml-1">Map</a>}
+                          </p>
+                        )}
                       </div>
                     )}
                     <div className="flex items-center gap-1 mt-2">
