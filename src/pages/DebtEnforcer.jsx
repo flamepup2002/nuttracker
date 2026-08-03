@@ -165,11 +165,11 @@ export default function DebtEnforcer() {
             onKeyDown={handleKeyDown}
             placeholder="Respond to the enforcer..."
             className="bg-zinc-900 border-zinc-700 text-white placeholder:text-zinc-500 flex-1"
-            disabled={loading || initializing} />
+            disabled={initializing} />
           
           <Button
             onClick={sendMessage}
-            disabled={!input.trim() || loading || initializing}
+            disabled={!input.trim() || initializing}
             className="bg-red-700 hover:bg-red-600 text-white">
             
             <Send className="w-4 h-4" />
