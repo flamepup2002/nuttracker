@@ -99,12 +99,7 @@ export default function CriminalRecord() {
                   >
                     <div className="flex items-start justify-between gap-2 mb-2">
                       <span className={`text-xs font-bold px-2 py-0.5 rounded bg-black/30 ${sev.color}`}>{sev.label}</span>
-                      <div className="flex items-center gap-1.5">
-                        {record.filing_reference && (
-                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-950/50 border border-blue-700/40 text-blue-300">FILED · CPIC</span>
-                        )}
-                        <span className="text-xs text-zinc-500">{SOURCE_LABELS[record.source] || record.source}</span>
-                      </div>
+                      <span className="text-xs text-zinc-500">{SOURCE_LABELS[record.source] || record.source}</span>
                     </div>
                     <p className="text-zinc-200 text-sm leading-relaxed">{record.charge}</p>
                     {record.code_reference && (
@@ -118,12 +113,6 @@ export default function CriminalRecord() {
                           {record.jurisdiction && <span>Jurisdiction: <span className="text-zinc-400">{record.jurisdiction}</span></span>}
                           {record.record_number && <span> · {record.record_number}</span>}
                         </p>
-                        {record.filing_reference && (
-                          <p className="text-blue-400/90 flex items-center gap-1.5">
-                            <span className="inline-block w-1.5 h-1.5 rounded-full bg-blue-400" />
-                            Filed with {record.filed_database || 'local criminal database'} · Ref {record.filing_reference}
-                          </p>
-                        )}
                       </div>
                     )}
                     <div className="flex items-center gap-1 mt-2">
