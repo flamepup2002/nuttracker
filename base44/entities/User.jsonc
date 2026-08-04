@@ -14,6 +14,10 @@
       "type": "string",
       "description": "Court-ordered display name set by the Judge agent (e.g. 'Inmate #1138', 'Convict Smith')"
     },
+    "court_ordered_address": {
+      "type": "string",
+      "description": "Court-ordered prison placement address set by the Judge agent. When set, the user's address field is locked and cannot be changed."
+    },
     "reputation_score": {
       "type": "number",
       "default": 100,

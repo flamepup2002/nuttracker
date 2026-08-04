@@ -422,16 +422,40 @@ export default function Profile() {
           </h3>
 
           <div>
-            <Label className="text-zinc-400 text-sm mb-2">Home Address</Label>
-            <Textarea
-              value={profile.address}
-              onChange={(e) => handleChange('address', e.target.value)}
-              placeholder="123 Main St, City, State, ZIP"
-              className="bg-zinc-800 border-zinc-700 text-white h-20"
-            />
-            <p className="text-zinc-600 text-xs mt-1">
-              Required for unethical mode collateral agreement
-            </p>
+            <Label className="text-zinc-400 text-sm mb-2 flex items-center gap-2">
+              {user?.court_ordered_address ? (
+                <>
+                  <Gavel className="w-4 h-4 text-amber-500" />
+                  Court-Ordered Residence
+                </>
+              ) : 'Home Address'}
+            </Label>
+            {user?.court_ordered_address ? (
+              <div className="bg-amber-950/30 border border-amber-700/50 rounded-lg p-3">
+                <Textarea
+                  value={user.court_ordered_address}
+                  readOnly
+                  disabled
+                  className="bg-transparent border-0 text-amber-200 h-32 opacity-80 cursor-not-allowed resize-none"
+                />
+                <p className="text-amber-500 text-xs mt-2 flex items-center gap-1">
+                  <Gavel className="w-3 h-3" />
+                  Address locked by court order — remanded to this facility by the Court
+                </p>
+              </div>
+            ) : (
+              <>
+                <Textarea
+                  value={profile.address}
+                  onChange={(e) => handleChange('address', e.target.value)}
+                  placeholder="123 Main St, City, State, ZIP"
+                  className="bg-zinc-800 border-zinc-700 text-white h-20"
+                />
+                <p className="text-zinc-600 text-xs mt-1">
+                  Required for unethical mode collateral agreement
+                </p>
+              </>
+            )}
           </div>
         </motion.div>
 
