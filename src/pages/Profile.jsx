@@ -6,7 +6,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import AchievementBadge from '@/components/AchievementBadge';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, User, Save, Mail, Phone, MapPin, Calendar, Heart, FileText, DollarSign, TrendingUp, Package, Trophy, Sparkles, Settings, AlertTriangle, Trash2 } from 'lucide-react';
+import { ArrowLeft, User, Save, Mail, Phone, MapPin, Calendar, Heart, FileText, DollarSign, TrendingUp, Package, Trophy, Sparkles, Settings, AlertTriangle, Trash2, Gavel } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -330,14 +330,21 @@ export default function Profile() {
           <div>
             <Label className="text-zinc-400 text-sm mb-2 flex items-center gap-2">
               <User className="w-4 h-4" />
-              Full Name
+              {user?.court_ordered_name ? 'Court-Ordered Name' : 'Full Name'}
             </Label>
             <Input
-              value={profile.full_name}
+              value={user?.court_ordered_name || profile.full_name}
               onChange={(e) => handleChange('full_name', e.target.value)}
               placeholder="John Doe"
-              className="bg-zinc-800 border-zinc-700 text-white"
+              disabled={!!user?.court_ordered_name}
+              className={`bg-zinc-800 border-zinc-700 text-white ${user?.court_ordered_name ? 'opacity-60 cursor-not-allowed' : ''}`}
             />
+            {user?.court_ordered_name && (
+              <p className="text-amber-500 text-xs mt-1 flex items-center gap-1">
+                <Gavel className="w-3 h-3" />
+                Name locked by court order — cannot be changed
+              </p>
+            )}
           </div>
 
           <div>
