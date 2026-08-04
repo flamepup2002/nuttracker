@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Lock, Unlock, Clock, Zap, AlertTriangle, Bluetooth, MessageCircle, Send, History, Sliders, Link2, ExternalLink, Smartphone } from 'lucide-react';
+import { ArrowLeft, Lock, Unlock, Clock, Zap, AlertTriangle, Bluetooth, MessageCircle, Send, History, Sliders, Link2, ExternalLink, Smartphone, X } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -17,7 +17,8 @@ export default function HornyJail() {
   const [deviceConnected, setDeviceConnected] = useState(false);
   const [device, setDevice] = useState(null);
   const [lockMode, setLockMode] = useState(null); // 'virtual' | 'device'
-  const [chasterLinked, setChasterLinked] = useState(false);
+  const [chasterLockUrl, setChasterLockUrl] = useState('');
+  const [chasterInput, setChasterInput] = useState('');
   const [isLocked, setIsLocked] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [aiActive, setAiActive] = useState(false);
@@ -340,35 +341,60 @@ export default function HornyJail() {
                 <Link2 className="w-5 h-5 text-pink-400" />
               </div>
               <div className="flex-1">
-                <p className="text-white font-bold text-sm">Chaster.app Sync</p>
-                <p className="text-zinc-500 text-xs">Link your Chaster lock for real enforcement</p>
+                <p className="text-white font-bold text-sm">Chaster.app Lock</p>
+                <p className="text-zinc-500 text-xs">Paste your Chaster lock's shareable link</p>
               </div>
-              {chasterLinked && (
-                <Badge className="bg-green-600 text-white">Linked</Badge>
-              )}
             </div>
-            {chasterLinked ? (
-              <div className="flex items-center justify-between p-3 bg-black/40 rounded-lg">
-                <span className="text-green-400 text-xs">✓ Chaster lock connected — sessions sync automatically</span>
-                <a href="https://chaster.app" target="_blank" rel="noopener noreferrer" className="text-pink-400 text-xs flex items-center gap-1 hover:text-pink-300">
-                  Open <ExternalLink className="w-3 h-3" />
-                </a>
+            {chasterLockUrl ? (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-3 bg-black/40 rounded-lg">
+                  <span className="text-green-400 text-xs flex items-center gap-1 truncate">
+                    <Link2 className="w-3 h-3 flex-shrink-0" />
+                    <span className="truncate">{chasterLockUrl}</span>
+                  </span>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <a href={chasterLockUrl} target="_blank" rel="noopener noreferrer" className="text-pink-400 hover:text-pink-300">
+                      <ExternalLink className="w-4 h-4" />
+                    </a>
+                    <button
+                      onClick={() => { setChasterLockUrl(''); setChasterInput(''); }}
+                      className="text-zinc-500 hover:text-red-400"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+                <p className="text-zinc-500 text-xs">
+                  Share this link with your keyholder. The AI warden will honor the lock duration.
+                </p>
               </div>
             ) : (
               <>
                 <p className="text-zinc-500 text-xs mb-3">
-                  Chaster.app is a chastity management platform. Link your account to enforce locks on a real shared lock. (Manual sync — connect your lock in Chaster after starting a session.)
+                  In Chaster.app, open your lock and copy the shareable link (looks like chaster.app/s/...). Paste it below.
                 </p>
-                <a href="https://chaster.app/auth/login" target="_blank" rel="noopener noreferrer" className="block">
+                <div className="flex gap-2">
+                  <Input
+                    value={chasterInput}
+                    onChange={(e) => setChasterInput(e.target.value)}
+                    placeholder="https://chaster.app/s/..."
+                    className="bg-zinc-900 border-zinc-800 text-white text-sm"
+                  />
                   <Button
-                    onClick={() => setChasterLinked(true)}
-                    variant="outline"
-                    className="w-full border-pink-500/40 text-pink-300 hover:bg-pink-600/10"
+                    onClick={() => {
+                      const url = chasterInput.trim();
+                      if (!url) return;
+                      const normalized = url.startsWith('http') ? url : `https://${url}`;
+                      setChasterLockUrl(normalized);
+                      setChasterInput('');
+                    }}
+                    disabled={!chasterInput.trim()}
+                    className="bg-pink-600 hover:bg-pink-700"
                   >
-                    <Link2 className="w-4 h-4 mr-2" />
-                    Link Chaster.app
+                    <Link2 className="w-4 h-4 mr-1" />
+                    Save
                   </Button>
-                </a>
+                </div>
               </>
             )}
           </motion.div>
