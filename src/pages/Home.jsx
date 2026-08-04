@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import PullToRefresh from '@/components/PullToRefresh';
 import { 
         Flame, Activity, DollarSign, Droplet, X, Ban, 
-        TrendingUp, Calendar, Play, Settings, ChevronRight, Coins, Sparkles, Trophy, Video, User, Zap, Home as HomeIcon, Gavel, FileText, CreditCard, Bell, BarChart3, Lock, MessageSquare, Target, Shield, ScrollText, AlertOctagon, Siren, Navigation, Crown
+        TrendingUp, Calendar, Play, Settings, ChevronRight, Coins, Sparkles, Trophy, Video, User, Zap, Home as HomeIcon, Gavel, FileText, CreditCard, Bell, BarChart3, Lock, MessageSquare, Target, Shield, ScrollText, AlertOctagon, Siren, Navigation, Crown, Scan
       } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import StatsCard from '@/components/StatsCard';
@@ -628,6 +628,19 @@ export default function Home() {
               <Siren className="w-8 h-8 text-blue-300 mb-3" />
               <p className="text-white font-bold text-lg">Police Database</p>
               <p className="text-white/70 text-sm">File records & resolve warrants</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+
+          <Link to="/BonerChecker">
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-pink-700 to-red-800 border border-pink-500/50"
+            >
+              <Scan className="w-8 h-8 text-pink-200 mb-3" />
+              <p className="text-white font-bold text-lg">Boner Checker</p>
+              <p className="text-white/70 text-sm">Prove it or pay $200</p>
               <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
             </motion.div>
           </Link>
