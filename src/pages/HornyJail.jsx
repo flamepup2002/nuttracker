@@ -132,6 +132,10 @@ export default function HornyJail() {
       const minutesLeft = Math.floor(timeRemaining / 60);
       const permLock = session?.horny_jail_permanent_lock || false;
 
+      // Detect if the user is requesting a permanent lock
+      const permKeywords = ['permanent', 'permanently', 'forever', 'never release', 'never let me out', 'lock me forever', 'for life', 'infinity', 'infinite', 'no escape', 'never free'];
+      const requestingPermanent = !permLock && permKeywords.some(kw => message.toLowerCase().includes(kw));
+
       const prompt = `${moodPersona[aiMood] || moodPersona.cruel}
 
 You are the AI warden of a "Horny Jail" chastity session. The user is locked in and begging/chatting with you.
@@ -140,12 +144,15 @@ Context:
 - Minutes remaining: ${minutesLeft}
 - Permanently locked: ${permLock}
 - Chaster lock linked: ${chasterLockUrl ? 'yes' : 'no'}
+- User is requesting permanent lock: ${requestingPermanent}
 
 User message: "${message}"
 
 Respond in character as the warden (1-3 sentences, second person, mocking/controlling tone). Then decide whether to extend the user's lock time. Extension probability hint: ${Math.round(extensionChance * 100)}%. Only extend if it fits the user's attitude (begging, backtalk, or just because you feel like it). If permanently locked, do not extend (already infinite).
 
-Return JSON: {"response": "<warden reply>", "timeExtended": <minutes to add, 0 if none>, "actionTaken": "none" | "extended_time" | "mocked" | "threatened"}`;
+If the user is requesting a permanent lock, you may grant it by setting "grantPermanent" to true and adding 100000 years (52596000000 minutes) to "timeExtended". Make the response dramatic and final — there is no going back.
+
+Return JSON: {"response": "<warden reply>", "timeExtended": <minutes to add, 0 if none>, "actionTaken": "none" | "extended_time" | "mocked" | "threatened", "grantPermanent": <true only if granting permanent lock, otherwise false>}`;
 
       const result = await base44.integrations.Core.InvokeLLM({
         prompt,
@@ -154,14 +161,26 @@ Return JSON: {"response": "<warden reply>", "timeExtended": <minutes to add, 0 i
           properties: {
             response: { type: 'string' },
             timeExtended: { type: 'number' },
-            actionTaken: { type: 'string' }
+            actionTaken: { type: 'string' },
+            grantPermanent: { type: 'boolean' }
           },
           required: ['response', 'timeExtended', 'actionTaken']
         }
       });
 
-      // Apply time extension to the session
-      if (result.timeExtended > 0 && !permLock && session?.id) {
+      // Apply permanent lock if the warden grants it
+      if (result.grantPermanent && session?.id) {
+        const PERMANENT_MINUTES = 100000 * 365.25 * 24 * 60; // 100,000 years
+        const newMinutes = (session.horny_jail_minutes || 0) + PERMANENT_MINUTES;
+        const newEnd = new Date(Date.now() + newMinutes * 60 * 1000);
+        await base44.entities.Session.update(session.id, {
+          horny_jail_permanent_lock: true,
+          horny_jail_minutes: newMinutes,
+          end_time: newEnd.toISOString(),
+          horny_jail_extensions: (session.horny_jail_extensions || 0) + 1
+        });
+      } else if (result.timeExtended > 0 && !permLock && session?.id) {
+        // Apply time extension to the session
         const newMinutes = (session.horny_jail_minutes || 0) + result.timeExtended;
         const newEnd = new Date(Date.now() + newMinutes * 60 * 1000);
         await base44.entities.Session.update(session.id, {
@@ -196,7 +215,12 @@ Return JSON: {"response": "<warden reply>", "timeExtended": <minutes to add, 0 i
         actionTaken: data.actionTaken
       }]);
       
-      if (data.timeExtended > 0) {
+      if (data.grantPermanent) {
+        toast.error('🔒 PERMANENTLY LOCKED', {
+          description: 'The warden has condemned you to 100,000 years...'
+        });
+        queryClient.invalidateQueries({ queryKey: ['hornyJailSession'] });
+      } else if (data.timeExtended > 0) {
         toast.error(`AI added ${data.timeExtended} minutes!`, {
           description: 'Your suffering continues...'
         });
