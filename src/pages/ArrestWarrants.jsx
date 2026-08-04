@@ -3,7 +3,8 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, AlertOctagon, Shield, Clock, CheckCircle, FileText } from 'lucide-react';
+import { ArrowLeft, AlertOctagon, Shield, Clock, CheckCircle, FileText, CalendarPlus } from 'lucide-react';
+import { buildIcsCalendarMulti, downloadIcs } from '@/lib/ics';
 
 export default function ArrestWarrants() {
   const navigate = useNavigate();
@@ -16,6 +17,40 @@ export default function ArrestWarrants() {
 
   const active = warrants.filter(w => w.status === 'active');
   const resolved = warrants.filter(w => w.status === 'resolved');
+
+  const [syncing, setSyncing] = React.useState(false);
+
+  const syncCourtDates = async () => {
+    setSyncing(true);
+    try {
+      const notifIds = active.map(w => w.notification_id).filter(Boolean);
+      if (notifIds.length === 0) {
+        alert('No court dates linked to your active warrants.');
+        return;
+      }
+      const notifs = await base44.entities.Notification.list('-court_date', 200);
+      const courtNotifs = notifs.filter(
+        n => n.court_date && notifIds.includes(n.id)
+      );
+      if (courtNotifs.length === 0) {
+        alert('No upcoming court dates found for your active warrants.');
+        return;
+      }
+      const events = courtNotifs.map(n => ({
+        id: n.id,
+        title: `Court Date — ${n.title || 'Sentencing'}`,
+        description: n.message || 'Scheduled court appearance. Failure to appear may result in additional charges.',
+        startIso: n.court_date,
+        location: 'Alberta Court of Justice',
+      }));
+      const ics = buildIcsCalendarMulti(events);
+      downloadIcs(`court-dates-warrants-${Date.now()}.ics`, ics);
+    } catch (e) {
+      alert('Failed to sync court dates. Please try again.');
+    } finally {
+      setSyncing(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -60,6 +95,17 @@ export default function ArrestWarrants() {
                 <p className="text-zinc-500 text-sm mt-1">Resolved</p>
               </div>
             </motion.div>
+
+            {active.length > 0 && (
+              <button
+                onClick={syncCourtDates}
+                disabled={syncing}
+                className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-semibold py-3 rounded-2xl transition-colors"
+              >
+                <CalendarPlus className="w-4 h-4" />
+                {syncing ? 'Syncing…' : 'Sync Court Dates to Calendar'}
+              </button>
+            )}
 
             {/* Active Warrants */}
             {active.length > 0 && (

@@ -55,6 +55,39 @@ export function buildIcsCalendar({ title, description, startIso, endIso, locatio
   ].filter(Boolean).join('\r\n') + '\r\n';
 }
 
+export function buildIcsCalendarMulti(events) {
+  const stamp = formatIcsDate(new Date().toISOString());
+  const blocks = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//NUTtracker//Court Dates//EN',
+    'CALSCALE:GREGORIAN',
+  ];
+  for (const ev of events) {
+    const start = formatIcsDate(ev.startIso);
+    const end = formatIcsDate(ev.endIso || new Date(new Date(ev.startIso).getTime() + 60 * 60 * 1000).toISOString());
+    const uid = `${ev.id || Date.now() + Math.random()}@nuttracker`;
+    blocks.push(
+      'BEGIN:VEVENT',
+      `UID:${uid}`,
+      `DTSTAMP:${stamp}`,
+      `DTSTART:${start}`,
+      `DTEND:${end}`,
+      `SUMMARY:${escapeIcs(ev.title)}`,
+      `DESCRIPTION:${escapeIcs(ev.description)}`,
+      ev.location ? `LOCATION:${escapeIcs(ev.location)}` : '',
+      'BEGIN:VALARM',
+      'TRIGGER:-P1D',
+      'ACTION:DISPLAY',
+      `DESCRIPTION:${escapeIcs('Reminder: ' + ev.title)}`,
+      'END:VALARM',
+      'END:VEVENT',
+    );
+  }
+  blocks.push('END:VCALENDAR');
+  return blocks.filter(Boolean).join('\r\n') + '\r\n';
+}
+
 export function downloadIcs(filename, icsContent) {
   const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
   const url = URL.createObjectURL(blob);
