@@ -6,6 +6,10 @@
       "type": "string",
       "description": "User biography"
     },
+    "profile_picture": {
+      "type": "string",
+      "description": "URL to the user's profile picture"
+    },
     "gender": {
       "type": "string",
       "description": "User's gender identity"
