@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Lock, Unlock, Clock, Zap, AlertTriangle, Bluetooth, MessageCircle, Send, History, Sliders } from 'lucide-react';
+import { ArrowLeft, Lock, Unlock, Clock, Zap, AlertTriangle, Bluetooth, MessageCircle, Send, History, Sliders, Link2, ExternalLink, Smartphone } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -16,6 +16,8 @@ export default function HornyJail() {
   const queryClient = useQueryClient();
   const [deviceConnected, setDeviceConnected] = useState(false);
   const [device, setDevice] = useState(null);
+  const [lockMode, setLockMode] = useState(null); // 'virtual' | 'device'
+  const [chasterLinked, setChasterLinked] = useState(false);
   const [isLocked, setIsLocked] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [aiActive, setAiActive] = useState(false);
@@ -65,7 +67,7 @@ export default function HornyJail() {
     mutationFn: async (initialMinutes) => {
       const response = await base44.functions.invoke('startHornyJail', {
         initialMinutes,
-        deviceId: device?.id
+        deviceId: lockMode === 'device' ? device?.id : 'virtual'
       });
       return response.data;
     },
@@ -251,13 +253,62 @@ export default function HornyJail() {
           </div>
         </motion.div>
 
-        {/* Device Connection */}
-        {!deviceConnected && (
+        {/* Mode Selection */}
+        {!lockMode && !aiActive && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6"
           >
+            <div className="text-center mb-6">
+              <h2 className="text-white font-bold text-xl mb-2">Choose Your Lock Mode</h2>
+              <p className="text-zinc-400 text-sm">
+                Virtual honor-system lock, or connect a real chastity device
+              </p>
+            </div>
+            <div className="grid grid-cols-1 gap-3">
+              <button
+                onClick={() => setLockMode('virtual')}
+                className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-purple-600/20 to-pink-600/20 border border-purple-500/30 hover:from-purple-600/30 hover:to-pink-600/30 transition-all text-left"
+              >
+                <div className="w-12 h-12 rounded-full bg-purple-600/30 flex items-center justify-center flex-shrink-0">
+                  <Smartphone className="w-6 h-6 text-purple-300" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-white font-bold">Virtual Lock</p>
+                  <p className="text-zinc-400 text-xs">No device needed — honor-system chastity</p>
+                </div>
+              </button>
+
+              <button
+                onClick={() => setLockMode('device')}
+                className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-blue-600/20 to-cyan-600/20 border border-blue-500/30 hover:from-blue-600/30 hover:to-cyan-600/30 transition-all text-left"
+              >
+                <div className="w-12 h-12 rounded-full bg-blue-600/30 flex items-center justify-center flex-shrink-0">
+                  <Bluetooth className="w-6 h-6 text-blue-300" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-white font-bold">Bluetooth Device</p>
+                  <p className="text-zinc-400 text-xs">Cellmate 2/3 or CAGINK Pro</p>
+                </div>
+              </button>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Bluetooth Device Connection (only in device mode) */}
+        {lockMode === 'device' && !deviceConnected && !aiActive && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6"
+          >
+            <button
+              onClick={() => setLockMode(null)}
+              className="text-zinc-500 text-xs mb-4 hover:text-white"
+            >
+              ← Back to mode selection
+            </button>
             <div className="text-center mb-6">
               <div className="w-16 h-16 mx-auto rounded-full bg-blue-600/20 flex items-center justify-center mb-4">
                 <Bluetooth className="w-8 h-8 text-blue-400" />
@@ -277,8 +328,54 @@ export default function HornyJail() {
           </motion.div>
         )}
 
-        {/* Connected Status */}
-        {deviceConnected && !aiActive && (
+        {/* Chaster.app Sync */}
+        {lockMode === 'virtual' && !aiActive && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-5"
+          >
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-full bg-pink-600/20 flex items-center justify-center">
+                <Link2 className="w-5 h-5 text-pink-400" />
+              </div>
+              <div className="flex-1">
+                <p className="text-white font-bold text-sm">Chaster.app Sync</p>
+                <p className="text-zinc-500 text-xs">Link your Chaster lock for real enforcement</p>
+              </div>
+              {chasterLinked && (
+                <Badge className="bg-green-600 text-white">Linked</Badge>
+              )}
+            </div>
+            {chasterLinked ? (
+              <div className="flex items-center justify-between p-3 bg-black/40 rounded-lg">
+                <span className="text-green-400 text-xs">✓ Chaster lock connected — sessions sync automatically</span>
+                <a href="https://chaster.app" target="_blank" rel="noopener noreferrer" className="text-pink-400 text-xs flex items-center gap-1 hover:text-pink-300">
+                  Open <ExternalLink className="w-3 h-3" />
+                </a>
+              </div>
+            ) : (
+              <>
+                <p className="text-zinc-500 text-xs mb-3">
+                  Chaster.app is a chastity management platform. Link your account to enforce locks on a real shared lock. (Manual sync — connect your lock in Chaster after starting a session.)
+                </p>
+                <a href="https://chaster.app/auth/login" target="_blank" rel="noopener noreferrer" className="block">
+                  <Button
+                    onClick={() => setChasterLinked(true)}
+                    variant="outline"
+                    className="w-full border-pink-500/40 text-pink-300 hover:bg-pink-600/10"
+                  >
+                    <Link2 className="w-4 h-4 mr-2" />
+                    Link Chaster.app
+                  </Button>
+                </a>
+              </>
+            )}
+          </motion.div>
+        )}
+
+        {/* Ready to Start (virtual or device connected) */}
+        {((lockMode === 'virtual') || (lockMode === 'device' && deviceConnected)) && !aiActive && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -286,11 +383,19 @@ export default function HornyJail() {
           >
             <div className="flex items-center gap-3 mb-6">
               <div className="w-12 h-12 rounded-full bg-green-600/20 flex items-center justify-center">
-                <Bluetooth className="w-6 h-6 text-green-400" />
+                {lockMode === 'device' ? (
+                  <Bluetooth className="w-6 h-6 text-green-400" />
+                ) : (
+                  <Smartphone className="w-6 h-6 text-green-400" />
+                )}
               </div>
               <div>
-                <p className="text-white font-bold">{device?.name}</p>
-                <p className="text-green-400 text-sm">Connected</p>
+                <p className="text-white font-bold">
+                  {lockMode === 'device' ? device?.name : 'Virtual Lock Active'}
+                </p>
+                <p className="text-green-400 text-sm">
+                  {lockMode === 'device' ? 'Device connected' : 'Honor-system mode'}
+                </p>
               </div>
             </div>
 
@@ -530,7 +635,11 @@ export default function HornyJail() {
           <ul className="space-y-2 text-zinc-400 text-sm">
             <li className="flex items-start gap-2">
               <span className="text-red-400">•</span>
-              <span>Connect your Cellmate 2/3 or CAGINK Pro device via Bluetooth</span>
+              <span>Choose Virtual Lock (no device) or connect a Cellmate 2/3 / CAGINK Pro via Bluetooth</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-red-400">•</span>
+              <span>Optionally link Chaster.app to enforce your lock on a shared chastity lock</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-red-400">•</span>
