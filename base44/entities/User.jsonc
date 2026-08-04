@@ -14,6 +14,33 @@
       "type": "string",
       "description": "Court-ordered display name set by the Judge agent (e.g. 'Inmate #1138', 'Convict Smith')"
     },
+    "reputation_score": {
+      "type": "number",
+      "default": 100,
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Reputation score from 0-100. 100 = pristine, 0 = utterly ruined"
+    },
+    "reputation_status": {
+      "type": "string",
+      "enum": [
+        "pristine",
+        "tarnished",
+        "disgraced",
+        "ruined"
+      ],
+      "default": "pristine",
+      "description": "Public reputation status set by the Judge"
+    },
+    "reputation_ruined_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the user's reputation was officially ruined by the court"
+    },
+    "reputation_shame": {
+      "type": "string",
+      "description": "Court-ordered public shaming text displayed on the user's profile"
+    },
     "gender": {
       "type": "string",
       "description": "User's gender identity"

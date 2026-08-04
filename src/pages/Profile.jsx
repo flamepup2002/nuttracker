@@ -6,7 +6,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import AchievementBadge from '@/components/AchievementBadge';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, User, Save, Mail, Phone, MapPin, Calendar, Heart, FileText, DollarSign, TrendingUp, Package, Trophy, Sparkles, Settings, AlertTriangle, Trash2, Gavel } from 'lucide-react';
+import { ArrowLeft, User, Save, Mail, Phone, MapPin, Calendar, Heart, FileText, DollarSign, TrendingUp, Package, Trophy, Sparkles, Settings, AlertTriangle, Trash2, Gavel, ShieldX } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -211,6 +211,26 @@ export default function Profile() {
             </p>
             {user?.profile_title && (
               <p className="text-sm text-purple-400 relative z-10">{user.profile_title}</p>
+            )}
+            {user?.reputation_status && user.reputation_status !== 'pristine' && (
+              <div className={`mt-3 px-4 py-2 rounded-lg border relative z-10 ${
+                user.reputation_status === 'ruined' ? 'bg-red-950/50 border-red-700/50' :
+                user.reputation_status === 'disgraced' ? 'bg-orange-950/50 border-orange-700/50' :
+                'bg-yellow-950/50 border-yellow-700/50'
+              }`}>
+                <p className={`text-xs font-bold uppercase tracking-wide flex items-center gap-1 ${
+                  user.reputation_status === 'ruined' ? 'text-red-400' :
+                  user.reputation_status === 'disgraced' ? 'text-orange-400' :
+                  'text-yellow-400'
+                }`}>
+                  <ShieldX className="w-3 h-3" />
+                  Reputation: {user.reputation_status}
+                </p>
+                <p className="text-zinc-400 text-xs mt-0.5">Score: {user.reputation_score ?? 0}/100</p>
+                {user?.reputation_shame && (
+                  <p className="text-zinc-500 text-xs mt-1 italic">"{user.reputation_shame}"</p>
+                )}
+              </div>
             )}
           </div>
         </motion.div>
