@@ -122,14 +122,69 @@ export default function HornyJail() {
 
   const chatMutation = useMutation({
     mutationFn: async (message) => {
-      const response = await base44.functions.invoke('hornyJailAIChat', {
-        sessionId: session?.id,
-        message,
-        isPermanentlyLocked: session?.horny_jail_permanent_lock || false,
-        timeRemaining: Math.floor(timeRemaining / 60),
-        aiMood
+      const moodPersona = {
+        merciless: 'You are a merciless, cold AI warden. You almost never show mercy and frequently extend lock time for any pleading.',
+        cruel: 'You are a cruel but playful AI warden. You enjoy teasing and sometimes extend time, but occasionally show a sliver of mercy.',
+        sadistic: 'You are a sadistic AI warden who delights in suffering. You find creative reasons to extend lock time and mock the user.',
+      };
+      const extensionChance = aiMood === 'merciless' ? 0.40 : aiMood === 'sadistic' ? 0.35 : 0.25;
+      const minutesLeft = Math.floor(timeRemaining / 60);
+      const permLock = session?.horny_jail_permanent_lock || false;
+
+      const prompt = `${moodPersona[aiMood] || moodPersona.cruel}
+
+You are the AI warden of a "Horny Jail" chastity session. The user is locked in and begging/chatting with you.
+Context:
+- AI mood: ${aiMood}
+- Minutes remaining: ${minutesLeft}
+- Permanently locked: ${permLock}
+- Chaster lock linked: ${chasterLockUrl ? 'yes' : 'no'}
+
+User message: "${message}"
+
+Respond in character as the warden (1-3 sentences, second person, mocking/controlling tone). Then decide whether to extend the user's lock time. Extension probability hint: ${Math.round(extensionChance * 100)}%. Only extend if it fits the user's attitude (begging, backtalk, or just because you feel like it). If permanently locked, do not extend (already infinite).
+
+Return JSON: {"response": "<warden reply>", "timeExtended": <minutes to add, 0 if none>, "actionTaken": "none" | "extended_time" | "mocked" | "threatened"}`;
+
+      const result = await base44.integrations.Core.InvokeLLM({
+        prompt,
+        response_json_schema: {
+          type: 'object',
+          properties: {
+            response: { type: 'string' },
+            timeExtended: { type: 'number' },
+            actionTaken: { type: 'string' }
+          },
+          required: ['response', 'timeExtended', 'actionTaken']
+        }
       });
-      return response.data;
+
+      // Apply time extension to the session
+      if (result.timeExtended > 0 && !permLock && session?.id) {
+        const newMinutes = (session.horny_jail_minutes || 0) + result.timeExtended;
+        const newEnd = new Date(Date.now() + newMinutes * 60 * 1000);
+        await base44.entities.Session.update(session.id, {
+          horny_jail_minutes: newMinutes,
+          end_time: newEnd.toISOString(),
+          horny_jail_extensions: (session.horny_jail_extensions || 0) + 1
+        });
+      }
+
+      // Log the interaction
+      if (session?.id) {
+        await base44.entities.HornyJailInteraction.create({
+          session_id: session.id,
+          user_message: message,
+          ai_response: result.response,
+          ai_mood: aiMood,
+          time_remaining_at_interaction: minutesLeft,
+          was_permanently_locked: permLock,
+          ai_action_taken: result.actionTaken,
+          time_extended_minutes: result.timeExtended || 0
+        });
+      }
+
+      return result;
     },
     onSuccess: (data) => {
       setChatMessages(prev => [...prev, {
@@ -146,6 +201,9 @@ export default function HornyJail() {
         });
         queryClient.invalidateQueries({ queryKey: ['hornyJailSession'] });
       }
+    },
+    onError: () => {
+      toast.error('The warden is silent... (failed to respond)');
     },
   });
 
