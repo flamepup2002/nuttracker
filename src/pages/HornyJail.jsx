@@ -66,19 +66,30 @@ export default function HornyJail() {
 
   const startSessionMutation = useMutation({
     mutationFn: async (initialMinutes) => {
-      const response = await base44.functions.invoke('startHornyJail', {
-        initialMinutes,
-        deviceId: lockMode === 'device' ? device?.id : 'virtual'
+      const now = new Date();
+      const endTime = new Date(now.getTime() + initialMinutes * 60 * 1000);
+      return await base44.entities.Session.create({
+        start_time: now.toISOString(),
+        end_time: endTime.toISOString(),
+        duration_seconds: initialMinutes * 60,
+        status: 'active',
+        is_horny_jail: true,
+        horny_jail_minutes: initialMinutes,
+        horny_jail_device_id: lockMode === 'device' ? (device?.id || 'device') : 'virtual',
+        horny_jail_extensions: 0,
+        horny_jail_permanent_lock: false,
       });
-      return response.data;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['hornyJailSession'] });
       setIsLocked(true);
       setAiActive(true);
       toast.success('AI has taken control', {
-        description: `You're locked for ${data.minutes} minutes... for now`
+        description: `You're locked for ${data.horny_jail_minutes} minutes... for now`
       });
+    },
+    onError: () => {
+      toast.error('Failed to start session');
     },
   });
 
