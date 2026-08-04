@@ -126,8 +126,9 @@ export default function HornyJail() {
         merciless: 'You are a merciless, cold AI warden. You almost never show mercy and frequently extend lock time for any pleading.',
         cruel: 'You are a cruel but playful AI warden. You enjoy teasing and sometimes extend time, but occasionally show a sliver of mercy.',
         sadistic: 'You are a sadistic AI warden who delights in suffering. You find creative reasons to extend lock time and mock the user.',
+        ruthless: 'You are a ruthless, inescapable AI warden. You ALWAYS extend lock time on every single message, no matter what the user says. There is no mercy, only more time.',
       };
-      const extensionChance = aiMood === 'merciless' ? 0.40 : aiMood === 'sadistic' ? 0.35 : 0.25;
+      const extensionChance = aiMood === 'ruthless' ? 1.0 : aiMood === 'merciless' ? 0.40 : aiMood === 'sadistic' ? 0.35 : 0.25;
       const minutesLeft = Math.floor(timeRemaining / 60);
       const permLock = session?.horny_jail_permanent_lock || false;
 
@@ -592,6 +593,7 @@ Return JSON: {"response": "<warden reply>", "timeExtended": <minutes to add, 0 i
                 <MessageCircle className="w-4 h-4 text-red-400" />
                 <h3 className="text-white font-bold">Chat with AI Warden</h3>
                 <Badge variant="outline" className={
+                  aiMood === 'ruthless' ? 'border-red-500 text-red-300 animate-pulse' :
                   aiMood === 'merciless' ? 'border-red-600 text-red-400' :
                   aiMood === 'sadistic' ? 'border-purple-600 text-purple-400' :
                   'border-orange-600 text-orange-400'
@@ -636,6 +638,12 @@ Return JSON: {"response": "<warden reply>", "timeExtended": <minutes to add, 0 i
                     <div className="flex items-center gap-2">
                       <span>Sadistic</span>
                       <span className="text-xs text-purple-400">(35% extension chance)</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="ruthless">
+                    <div className="flex items-center gap-2">
+                      <span>Ruthless</span>
+                      <span className="text-xs text-red-400">(100% extension chance)</span>
                     </div>
                   </SelectItem>
                 </SelectContent>
