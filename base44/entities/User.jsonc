@@ -10,6 +10,10 @@
       "type": "string",
       "description": "URL to the user's profile picture"
     },
+    "court_ordered_name": {
+      "type": "string",
+      "description": "Court-ordered display name set by the Judge agent (e.g. 'Inmate #1138', 'Convict Smith')"
+    },
     "gender": {
       "type": "string",
       "description": "User's gender identity"

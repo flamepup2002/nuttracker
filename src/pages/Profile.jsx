@@ -197,11 +197,21 @@ export default function Profile() {
           animate={{ opacity: 1, y: 0 }}
           className="flex justify-center"
         >
-          <div className="relative flex items-center justify-center">
+          <div className="relative flex flex-col items-center justify-center">
             <div className="absolute w-32 h-32 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 opacity-20 blur-2xl" />
-            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center relative z-10">
-              <User className="w-12 h-12 text-white" />
+            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center relative z-10 overflow-hidden">
+              {user?.profile_picture ? (
+                <img src={user.profile_picture} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                <User className="w-12 h-12 text-white" />
+              )}
             </div>
+            <p className="mt-3 text-lg font-bold text-white relative z-10">
+              {user?.court_ordered_name || user?.full_name || 'Anonymous'}
+            </p>
+            {user?.profile_title && (
+              <p className="text-sm text-purple-400 relative z-10">{user.profile_title}</p>
+            )}
           </div>
         </motion.div>
 
