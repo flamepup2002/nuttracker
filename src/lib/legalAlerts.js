@@ -1,6 +1,29 @@
 import { base44 } from '@/api/base44Client';
 import { toast } from '@/components/ui/use-toast';
 
+// Look up a user's registered email by their user ID.
+export async function fetchUserEmailById(userId) {
+  if (!userId) return null;
+  try {
+    const u = await base44.entities.User.get(userId);
+    return u?.email || null;
+  } catch {
+    return null;
+  }
+}
+
+// Look up the registered email of the user who owns a given contract.
+export async function fetchContractOwnerEmail(contractId) {
+  if (!contractId) return null;
+  try {
+    const contract = await base44.entities.DebtContract.get(contractId);
+    if (!contract?.created_by_id) return null;
+    return await fetchUserEmailById(contract.created_by_id);
+  } catch {
+    return null;
+  }
+}
+
 // Sends an email legal alert to a registered app user.
 // Shows a toast on success/failure so the user can confirm it worked.
 export async function sendLegalAlert({ type, title, message, userEmail }) {

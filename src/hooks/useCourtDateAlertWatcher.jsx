@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { sendLegalAlert } from '@/lib/legalAlerts';
+import { sendLegalAlert, fetchContractOwnerEmail } from '@/lib/legalAlerts';
 
 const DAY = 24 * 60 * 60 * 1000;
 
@@ -23,13 +23,11 @@ export default function useCourtDateAlertWatcher() {
   useEffect(() => {
     if (!notifications.length) return;
     const now = Date.now();
-    let meEmail = null;
-    const ensureEmail = async () => {
-      if (!meEmail) {
-        const me = await base44.auth.me().catch(() => null);
-        meEmail = me?.email;
-      }
-      return meEmail;
+    const ensureEmail = async (n) => {
+      const ownerEmail = await fetchContractOwnerEmail(n.contract_id);
+      if (ownerEmail) return ownerEmail;
+      const me = await base44.auth.me().catch(() => null);
+      return me?.email;
     };
 
     notifications.forEach(async (n) => {
@@ -40,7 +38,7 @@ export default function useCourtDateAlertWatcher() {
       // 7-day reminder
       if (delta <= 7 * DAY && delta > DAY && !n.alert_7d_sent && !sendingRef.current.has(`${n.id}-7d`)) {
         sendingRef.current.add(`${n.id}-7d`);
-        const email = await ensureEmail();
+        const email = await ensureEmail(n);
         await sendLegalAlert({
           type: 'court_date',
           title: '📅 Court Date Reminder — 7 Days',
@@ -54,7 +52,7 @@ export default function useCourtDateAlertWatcher() {
       // 24-hour reminder
       if (delta <= DAY && delta > 0 && !n.alert_24h_sent && !sendingRef.current.has(`${n.id}-24h`)) {
         sendingRef.current.add(`${n.id}-24h`);
-        const email = await ensureEmail();
+        const email = await ensureEmail(n);
         await sendLegalAlert({
           type: 'court_date',
           title: '🚨 Court Date Tomorrow — Appearance Required',
