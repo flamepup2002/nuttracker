@@ -37,7 +37,6 @@ export function buildIcsCalendar({ title, description, startIso, endIso, locatio
     'VERSION:2.0',
     'PRODID:-//NUTtracker//Court Date//EN',
     'CALSCALE:GREGORIAN',
-    'METHOD:PUBLISH',
     'BEGIN:VEVENT',
     `UID:${uid}`,
     `DTSTAMP:${stamp}`,
@@ -53,7 +52,7 @@ export function buildIcsCalendar({ title, description, startIso, endIso, locatio
     'END:VALARM',
     'END:VEVENT',
     'END:VCALENDAR',
-  ].filter(Boolean).join('\r\n');
+  ].filter(Boolean).join('\r\n') + '\r\n';
 }
 
 export function downloadIcs(filename, icsContent) {
