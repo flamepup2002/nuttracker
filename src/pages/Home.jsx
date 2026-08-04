@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import PullToRefresh from '@/components/PullToRefresh';
 import { 
         Flame, Activity, DollarSign, Droplet, X, Ban, 
-        TrendingUp, Calendar, Play, Settings, ChevronRight, Coins, Sparkles, Trophy, Video, User, Zap, Home as HomeIcon, Gavel, FileText, CreditCard, Bell, BarChart3, Lock, MessageSquare, Target, Shield, ScrollText, AlertOctagon, Siren, Navigation
+        TrendingUp, Calendar, Play, Settings, ChevronRight, Coins, Sparkles, Trophy, Video, User, Zap, Home as HomeIcon, Gavel, FileText, CreditCard, Bell, BarChart3, Lock, MessageSquare, Target, Shield, ScrollText, AlertOctagon, Siren, Navigation, Crown
       } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import StatsCard from '@/components/StatsCard';
@@ -546,6 +546,19 @@ export default function Home() {
               <Gavel className="w-8 h-8 text-yellow-200 mb-3" />
               <p className="text-white font-bold text-lg">The Judge</p>
               <p className="text-white/70 text-sm">Present your case</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+
+          <Link to="/SuperiorDomChat">
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-yellow-700 via-red-800 to-yellow-900 border border-yellow-500/50"
+            >
+              <Crown className="w-8 h-8 text-yellow-200 mb-3" />
+              <p className="text-white font-bold text-lg">Superior Dom</p>
+              <p className="text-white/70 text-sm">Winners win, losers pay</p>
               <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
             </motion.div>
           </Link>

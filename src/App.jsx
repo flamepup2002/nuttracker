@@ -10,6 +10,7 @@ import DebtEnforcerPage from './pages/DebtEnforcer';
 import CriminalRecordPage from './pages/CriminalRecord';
 import ArrestWarrantsPage from './pages/ArrestWarrants';
 import JudgeChatPage from './pages/JudgeChat';
+import SuperiorDomChatPage from './pages/SuperiorDomChat';
 import PoliceDatabasePage from './pages/PoliceDatabase';
 import LiveDispatchPage from './pages/LiveDispatch';
 import PenaltiesPage from './pages/Penalties';
@@ -76,6 +77,7 @@ const AuthenticatedApp = () => {
       <Route path="/CriminalRecord" element={<LayoutWrapper currentPageName="CriminalRecord"><CriminalRecordPage /></LayoutWrapper>} />
       <Route path="/ArrestWarrants" element={<LayoutWrapper currentPageName="ArrestWarrants"><ArrestWarrantsPage /></LayoutWrapper>} />
       <Route path="/JudgeChat" element={<LayoutWrapper currentPageName="JudgeChat"><JudgeChatPage /></LayoutWrapper>} />
+      <Route path="/SuperiorDomChat" element={<LayoutWrapper currentPageName="SuperiorDomChat"><SuperiorDomChatPage /></LayoutWrapper>} />
       <Route path="/PoliceDatabase" element={<LayoutWrapper currentPageName="PoliceDatabase"><PoliceDatabasePage /></LayoutWrapper>} />
       <Route path="/LiveDispatch" element={<LayoutWrapper currentPageName="LiveDispatch"><LiveDispatchPage /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
