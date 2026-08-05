@@ -15,6 +15,7 @@ import BonerCheckerPage from './pages/BonerChecker';
 import PuppyCheckerPage from './pages/PuppyChecker';
 import PoliceDatabasePage from './pages/PoliceDatabase';
 import LiveDispatchPage from './pages/LiveDispatch';
+import PoliceOfficerChatPage from './pages/PoliceOfficerChat';
 import PenaltiesPage from './pages/Penalties';
 import CriminalChargesPage from './pages/CriminalCharges';
 import CourtDatesPage from './pages/CourtDates';
@@ -84,6 +85,7 @@ const AuthenticatedApp = () => {
       <Route path="/PuppyChecker" element={<LayoutWrapper currentPageName="PuppyChecker"><PuppyCheckerPage /></LayoutWrapper>} />
       <Route path="/PoliceDatabase" element={<LayoutWrapper currentPageName="PoliceDatabase"><PoliceDatabasePage /></LayoutWrapper>} />
       <Route path="/LiveDispatch" element={<LayoutWrapper currentPageName="LiveDispatch"><LiveDispatchPage /></LayoutWrapper>} />
+      <Route path="/PoliceOfficerChat" element={<LayoutWrapper currentPageName="PoliceOfficerChat"><PoliceOfficerChatPage /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
