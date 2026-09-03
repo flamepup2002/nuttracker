@@ -1,0 +1,65 @@
+{
+  "name": "ReputationLog",
+  "type": "object",
+  "properties": {
+    "previous_score": {
+      "type": "number",
+      "description": "Reputation score before the change"
+    },
+    "new_score": {
+      "type": "number",
+      "description": "Reputation score after the change"
+    },
+    "previous_status": {
+      "type": "string",
+      "description": "Reputation status before the change"
+    },
+    "new_status": {
+      "type": "string",
+      "enum": [
+        "pristine",
+        "tarnished",
+        "disgraced",
+        "ruined"
+      ],
+      "description": "Reputation status after the change"
+    },
+    "change_reason": {
+      "type": "string",
+      "description": "Why the reputation was changed (the ruling or charge)"
+    },
+    "shame_text": {
+      "type": "string",
+      "description": "Public shaming text applied during this change"
+    },
+    "changed_by": {
+      "type": "string",
+      "default": "judge",
+      "description": "Which agent made the change"
+    },
+    "changed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the change was recorded"
+    }
+  },
+  "required": [
+    "new_score",
+    "new_status",
+    "changed_at"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}

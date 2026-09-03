@@ -19,6 +19,11 @@ import PoliceOfficerChatPage from './pages/PoliceOfficerChat';
 import PenaltiesPage from './pages/Penalties';
 import CriminalChargesPage from './pages/CriminalCharges';
 import CourtDatesPage from './pages/CourtDates';
+import ReputationLogPage from './pages/ReputationLog';
+import CourtCalendarPage from './pages/CourtCalendar';
+import EvidenceLockerPage from './pages/EvidenceLocker';
+import WardenDashboardPage from './pages/WardenDashboard';
+import PrisonRegistryPage from './pages/PrisonRegistry';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
@@ -86,6 +91,11 @@ const AuthenticatedApp = () => {
       <Route path="/PoliceDatabase" element={<LayoutWrapper currentPageName="PoliceDatabase"><PoliceDatabasePage /></LayoutWrapper>} />
       <Route path="/LiveDispatch" element={<LayoutWrapper currentPageName="LiveDispatch"><LiveDispatchPage /></LayoutWrapper>} />
       <Route path="/PoliceOfficerChat" element={<LayoutWrapper currentPageName="PoliceOfficerChat"><PoliceOfficerChatPage /></LayoutWrapper>} />
+      <Route path="/ReputationLog" element={<LayoutWrapper currentPageName="ReputationLog"><ReputationLogPage /></LayoutWrapper>} />
+      <Route path="/CourtCalendar" element={<LayoutWrapper currentPageName="CourtCalendar"><CourtCalendarPage /></LayoutWrapper>} />
+      <Route path="/EvidenceLocker" element={<LayoutWrapper currentPageName="EvidenceLocker"><EvidenceLockerPage /></LayoutWrapper>} />
+      <Route path="/WardenDashboard" element={<LayoutWrapper currentPageName="WardenDashboard"><WardenDashboardPage /></LayoutWrapper>} />
+      <Route path="/PrisonRegistry" element={<LayoutWrapper currentPageName="PrisonRegistry"><PrisonRegistryPage /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
