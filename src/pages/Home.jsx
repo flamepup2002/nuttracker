@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import PullToRefresh from '@/components/PullToRefresh';
 import { 
         Flame, Activity, DollarSign, Droplet, X, Ban, 
-        TrendingUp, Calendar, Play, Settings, ChevronRight, Coins, Sparkles, Trophy, Video, User, Zap, Home as HomeIcon, Gavel, FileText, CreditCard, Bell, BarChart3, Lock, MessageSquare, Target, Shield, ScrollText, AlertOctagon, Siren, Navigation, Crown, Scan, Dog
+        TrendingUp, Calendar, Play, Settings, ChevronRight, Coins, Sparkles, Trophy, Video, User, Zap, Home as HomeIcon, Gavel, FileText, CreditCard, Bell, BarChart3, Lock, MessageSquare, Target, Shield, ScrollText, AlertOctagon, Siren, Navigation, Crown, Scan, Dog, History, Archive, LayoutDashboard, Building2
       } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import StatsCard from '@/components/StatsCard';
@@ -667,6 +667,84 @@ export default function Home() {
               <Navigation className="w-8 h-8 text-red-300 mb-3 animate-pulse" />
               <p className="text-white font-bold text-lg">Live Dispatch</p>
               <p className="text-white/70 text-sm">Track units in real time</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+
+          <Link to="/PoliceOfficerChat">
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-blue-800 to-slate-900 border border-blue-600/50"
+            >
+              <Shield className="w-8 h-8 text-blue-300 mb-3" />
+              <p className="text-white font-bold text-lg">Police Interrogation</p>
+              <p className="text-white/70 text-sm">Officer Slater wants a word</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+
+          <Link to="/WardenDashboard">
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-purple-800 to-slate-900 border border-purple-600/50"
+            >
+              <LayoutDashboard className="w-8 h-8 text-purple-300 mb-3" />
+              <p className="text-white font-bold text-lg">Warden Dashboard</p>
+              <p className="text-white/70 text-sm">Enforcement overview</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+
+          <Link to="/CourtCalendar">
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-indigo-800 to-slate-900 border border-indigo-600/50"
+            >
+              <Calendar className="w-8 h-8 text-indigo-300 mb-3" />
+              <p className="text-white font-bold text-lg">Court Calendar</p>
+              <p className="text-white/70 text-sm">Dates & deadlines</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+
+          <Link to="/PrisonRegistry">
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-zinc-700 to-zinc-900 border border-zinc-500/50"
+            >
+              <Building2 className="w-8 h-8 text-zinc-300 mb-3" />
+              <p className="text-white font-bold text-lg">Prison Registry</p>
+              <p className="text-white/70 text-sm">Assigned facility & status</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+
+          <Link to="/ReputationLog">
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-red-800 to-zinc-900 border border-red-600/50"
+            >
+              <History className="w-8 h-8 text-red-300 mb-3" />
+              <p className="text-white font-bold text-lg">Reputation Log</p>
+              <p className="text-white/70 text-sm">Court-ordered changes</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+
+          <Link to="/EvidenceLocker">
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-zinc-800 to-zinc-950 border border-zinc-600/50"
+            >
+              <Archive className="w-8 h-8 text-zinc-300 mb-3" />
+              <p className="text-white font-bold text-lg">Evidence Locker</p>
+              <p className="text-white/70 text-sm">Submitted photo proofs</p>
               <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
             </motion.div>
           </Link>
