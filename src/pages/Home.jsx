@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import PullToRefresh from '@/components/PullToRefresh';
 import { 
         Flame, Activity, DollarSign, Droplet, X, Ban, 
-        TrendingUp, Calendar, Play, Settings, ChevronRight, Coins, Sparkles, Trophy, Video, User, Zap, Home as HomeIcon, Gavel, FileText, CreditCard, Bell, BarChart3, Lock, MessageSquare, Target, Shield, ScrollText, AlertOctagon, Siren, Navigation, Crown, Scan, Dog, History, Archive, LayoutDashboard, Building2, Wallet, ShieldCheck, BookOpen, ShoppingBag, Clock, Star, FileEdit, Unlock
+        TrendingUp, Calendar, Play, Settings, ChevronRight, Coins, Sparkles, Trophy, Video, User, Zap, Home as HomeIcon, Gavel, FileText, CreditCard, Bell, BarChart3, Lock, MessageSquare, Target, Shield, ScrollText, AlertOctagon, Siren, Navigation, Crown, Scan, Dog, History, Archive, LayoutDashboard, Building2, Wallet, ShieldCheck, BookOpen, ShoppingBag, Clock, Star, FileEdit, Unlock, PieChart, Bot, Package, Send, TrendingDown, AlertTriangle
       } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import StatsCard from '@/components/StatsCard';
@@ -853,6 +853,105 @@ export default function Home() {
               <Wallet className="w-8 h-8 text-green-200 mb-3" />
               <p className="text-white font-bold text-lg">Stripe Wallet</p>
               <p className="text-white/70 text-sm">Convert coins to debt</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+
+          <Link to="/EnforcementAnalytics">
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-indigo-700 to-blue-900 border border-indigo-500/50">
+              <PieChart className="w-8 h-8 text-indigo-200 mb-3" />
+              <p className="text-white font-bold text-lg">Enforcement Analytics</p>
+              <p className="text-white/70 text-sm">Charts & success rates</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+
+          <Link to="/ProfileSecurity">
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-blue-700 to-slate-900 border border-blue-500/50">
+              <ShieldCheck className="w-8 h-8 text-blue-200 mb-3" />
+              <p className="text-white font-bold text-lg">Profile Security</p>
+              <p className="text-white/70 text-sm">Locks & prison status</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+
+          <Link to="/SystemLogs">
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-zinc-700 to-zinc-900 border border-zinc-500/50">
+              <ScrollText className="w-8 h-8 text-zinc-300 mb-3" />
+              <p className="text-white font-bold text-lg">System Logs</p>
+              <p className="text-white/70 text-sm">Agent audit trail</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+
+          <Link to="/LegalAppeals">
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-amber-700 to-yellow-900 border border-amber-500/50">
+              <Gavel className="w-8 h-8 text-amber-200 mb-3" />
+              <p className="text-white font-bold text-lg">Legal Appeals</p>
+              <p className="text-white/70 text-sm">Review criminal records</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+
+          <Link to="/EnforcementLogs">
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-red-800 to-zinc-900 border border-red-600/50">
+              <ScrollText className="w-8 h-8 text-red-300 mb-3" />
+              <p className="text-white font-bold text-lg">Enforcement Logs</p>
+              <p className="text-white/70 text-sm">Agent action history</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+
+          <Link to="/AssetSeizure">
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-orange-700 to-amber-900 border border-orange-500/50">
+              <Package className="w-8 h-8 text-orange-200 mb-3" />
+              <p className="text-white font-bold text-lg">Asset Seizure</p>
+              <p className="text-white/70 text-sm">Seized collateral</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+
+          <Link to="/OfficerDispatch">
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-red-700 to-blue-900 border border-red-500/50">
+              <Send className="w-8 h-8 text-red-200 mb-3" />
+              <p className="text-white font-bold text-lg">Officer Dispatch</p>
+              <p className="text-white/70 text-sm">Request an officer</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+
+          <Link to="/WardenMessaging">
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-purple-700 to-slate-900 border border-purple-500/50">
+              <Bot className="w-8 h-8 text-purple-200 mb-3" />
+              <p className="text-white font-bold text-lg">Warden Messaging</p>
+              <p className="text-white/70 text-sm">Direct line to the Warden</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+
+          <Link to="/EscalationMatrix">
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-orange-800 to-red-900 border border-orange-600/50">
+              <AlertTriangle className="w-8 h-8 text-orange-200 mb-3" />
+              <p className="text-white font-bold text-lg">Escalation Matrix</p>
+              <p className="text-white/70 text-sm">Penalty tiers & rules</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+
+          <Link to="/AppealsBoard">
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-purple-700 to-indigo-900 border border-purple-500/50">
+              <Gavel className="w-8 h-8 text-purple-200 mb-3" />
+              <p className="text-white font-bold text-lg">Appeals Board</p>
+              <p className="text-white/70 text-sm">Fight Judge penalties</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+
+          <Link to="/GlobalLeaderboard">
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-yellow-600 to-amber-800 border border-yellow-500/50">
+              <Crown className="w-8 h-8 text-yellow-200 mb-3" />
+              <p className="text-white font-bold text-lg">Global Leaderboard</p>
+              <p className="text-white/70 text-sm">Rankings & standings</p>
               <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
             </motion.div>
           </Link>

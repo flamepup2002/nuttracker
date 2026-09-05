@@ -1,0 +1,71 @@
+{
+  "name": "SystemLog",
+  "type": "object",
+  "properties": {
+    "agent_name": {
+      "type": "string",
+      "enum": [
+        "judge",
+        "police",
+        "police_officer",
+        "debt_enforcer",
+        "puppy_checker",
+        "boner_checker",
+        "warden",
+        "system"
+      ],
+      "description": "Which agent performed the action"
+    },
+    "action_type": {
+      "type": "string",
+      "description": "Type of action performed (e.g. ruling, dispatch, penalty, check)"
+    },
+    "description": {
+      "type": "string",
+      "description": "What the agent did"
+    },
+    "target_entity": {
+      "type": "string",
+      "description": "Entity affected by the action"
+    },
+    "target_id": {
+      "type": "string",
+      "description": "ID of the affected record"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "info",
+        "warning",
+        "critical"
+      ],
+      "default": "info",
+      "description": "Log severity level"
+    },
+    "logged_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the action was logged"
+    }
+  },
+  "required": [
+    "agent_name",
+    "action_type",
+    "description",
+    "logged_at"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}

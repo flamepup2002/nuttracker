@@ -1,0 +1,77 @@
+{
+  "name": "Appeal",
+  "type": "object",
+  "properties": {
+    "appeal_type": {
+      "type": "string",
+      "enum": [
+        "criminal_record",
+        "sentence",
+        "penalty",
+        "reputation_hit"
+      ],
+      "description": "What is being appealed"
+    },
+    "target_id": {
+      "type": "string",
+      "description": "ID of the record or penalty being appealed"
+    },
+    "target_description": {
+      "type": "string",
+      "description": "Human-readable description of what is being appealed"
+    },
+    "reason": {
+      "type": "string",
+      "description": "Grounds for the appeal"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "under_review",
+        "approved",
+        "denied"
+      ],
+      "default": "pending",
+      "description": "Appeal status"
+    },
+    "filed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the appeal was filed"
+    },
+    "reviewed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the appeal was reviewed"
+    },
+    "board_notes": {
+      "type": "string",
+      "description": "Notes from the appeals board or judge"
+    },
+    "filed_to_board": {
+      "type": "boolean",
+      "default": false,
+      "description": "True if filed to the appeals board, false if a direct legal appeal"
+    }
+  },
+  "required": [
+    "appeal_type",
+    "reason",
+    "filed_at"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}

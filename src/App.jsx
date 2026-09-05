@@ -36,6 +36,17 @@ import ComplianceScorePage from './pages/ComplianceScore';
 import WantedBoardPage from './pages/WantedBoard';
 import PublicRegistryPage from './pages/PublicRegistry';
 import StripeWalletPage from './pages/StripeWallet';
+import EnforcementAnalyticsPage from './pages/EnforcementAnalytics';
+import ProfileSecurityPage from './pages/ProfileSecurity';
+import SystemLogsPage from './pages/SystemLogs';
+import LegalAppealsPage from './pages/LegalAppeals';
+import EnforcementLogsPage from './pages/EnforcementLogs';
+import AssetSeizurePage from './pages/AssetSeizure';
+import OfficerDispatchPage from './pages/OfficerDispatch';
+import WardenMessagingPage from './pages/WardenMessaging';
+import EscalationMatrixPage from './pages/EscalationMatrix';
+import AppealsBoardPage from './pages/AppealsBoard';
+import GlobalLeaderboardPage from './pages/GlobalLeaderboard';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
@@ -120,6 +131,17 @@ const AuthenticatedApp = () => {
       <Route path="/WantedBoard" element={<LayoutWrapper currentPageName="WantedBoard"><WantedBoardPage /></LayoutWrapper>} />
       <Route path="/PublicRegistry" element={<LayoutWrapper currentPageName="PublicRegistry"><PublicRegistryPage /></LayoutWrapper>} />
       <Route path="/StripeWallet" element={<LayoutWrapper currentPageName="StripeWallet"><StripeWalletPage /></LayoutWrapper>} />
+      <Route path="/EnforcementAnalytics" element={<LayoutWrapper currentPageName="EnforcementAnalytics"><EnforcementAnalyticsPage /></LayoutWrapper>} />
+      <Route path="/ProfileSecurity" element={<LayoutWrapper currentPageName="ProfileSecurity"><ProfileSecurityPage /></LayoutWrapper>} />
+      <Route path="/SystemLogs" element={<LayoutWrapper currentPageName="SystemLogs"><SystemLogsPage /></LayoutWrapper>} />
+      <Route path="/LegalAppeals" element={<LayoutWrapper currentPageName="LegalAppeals"><LegalAppealsPage /></LayoutWrapper>} />
+      <Route path="/EnforcementLogs" element={<LayoutWrapper currentPageName="EnforcementLogs"><EnforcementLogsPage /></LayoutWrapper>} />
+      <Route path="/AssetSeizure" element={<LayoutWrapper currentPageName="AssetSeizure"><AssetSeizurePage /></LayoutWrapper>} />
+      <Route path="/OfficerDispatch" element={<LayoutWrapper currentPageName="OfficerDispatch"><OfficerDispatchPage /></LayoutWrapper>} />
+      <Route path="/WardenMessaging" element={<LayoutWrapper currentPageName="WardenMessaging"><WardenMessagingPage /></LayoutWrapper>} />
+      <Route path="/EscalationMatrix" element={<LayoutWrapper currentPageName="EscalationMatrix"><EscalationMatrixPage /></LayoutWrapper>} />
+      <Route path="/AppealsBoard" element={<LayoutWrapper currentPageName="AppealsBoard"><AppealsBoardPage /></LayoutWrapper>} />
+      <Route path="/GlobalLeaderboard" element={<LayoutWrapper currentPageName="GlobalLeaderboard"><GlobalLeaderboardPage /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
