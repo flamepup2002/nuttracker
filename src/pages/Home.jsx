@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import PullToRefresh from '@/components/PullToRefresh';
 import { 
         Flame, Activity, DollarSign, Droplet, X, Ban, 
-        TrendingUp, Calendar, Play, Settings, ChevronRight, Coins, Sparkles, Trophy, Video, User, Zap, Home as HomeIcon, Gavel, FileText, CreditCard, Bell, BarChart3, Lock, MessageSquare, Target, Shield, ScrollText, AlertOctagon, Siren, Navigation, Crown, Scan, Dog, History, Archive, LayoutDashboard, Building2
+        TrendingUp, Calendar, Play, Settings, ChevronRight, Coins, Sparkles, Trophy, Video, User, Zap, Home as HomeIcon, Gavel, FileText, CreditCard, Bell, BarChart3, Lock, MessageSquare, Target, Shield, ScrollText, AlertOctagon, Siren, Navigation, Crown, Scan, Dog, History, Archive, LayoutDashboard, Building2, Wallet, ShieldCheck, BookOpen, ShoppingBag, Clock, Star, FileEdit, Unlock
       } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import StatsCard from '@/components/StatsCard';
@@ -745,6 +745,114 @@ export default function Home() {
               <Archive className="w-8 h-8 text-zinc-300 mb-3" />
               <p className="text-white font-bold text-lg">Evidence Locker</p>
               <p className="text-white/70 text-sm">Submitted photo proofs</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+
+          <Link to="/DebtSettlementPortal">
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-green-800 to-emerald-900 border border-green-600/50">
+              <DollarSign className="w-8 h-8 text-green-300 mb-3" />
+              <p className="text-white font-bold text-lg">Debt Settlement</p>
+              <p className="text-white/70 text-sm">Pay & negotiate debts</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+
+          <Link to="/AchievementsCase">
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-yellow-700 to-orange-800 border border-yellow-500/50">
+              <Star className="w-8 h-8 text-yellow-200 mb-3" />
+              <p className="text-white font-bold text-lg">Achievement Case</p>
+              <p className="text-white/70 text-sm">Showcase your badges</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+
+          <Link to="/PrisonCommissary">
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-orange-700 to-amber-900 border border-orange-500/50">
+              <ShoppingBag className="w-8 h-8 text-orange-200 mb-3" />
+              <p className="text-white font-bold text-lg">Prison Commissary</p>
+              <p className="text-white/70 text-sm">Buy items with coins</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+
+          <Link to="/SentenceTracker">
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-blue-800 to-slate-900 border border-blue-600/50">
+              <Clock className="w-8 h-8 text-blue-300 mb-3" />
+              <p className="text-white font-bold text-lg">Sentence Tracker</p>
+              <p className="text-white/70 text-sm">Time served & release</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+
+          <Link to="/EnforcementLedger">
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-amber-800 to-yellow-900 border border-amber-600/50">
+              <BookOpen className="w-8 h-8 text-amber-300 mb-3" />
+              <p className="text-white font-bold text-lg">Enforcement Ledger</p>
+              <p className="text-white/70 text-sm">Fines & settlements</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+
+          <Link to="/JudgeSettings">
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-amber-700 to-yellow-900 border border-amber-500/50">
+              <Gavel className="w-8 h-8 text-amber-200 mb-3" />
+              <p className="text-white font-bold text-lg">Judge Settings</p>
+              <p className="text-white/70 text-sm">Tune severity & mode</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+
+          <Link to="/ContractTemplates">
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-purple-700 to-indigo-900 border border-purple-500/50">
+              <FileEdit className="w-8 h-8 text-purple-200 mb-3" />
+              <p className="text-white font-bold text-lg">Contract Templates</p>
+              <p className="text-white/70 text-sm">Save custom contracts</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+
+          <Link to="/BailBonds">
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-blue-700 to-slate-900 border border-blue-500/50">
+              <Unlock className="w-8 h-8 text-blue-200 mb-3" />
+              <p className="text-white font-bold text-lg">Bail Bonds</p>
+              <p className="text-white/70 text-sm">Post bail & avoid jail</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+
+          <Link to="/ComplianceScore">
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-green-700 to-emerald-900 border border-green-500/50">
+              <ShieldCheck className="w-8 h-8 text-green-200 mb-3" />
+              <p className="text-white font-bold text-lg">Compliance Score</p>
+              <p className="text-white/70 text-sm">Your obedience grade</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+
+          <Link to="/WantedBoard">
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-red-800 to-zinc-950 border border-red-600/50">
+              <Siren className="w-8 h-8 text-red-300 mb-3 animate-pulse" />
+              <p className="text-white font-bold text-lg">Wanted Board</p>
+              <p className="text-white/70 text-sm">Active arrest flags</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+
+          <Link to="/PublicRegistry">
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-indigo-700 to-purple-900 border border-indigo-500/50">
+              <FileText className="w-8 h-8 text-indigo-200 mb-3" />
+              <p className="text-white font-bold text-lg">Public Registry</p>
+              <p className="text-white/70 text-sm">Searchable contracts</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+
+          <Link to="/StripeWallet">
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-green-700 to-teal-900 border border-green-500/50">
+              <Wallet className="w-8 h-8 text-green-200 mb-3" />
+              <p className="text-white font-bold text-lg">Stripe Wallet</p>
+              <p className="text-white/70 text-sm">Convert coins to debt</p>
               <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
             </motion.div>
           </Link>

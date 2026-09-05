@@ -1,0 +1,79 @@
+{
+  "name": "ContractTemplate",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Template name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Template terms and details"
+    },
+    "intensity_level": {
+      "type": "string",
+      "enum": [
+        "mild",
+        "moderate",
+        "intense",
+        "extreme"
+      ],
+      "default": "moderate",
+      "description": "Template intensity"
+    },
+    "monthly_payment": {
+      "type": "number",
+      "description": "Default monthly payment"
+    },
+    "duration_months": {
+      "type": "number",
+      "description": "Default duration in months"
+    },
+    "terms": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of contract terms"
+    },
+    "penalty_percentage": {
+      "type": "number",
+      "default": 5,
+      "description": "Default penalty percentage"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "debt",
+        "behavioral",
+        "findom",
+        "punishment"
+      ],
+      "default": "debt",
+      "description": "Template category"
+    },
+    "is_favorite": {
+      "type": "boolean",
+      "default": false,
+      "description": "Marked as favorite for quick assignment"
+    }
+  },
+  "required": [
+    "title",
+    "intensity_level"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}

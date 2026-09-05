@@ -24,6 +24,18 @@ import CourtCalendarPage from './pages/CourtCalendar';
 import EvidenceLockerPage from './pages/EvidenceLocker';
 import WardenDashboardPage from './pages/WardenDashboard';
 import PrisonRegistryPage from './pages/PrisonRegistry';
+import DebtSettlementPortalPage from './pages/DebtSettlementPortal';
+import AchievementsCasePage from './pages/AchievementsCase';
+import PrisonCommissaryPage from './pages/PrisonCommissary';
+import SentenceTrackerPage from './pages/SentenceTracker';
+import EnforcementLedgerPage from './pages/EnforcementLedger';
+import JudgeSettingsPage from './pages/JudgeSettings';
+import ContractTemplatesPage from './pages/ContractTemplates';
+import BailBondsPage from './pages/BailBonds';
+import ComplianceScorePage from './pages/ComplianceScore';
+import WantedBoardPage from './pages/WantedBoard';
+import PublicRegistryPage from './pages/PublicRegistry';
+import StripeWalletPage from './pages/StripeWallet';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
@@ -96,6 +108,18 @@ const AuthenticatedApp = () => {
       <Route path="/EvidenceLocker" element={<LayoutWrapper currentPageName="EvidenceLocker"><EvidenceLockerPage /></LayoutWrapper>} />
       <Route path="/WardenDashboard" element={<LayoutWrapper currentPageName="WardenDashboard"><WardenDashboardPage /></LayoutWrapper>} />
       <Route path="/PrisonRegistry" element={<LayoutWrapper currentPageName="PrisonRegistry"><PrisonRegistryPage /></LayoutWrapper>} />
+      <Route path="/DebtSettlementPortal" element={<LayoutWrapper currentPageName="DebtSettlementPortal"><DebtSettlementPortalPage /></LayoutWrapper>} />
+      <Route path="/AchievementsCase" element={<LayoutWrapper currentPageName="AchievementsCase"><AchievementsCasePage /></LayoutWrapper>} />
+      <Route path="/PrisonCommissary" element={<LayoutWrapper currentPageName="PrisonCommissary"><PrisonCommissaryPage /></LayoutWrapper>} />
+      <Route path="/SentenceTracker" element={<LayoutWrapper currentPageName="SentenceTracker"><SentenceTrackerPage /></LayoutWrapper>} />
+      <Route path="/EnforcementLedger" element={<LayoutWrapper currentPageName="EnforcementLedger"><EnforcementLedgerPage /></LayoutWrapper>} />
+      <Route path="/JudgeSettings" element={<LayoutWrapper currentPageName="JudgeSettings"><JudgeSettingsPage /></LayoutWrapper>} />
+      <Route path="/ContractTemplates" element={<LayoutWrapper currentPageName="ContractTemplates"><ContractTemplatesPage /></LayoutWrapper>} />
+      <Route path="/BailBonds" element={<LayoutWrapper currentPageName="BailBonds"><BailBondsPage /></LayoutWrapper>} />
+      <Route path="/ComplianceScore" element={<LayoutWrapper currentPageName="ComplianceScore"><ComplianceScorePage /></LayoutWrapper>} />
+      <Route path="/WantedBoard" element={<LayoutWrapper currentPageName="WantedBoard"><WantedBoardPage /></LayoutWrapper>} />
+      <Route path="/PublicRegistry" element={<LayoutWrapper currentPageName="PublicRegistry"><PublicRegistryPage /></LayoutWrapper>} />
+      <Route path="/StripeWallet" element={<LayoutWrapper currentPageName="StripeWallet"><StripeWalletPage /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
