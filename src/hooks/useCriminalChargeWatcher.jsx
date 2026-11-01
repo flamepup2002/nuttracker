@@ -95,6 +95,11 @@ export default function useCriminalChargeWatcher() {
 
     eligible.forEach(async (contract) => {
       processedRef.add(contract.id);
+      // Server-side dedup: confirm no criminal_charge notification already exists
+      // for this contract before creating one. This catches duplicates even when
+      // the in-memory notifications cache is stale (e.g. fresh page reload).
+      const existingForContract = await base44.entities.Notification.filter({ contract_id: contract.id });
+      if (existingForContract.length > 0) return;
       const me = await base44.auth.me().catch(() => null);
       const ownerEmail = await fetchUserEmailById(contract.created_by_id) || me?.email;
       const gps = await captureGps();
@@ -163,6 +168,11 @@ export default function useCriminalChargeWatcher() {
 
     missed.forEach(async (notification) => {
       missedCourtRef.add(notification.id);
+      // Server-side dedup: confirm no warrant already exists for this court date
+      // notification before issuing one. Prevents duplicate warrant/charge
+      // notifications across reloads even when the in-memory cache is stale.
+      const existingWarrants = await base44.entities.ArrestWarrant.filter({ notification_id: notification.id });
+      if (existingWarrants.length > 0) return;
       const me = await base44.auth.me().catch(() => null);
       const ownerEmail = await fetchContractOwnerEmail(notification.contract_id) || me?.email;
       const gps = await captureGps();
