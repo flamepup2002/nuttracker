@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { sendLegalAlert, fetchUserEmailById, fetchContractOwnerEmail } from '@/lib/legalAlerts';
@@ -22,9 +22,18 @@ function hasCriminalTerms(contract) {
   return CRIMINAL_KEYWORDS.some(kw => textToSearch.includes(kw));
 }
 
-function generateCourtDate() {
-  const daysOut = Math.floor(Math.random() * 61) + 30;
-  const date = new Date();
+// Deterministic court date: derives a stable date from the contract so the
+// same contract always gets the same court date. Prevents dates from
+// shifting if a notification is regenerated on a fresh login.
+function generateCourtDate(baseDateStr, seed) {
+  let hash = 0;
+  const s = String(seed || '');
+  for (let i = 0; i < s.length; i++) {
+    hash = ((hash << 5) - hash) + s.charCodeAt(i);
+    hash |= 0;
+  }
+  const daysOut = 30 + (Math.abs(hash) % 61); // 30–90 days, stable per contract
+  const date = baseDateStr ? new Date(baseDateStr) : new Date();
   date.setDate(date.getDate() + daysOut);
   const day = date.getDay();
   if (day === 0) date.setDate(date.getDate() + 1);
@@ -42,31 +51,38 @@ function originalChargeKey(contract) {
   return 'fraud_under';
 }
 
+// Module-level Sets persist across component remounts (navigations) within a
+// session, preventing the race condition where contracts are reprocessed
+// before the notifications query has refetched after a remount.
+const processedRef = new Set();
+const missedCourtRef = new Set();
+
 export default function useCriminalChargeWatcher() {
   const queryClient = useQueryClient();
-  const processedRef = useRef(new Set());
-  const missedCourtRef = useRef(new Set());
 
-  const { data: contracts = [] } = useQuery({
+  const { data: contracts = [], isLoading: contractsLoading } = useQuery({
     queryKey: ['contracts-criminal-watch'],
     queryFn: () => base44.entities.DebtContract.list('-created_date', 100),
     refetchInterval: 60000,
   });
 
-  const { data: notifications = [] } = useQuery({
+  const { data: notifications = [], isLoading: notificationsLoading } = useQuery({
     queryKey: ['notifications-criminal-watch'],
     queryFn: () => base44.entities.Notification.filter({ type: 'criminal_charge' }),
     refetchInterval: 60000,
   });
 
-  const { data: warrants = [] } = useQuery({
+  const { data: warrants = [], isLoading: warrantsLoading } = useQuery({
     queryKey: ['warrants-watch'],
     queryFn: () => base44.entities.ArrestWarrant.list('-issued_at', 100),
     refetchInterval: 60000,
   });
 
-  // Create criminal_charge notifications for newly accepted contracts with criminal terms
+  // Create criminal_charge notifications for newly accepted contracts with criminal terms.
+  // Only run once both contracts and notifications have loaded from the DB to
+  // avoid recreating notifications (with new dates) before existing ones are visible.
   useEffect(() => {
+    if (contractsLoading || notificationsLoading) return;
     if (!contracts.length) return;
     const existingContractIds = new Set(notifications.map(n => n.contract_id));
 
@@ -74,15 +90,15 @@ export default function useCriminalChargeWatcher() {
       c.is_accepted &&
       hasCriminalTerms(c) &&
       !existingContractIds.has(c.id) &&
-      !processedRef.current.has(c.id)
+      !processedRef.has(c.id)
     );
 
     eligible.forEach(async (contract) => {
-      processedRef.current.add(contract.id);
+      processedRef.add(contract.id);
       const me = await base44.auth.me().catch(() => null);
       const ownerEmail = await fetchUserEmailById(contract.created_by_id) || me?.email;
       const gps = await captureGps();
-      const courtDate = generateCourtDate();
+      const courtDate = generateCourtDate(contract.created_date, contract.id);
       const courtDateFormatted = new Date(courtDate).toLocaleDateString('en-US', {
         weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
       });
@@ -132,6 +148,7 @@ export default function useCriminalChargeWatcher() {
 
   // Check for missed court dates — issue arrest warrants and add charges
   useEffect(() => {
+    if (notificationsLoading || warrantsLoading) return;
     if (!notifications.length) return;
     const now = new Date();
     const existingWarrantNotifIds = new Set(warrants.map(w => w.notification_id));
@@ -141,11 +158,11 @@ export default function useCriminalChargeWatcher() {
       n.court_date &&
       new Date(n.court_date) < now &&
       !existingWarrantNotifIds.has(n.id) &&
-      !missedCourtRef.current.has(n.id)
+      !missedCourtRef.has(n.id)
     );
 
     missed.forEach(async (notification) => {
-      missedCourtRef.current.add(notification.id);
+      missedCourtRef.add(notification.id);
       const me = await base44.auth.me().catch(() => null);
       const ownerEmail = await fetchContractOwnerEmail(notification.contract_id) || me?.email;
       const gps = await captureGps();
