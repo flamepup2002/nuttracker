@@ -215,6 +215,20 @@
     "last_daily_bonus_date": {
       "type": "string",
       "description": "Date of last daily login bonus"
+    },
+    "no_appeals": {
+      "type": "boolean",
+      "default": false,
+      "description": "When true, the court has ordered no appeals \u2014 the defendant is barred from filing any appeal against verdicts, charges, sentences, or penalties. Set by the Judge agent as part of a 'no appeals' order."
+    },
+    "no_appeals_reason": {
+      "type": "string",
+      "description": "The court's stated reason for barring all appeals, announced by the Judge when issuing the 'no appeals' order."
+    },
+    "no_appeals_ordered_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the court issued the 'no appeals' order."
     }
   },
   "required": []

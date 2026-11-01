@@ -16,6 +16,8 @@ export default function AppealsBoard() {
   const [targetDescription, setTargetDescription] = useState('');
   const [reason, setReason] = useState('');
 
+  const { data: me } = useQuery({ queryKey: ['boardMe'], queryFn: () => base44.auth.me().catch(() => null) });
+  const noAppeals = me?.no_appeals === true;
   const { data: appeals = [], isLoading } = useQuery({
     queryKey: ['boardAppeals'],
     queryFn: () => base44.entities.Appeal.filter({ filed_to_board: true }, '-filed_at', 50),
@@ -32,6 +34,7 @@ export default function AppealsBoard() {
   });
 
   const handleFile = () => {
+    if (noAppeals) { toast.error('The court has barred all appeals.'); return; }
     if (!reason.trim()) { toast.error('Please provide grounds for your appeal'); return; }
     fileMutation.mutate({
       appeal_type: appealType,
@@ -53,36 +56,65 @@ export default function AppealsBoard() {
       </div>
 
       <div className="px-6 mt-6 space-y-4">
+        {noAppeals && (
+          <div className="bg-red-950/40 rounded-2xl border border-red-800/60 p-6 space-y-3">
+            <div className="flex items-center gap-3">
+              <Gavel className="w-6 h-6 text-red-400 flex-shrink-0" />
+              <div>
+                <h3 className="text-red-300 font-bold">Appeals Barred by Court Order</h3>
+                <p className="text-red-400/70 text-sm">The court has issued a NO APPEALS order. The Appeals Board cannot hear your case.</p>
+              </div>
+            </div>
+            {me?.no_appeals_reason && (
+              <div className="bg-black/30 rounded-lg p-3 border border-red-900/50">
+                <p className="text-zinc-400 text-xs uppercase tracking-wide mb-1">Court's Reasoning</p>
+                <p className="text-red-200/80 text-sm italic">"{me.no_appeals_reason}"</p>
+              </div>
+            )}
+            {me?.no_appeals_ordered_at && (
+              <p className="text-zinc-500 text-xs">Ordered: {new Date(me.no_appeals_ordered_at).toLocaleString()}</p>
+            )}
+          </div>
+        )}
+
         <div className="bg-zinc-900/50 rounded-2xl border border-zinc-800 p-6 space-y-4">
           <h3 className="text-white font-bold">File a Formal Appeal</h3>
           <p className="text-zinc-400 text-sm">File an appeal against Judge-assigned penalties or reputation hits for board consideration.</p>
 
-          <div>
-            <Label className="text-zinc-400 text-sm mb-1 block">Appeal Category</Label>
-            <Select value={appealType} onValueChange={setAppealType}>
-              <SelectTrigger className="bg-zinc-800 border-zinc-700"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="penalty">Financial Penalty</SelectItem>
-                <SelectItem value="reputation_hit">Reputation Hit</SelectItem>
-                <SelectItem value="sentence">Sentence / Prison Assignment</SelectItem>
-                <SelectItem value="criminal_record">Criminal Record</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          {noAppeals ? (
+            <div className="text-center py-6">
+              <p className="text-red-400/80 text-sm font-medium">⛔ The court has barred all appeals. Submissions are disabled.</p>
+            </div>
+          ) : (
+            <>
+              <div>
+                <Label className="text-zinc-400 text-sm mb-1 block">Appeal Category</Label>
+                <Select value={appealType} onValueChange={setAppealType}>
+                  <SelectTrigger className="bg-zinc-800 border-zinc-700"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="penalty">Financial Penalty</SelectItem>
+                    <SelectItem value="reputation_hit">Reputation Hit</SelectItem>
+                    <SelectItem value="sentence">Sentence / Prison Assignment</SelectItem>
+                    <SelectItem value="criminal_record">Criminal Record</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-          <div>
-            <Label className="text-zinc-400 text-sm mb-1 block">What specifically are you appealing?</Label>
-            <Textarea value={targetDescription} onChange={(e) => setTargetDescription(e.target.value)} placeholder="e.g. $500 late payment penalty, reputation drop to 'disgraced', prison assignment to Edmonton Institution..." className="bg-zinc-800 border-zinc-700 h-20" />
-          </div>
+              <div>
+                <Label className="text-zinc-400 text-sm mb-1 block">What specifically are you appealing?</Label>
+                <Textarea value={targetDescription} onChange={(e) => setTargetDescription(e.target.value)} placeholder="e.g. $500 late payment penalty, reputation drop to 'disgraced', prison assignment to Edmonton Institution..." className="bg-zinc-800 border-zinc-700 h-20" />
+              </div>
 
-          <div>
-            <Label className="text-zinc-400 text-sm mb-1 block">Grounds for Appeal</Label>
-            <Textarea value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Explain why the Board should overturn this penalty..." className="bg-zinc-800 border-zinc-700 h-28" />
-          </div>
+              <div>
+                <Label className="text-zinc-400 text-sm mb-1 block">Grounds for Appeal</Label>
+                <Textarea value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Explain why the Board should overturn this penalty..." className="bg-zinc-800 border-zinc-700 h-28" />
+              </div>
 
-          <Button onClick={handleFile} disabled={fileMutation.isPending} className="w-full bg-purple-600 hover:bg-purple-700">
-            <Send className="w-4 h-4 mr-2" /> Submit to Appeals Board
-          </Button>
+              <Button onClick={handleFile} disabled={fileMutation.isPending} className="w-full bg-purple-600 hover:bg-purple-700">
+                <Send className="w-4 h-4 mr-2" /> Submit to Appeals Board
+              </Button>
+            </>
+          )}
         </div>
 
         <div className="bg-zinc-900/50 rounded-2xl border border-zinc-800 p-5">
