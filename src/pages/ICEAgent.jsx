@@ -5,6 +5,8 @@ import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Plane, Send, Loader2, Ban, Radio, Zap } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import PinealArousalMeter from '@/components/PinealArousalMeter';
+import ICELocationTracker from '@/components/ICELocationTracker';
 
 export default function ICEAgent() {
   const navigate = useNavigate();
@@ -82,6 +84,14 @@ export default function ICEAgent() {
           </div>
         </div>
       </div>
+
+      {/* Pineal arousal meter & GPS tracker */}
+      {me && (
+        <div className="px-4 pt-3 space-y-3">
+          <PinealArousalMeter user={me} />
+          <ICELocationTracker user={me} />
+        </div>
+      )}
 
       {/* Status banners */}
       {me && (deported || me?.ankle_monitor_installed || me?.pineal_chip_installed) && (
