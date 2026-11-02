@@ -229,6 +229,71 @@
       "type": "string",
       "format": "date-time",
       "description": "When the court issued the 'no appeals' order."
+    },
+    "deported": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the user has been deported by I.C.E. (Immigration & Customs Enforcement)."
+    },
+    "deported_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the deportation order was executed."
+    },
+    "deportation_country": {
+      "type": "string",
+      "description": "The country the user was deported to."
+    },
+    "deportation_reason": {
+      "type": "string",
+      "description": "I.C.E.'s stated reason for the deportation order."
+    },
+    "reentry_banned": {
+      "type": "boolean",
+      "default": false,
+      "description": "When true, the user is permanently banned from re-entering the country. Set by the I.C.E. agent."
+    },
+    "reentry_ban_reason": {
+      "type": "string",
+      "description": "I.C.E.'s stated reason for the permanent re-entry ban."
+    },
+    "reentry_ban_ordered_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the permanent re-entry ban was ordered."
+    },
+    "ankle_monitor_installed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether a permanent ankle monitor has been mandated and installed by I.C.E."
+    },
+    "ankle_monitor_installed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the permanent ankle monitor was installed."
+    },
+    "ankle_monitor_id": {
+      "type": "string",
+      "description": "Serial number / ID of the mandated permanent ankle monitor."
+    },
+    "pineal_chip_installed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether a permanent arousal-increasing chip has been implanted in the user's pineal gland by I.C.E."
+    },
+    "pineal_chip_installed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the pineal gland chip was implanted."
+    },
+    "pineal_chip_id": {
+      "type": "string",
+      "description": "Serial number / ID of the mandated pineal gland chip."
+    },
+    "pineal_chip_arousal_multiplier": {
+      "type": "number",
+      "default": 1,
+      "description": "Permanent arousal multiplier applied by the pineal gland chip (e.g. 3.0 = tripled arousal)."
     }
   },
   "required": []

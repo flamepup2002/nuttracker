@@ -47,6 +47,7 @@ import WardenMessagingPage from './pages/WardenMessaging';
 import EscalationMatrixPage from './pages/EscalationMatrix';
 import AppealsBoardPage from './pages/AppealsBoard';
 import GlobalLeaderboardPage from './pages/GlobalLeaderboard';
+import ICEAgentPage from './pages/ICEAgent';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
@@ -142,6 +143,7 @@ const AuthenticatedApp = () => {
       <Route path="/EscalationMatrix" element={<LayoutWrapper currentPageName="EscalationMatrix"><EscalationMatrixPage /></LayoutWrapper>} />
       <Route path="/AppealsBoard" element={<LayoutWrapper currentPageName="AppealsBoard"><AppealsBoardPage /></LayoutWrapper>} />
       <Route path="/GlobalLeaderboard" element={<LayoutWrapper currentPageName="GlobalLeaderboard"><GlobalLeaderboardPage /></LayoutWrapper>} />
+      <Route path="/ICEAgent" element={<LayoutWrapper currentPageName="ICEAgent"><ICEAgentPage /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

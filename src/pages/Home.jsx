@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import PullToRefresh from '@/components/PullToRefresh';
 import { 
         Flame, Activity, DollarSign, Droplet, X, Ban, 
-        TrendingUp, Calendar, Play, Settings, ChevronRight, Coins, Sparkles, Trophy, Video, User, Zap, Home as HomeIcon, Gavel, FileText, CreditCard, Bell, BarChart3, Lock, MessageSquare, Target, Shield, ScrollText, AlertOctagon, Siren, Navigation, Crown, Scan, Dog, History, Archive, LayoutDashboard, Building2, Wallet, ShieldCheck, BookOpen, ShoppingBag, Clock, Star, FileEdit, Unlock, PieChart, Bot, Package, Send, TrendingDown, AlertTriangle
+        TrendingUp, Calendar, Play, Settings, ChevronRight, Coins, Sparkles, Trophy, Video, User, Zap, Home as HomeIcon, Gavel, FileText, CreditCard, Bell, BarChart3, Lock, MessageSquare, Target, Shield, ScrollText, AlertOctagon, Siren, Navigation, Crown, Scan, Dog, History, Archive, LayoutDashboard, Building2, Wallet, ShieldCheck, BookOpen, ShoppingBag, Clock, Star, FileEdit, Unlock, PieChart, Bot, Package, Send, TrendingDown, AlertTriangle, Plane
       } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import StatsCard from '@/components/StatsCard';
@@ -680,6 +680,19 @@ export default function Home() {
               <Shield className="w-8 h-8 text-blue-300 mb-3" />
               <p className="text-white font-bold text-lg">Police Interrogation</p>
               <p className="text-white/70 text-sm">Officer Slater wants a word</p>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+            </motion.div>
+          </Link>
+
+          <Link to="/ICEAgent">
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-sky-800 to-zinc-950 border border-sky-600/50"
+            >
+              <Plane className="w-8 h-8 text-sky-300 mb-3" />
+              <p className="text-white font-bold text-lg">I.C.E. Removal</p>
+              <p className="text-white/70 text-sm">Deportation & ankle monitor</p>
               <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl" />
             </motion.div>
           </Link>
