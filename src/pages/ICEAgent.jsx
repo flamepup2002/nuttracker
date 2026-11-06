@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Plane, Send, Loader2, Ban, Radio, Zap, Skull, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Plane, Send, Loader2, Ban, Radio, Zap } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import PinealArousalMeter from '@/components/PinealArousalMeter';
 import ICELocationTracker from '@/components/ICELocationTracker';
@@ -90,18 +90,6 @@ export default function ICEAgent() {
         <div className="px-4 pt-3 space-y-3">
           <PinealArousalMeter user={me} />
           <ICELocationTracker user={me} />
-          <Link to="/Crime" className="block">
-            <div className="bg-zinc-950/60 border border-red-900/40 rounded-2xl p-3 flex items-center gap-3 hover:border-red-700/60 transition-all">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-red-700 to-zinc-900 flex items-center justify-center border border-red-500/40">
-                <Skull className="w-5 h-5 text-red-300" />
-              </div>
-              <div className="flex-1">
-                <p className="text-red-200 font-bold text-sm">Crime Page</p>
-                <p className="text-red-400/50 text-xs">Plan & commit a crime to feed the chip</p>
-              </div>
-              <ChevronRight className="w-5 h-5 text-zinc-600" />
-            </div>
-          </Link>
         </div>
       )}
 
