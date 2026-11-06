@@ -48,6 +48,7 @@ import EscalationMatrixPage from './pages/EscalationMatrix';
 import AppealsBoardPage from './pages/AppealsBoard';
 import GlobalLeaderboardPage from './pages/GlobalLeaderboard';
 import ICEAgentPage from './pages/ICEAgent';
+import CrimePage from './pages/CrimePage';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
@@ -144,6 +145,7 @@ const AuthenticatedApp = () => {
       <Route path="/AppealsBoard" element={<LayoutWrapper currentPageName="AppealsBoard"><AppealsBoardPage /></LayoutWrapper>} />
       <Route path="/GlobalLeaderboard" element={<LayoutWrapper currentPageName="GlobalLeaderboard"><GlobalLeaderboardPage /></LayoutWrapper>} />
       <Route path="/ICEAgent" element={<LayoutWrapper currentPageName="ICEAgent"><ICEAgentPage /></LayoutWrapper>} />
+      <Route path="/Crime" element={<LayoutWrapper currentPageName="Crime"><CrimePage /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
