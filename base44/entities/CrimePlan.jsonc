@@ -1,0 +1,89 @@
+{
+  "name": "CrimePlan",
+  "type": "object",
+  "properties": {
+    "crime_name": {
+      "type": "string",
+      "description": "Name of the chosen crime"
+    },
+    "crime_id": {
+      "type": "string",
+      "description": "Catalog id of the crime"
+    },
+    "variant": {
+      "type": "string",
+      "description": "Selected crime variant/type"
+    },
+    "location": {
+      "type": "string",
+      "description": "Selected target location"
+    },
+    "time": {
+      "type": "string",
+      "description": "Selected time slot"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Selected date"
+    },
+    "method": {
+      "type": "string",
+      "description": "Selected method of execution"
+    },
+    "est_payout": {
+      "type": "number",
+      "description": "Estimated payout in dollars"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "FELONY",
+        "FEDERAL"
+      ],
+      "description": "Crime severity"
+    },
+    "risk": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "extreme"
+      ],
+      "description": "Risk level"
+    },
+    "plan_text": {
+      "type": "string",
+      "description": "AI-generated detailed crime plan (markdown)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "planned",
+        "executed",
+        "abandoned"
+      ],
+      "default": "planned",
+      "description": "Plan status"
+    }
+  },
+  "required": [
+    "crime_name",
+    "plan_text"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}

@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   ArrowLeft, Skull, RefreshCw, MapPin, Clock, Calendar, Wrench,
-  Lock, Flame, Check, ChevronRight, AlertTriangle,
+  Lock, Flame, Check, ChevronRight, AlertTriangle, Loader2, ListOrdered,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { base44 } from '@/api/base44Client';
 import {
   rollBoard, nextDays, LOCATIONS, METHODS, TIME_SLOTS,
   SEVERITY_COLOR, RISK_COLOR,
@@ -22,6 +23,7 @@ export default function CrimePage() {
   const [date, setDate] = useState(null);
   const [method, setMethod] = useState(null);
   const [committed, setCommitted] = useState(false);
+  const [generating, setGenerating] = useState(false);
 
   const dates = useMemo(() => nextDays(7), []);
 
@@ -49,10 +51,75 @@ export default function CrimePage() {
 
   const planComplete = selected && variant && location && time && date && method;
 
-  const commit = () => {
-    if (!planComplete) return;
-    setCommitted(true);
-    toast.success('Crime plan committed.');
+  const buildPrompt = () => `You are a criminal mastermind planner writing a fictional, in-character heist dossier for a roleplay app.
+Design a detailed, realistic crime plan for the following job. Be specific, tactical and cinematic but stay within the fictional scenario.
+
+CRIME: ${selected.name} (${selected.severity})
+VARIANT/TYPE: ${variant}
+TARGET LOCATION: ${location}
+DATE: ${date}
+TIME: ${time}
+METHOD: ${method}
+ESTIMATED PAYOUT: $${selected.reward.toLocaleString()}
+RISK LEVEL: ${selected.risk}
+
+Write the plan in markdown with these sections:
+## Overview
+A short, punchy summary of the job and its goal.
+## Reconnaissance
+What to scout beforehand and how.
+## Step-by-Step Execution
+A numbered list of concrete steps from arrival to exit.
+## Equipment & Tools
+A bullet list of what to bring.
+## Alibi & Cover Story
+How to stay invisible before, during and after.
+## Escape & Evasion
+The exit route and how to disappear with the take.
+## Red Flags & Contingencies
+What can go wrong and the fallback for each.
+## Cleanup & Money Trail
+How to launder or hide the proceeds.
+
+Keep each section tight and vivid. Do not include disclaimers.`;
+
+  const commit = async () => {
+    if (!planComplete || generating) return;
+    setGenerating(true);
+    try {
+      const res = await base44.integrations.Core.InvokeLLM({
+        prompt: buildPrompt(),
+        response_json_schema: {
+          type: 'object',
+          properties: { plan_markdown: { type: 'string' } },
+          required: ['plan_markdown'],
+        },
+      });
+      const planText = res?.plan_markdown || (typeof res === 'string' ? res : '');
+
+      const dateLabel = dates.find((d) => d.value === date)?.label || date;
+      const created = await base44.entities.CrimePlan.create({
+        crime_name: selected.name,
+        crime_id: selected.id,
+        variant,
+        location,
+        time,
+        date,
+        method,
+        est_payout: selected.reward,
+        severity: selected.severity,
+        risk: selected.risk,
+        plan_text: planText,
+        status: 'planned',
+      });
+      toast.success('Crime plan generated.');
+      setCommitted(true);
+      navigate(`/CrimePlan/${created.id}`);
+    } catch (e) {
+      toast.error('Failed to generate crime plan.');
+    } finally {
+      setGenerating(false);
+    }
   };
 
   return (
@@ -95,6 +162,15 @@ export default function CrimePage() {
                 {refreshUsed ? 'Refresh Used' : 'Free Refresh'}
               </button>
             </div>
+
+            <button
+              onClick={() => navigate('/CrimePlans')}
+              className="w-full flex items-center gap-2.5 p-3 rounded-xl border border-red-900/40 bg-red-950/20 hover:bg-red-900/30 transition-all text-left"
+            >
+              <ListOrdered className="w-4 h-4 text-red-300" />
+              <span className="text-red-200 text-xs font-bold flex-1">My Generated Plans</span>
+              <ChevronRight className="w-4 h-4 text-zinc-600" />
+            </button>
 
             {board.map((c, idx) => (
               <motion.button
@@ -228,10 +304,12 @@ export default function CrimePage() {
             ) : (
               <button
                 onClick={commit}
-                disabled={!planComplete}
+                disabled={!planComplete || generating}
                 className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-red-700 to-red-900 hover:from-red-600 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold flex items-center justify-center gap-2 transition-all"
               >
-                {planComplete ? (
+                {generating ? (
+                  <><Loader2 className="w-5 h-5 animate-spin" /> Generating crime plan…</>
+                ) : planComplete ? (
                   <><Flame className="w-5 h-5" /> Commit to Crime Plan</>
                 ) : (
                   <><AlertTriangle className="w-4 h-4" /> Complete all details to commit</>

@@ -49,6 +49,8 @@ import AppealsBoardPage from './pages/AppealsBoard';
 import GlobalLeaderboardPage from './pages/GlobalLeaderboard';
 import ICEAgentPage from './pages/ICEAgent';
 import CrimePage from './pages/CrimePage';
+import CrimePlanDetailPage from './pages/CrimePlanDetail';
+import CrimePlansPage from './pages/CrimePlans';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
@@ -146,6 +148,8 @@ const AuthenticatedApp = () => {
       <Route path="/GlobalLeaderboard" element={<LayoutWrapper currentPageName="GlobalLeaderboard"><GlobalLeaderboardPage /></LayoutWrapper>} />
       <Route path="/ICEAgent" element={<LayoutWrapper currentPageName="ICEAgent"><ICEAgentPage /></LayoutWrapper>} />
       <Route path="/Crime" element={<LayoutWrapper currentPageName="Crime"><CrimePage /></LayoutWrapper>} />
+      <Route path="/CrimePlans" element={<LayoutWrapper currentPageName="CrimePlans"><CrimePlansPage /></LayoutWrapper>} />
+      <Route path="/CrimePlan/:id" element={<LayoutWrapper currentPageName="CrimePlanDetail"><CrimePlanDetailPage /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
