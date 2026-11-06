@@ -7,6 +7,7 @@ import { ArrowLeft, Plane, Send, Loader2, Ban, Radio, Zap } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import PinealArousalMeter from '@/components/PinealArousalMeter';
 import ICELocationTracker from '@/components/ICELocationTracker';
+import CrimeMenu from '@/components/CrimeMenu';
 
 export default function ICEAgent() {
   const navigate = useNavigate();
@@ -90,6 +91,7 @@ export default function ICEAgent() {
         <div className="px-4 pt-3 space-y-3">
           <PinealArousalMeter user={me} />
           <ICELocationTracker user={me} />
+          <CrimeMenu />
         </div>
       )}
 
